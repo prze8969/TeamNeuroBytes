@@ -1,7 +1,7 @@
 // lib/api.ts
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-export async function fetchApi(endpoint: string, options: RequestInit = {}) {
+export async function fetchApi<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = typeof document !== 'undefined' ? 
     document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : null;
 

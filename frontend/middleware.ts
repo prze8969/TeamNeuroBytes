@@ -6,7 +6,8 @@ import { jwtDecode } from 'jwt-decode'
 const roleRouteMap: Record<string, string[]> = {
   '/farmer': ['FARMER'],
   '/buyer': ['BUYER'],
-  '/organization': ['ORGANIZATION'],
+  '/fpo': ['FPO'],
+  '/organization': ['ORGANIZATION', 'FPO'],
   '/warehouse': ['WAREHOUSE'],
   '/transportation': ['TRANSPORTATION'],
   '/admin': ['ADMIN'],
@@ -14,32 +15,44 @@ const roleRouteMap: Record<string, string[]> = {
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
+  const userRoleCookie = request.cookies.get('user_role')?.value
   const { pathname } = request.nextUrl
 
-  // Allow auth routes and public assets
-  if (pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/_next') || pathname === '/') {
+  // Allow auth routes, public assets, and static files
+  if (
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/kyc') ||
+    pathname.startsWith('/_next') ||
+    pathname === '/'
+  ) {
     return NextResponse.next()
   }
 
-  if (!token) {
+  // If no token or role present, redirect to login
+  if (!token && !userRoleCookie) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  try {
-    const decoded: any = jwtDecode(token)
-    const userRole = decoded.role
+  let userRole = userRoleCookie || 'FARMER'
 
-    // Check if the user is trying to access a role-protected route
-    for (const [routePrefix, allowedRoles] of Object.entries(roleRouteMap)) {
-      if (pathname.startsWith(routePrefix) && !allowedRoles.includes(userRole)) {
-        // Redirect unauthorized users to their own dashboard
-        const dashboardUrl = `/${userRole.toLowerCase()}/dashboard`
-        return NextResponse.redirect(new URL(dashboardUrl, request.url))
+  if (token && token !== 'mock-jwt-token') {
+    try {
+      const decoded: any = jwtDecode(token)
+      if (decoded?.role) {
+        userRole = decoded.role
       }
+    } catch (error) {
+      // Fallback to cookie role or login
     }
-  } catch (error) {
-    // Invalid token
-    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Check if user is accessing a role-protected route
+  for (const [routePrefix, allowedRoles] of Object.entries(roleRouteMap)) {
+    if (pathname.startsWith(routePrefix) && !allowedRoles.includes(userRole)) {
+      const dashboardUrl = `/${userRole.toLowerCase()}/dashboard`
+      return NextResponse.redirect(new URL(dashboardUrl, request.url))
+    }
   }
 
   return NextResponse.next()
