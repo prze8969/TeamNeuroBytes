@@ -1,50 +1,60 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.db.engine import create_db_and_tables
 from contextlib import asynccontextmanager
+
+from app.core.config import settings
+from app.db.engine import create_db_and_tables
+
+# Import all API Routers
+from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Initialize SQLModel DB and auto-seed initial demo dataset
     create_db_and_tables()
     yield
 
-# Initialize FastAPI app
 app = FastAPI(
-    title="AgMarknet API",
-    description="Backend API for the AgMarknet platform (SIH Problem Statement 132)",
-    version="1.0.0",
+    title="KisanSetu & AgMarknet Core API",
+    description=(
+        "Production-ready backend for Smart India Hackathon (SIH Problem Statement 26132: "
+        "'Strengthening market linkages and price discovery for farmers'). "
+        "Orchestrates YOLOv8 AI Crop Grading, Geospatial Freight Pooling, Price Intelligence, "
+        "WhatsApp Business Conversational Bot, and Milestone Escrow Rails."
+    ),
+    version="2.0.0",
     lifespan=lifespan
 )
 
-# Configure CORS for Next.js frontend
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-
+# CORS Configuration for Next.js web dashboards & local testing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-from app.routers import auth
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-# from app.routers import farmers, buyers, organization, warehouse, transportation, marketplace, payments, price_feed, central_bank, grievance
-# app.include_router(farmers.router, prefix="/api/farmers", tags=["farmers"])
-# app.include_router(buyers.router, prefix="/api/buyers", tags=["buyers"])
-# app.include_router(organization.router, prefix="/api/org", tags=["organization"])
-# app.include_router(warehouse.router, prefix="/api/warehouse", tags=["warehouse"])
-# app.include_router(transportation.router, prefix="/api/transport", tags=["transportation"])
-# app.include_router(marketplace.router, prefix="/api/marketplace", tags=["marketplace"])
-# app.include_router(payments.router, prefix="/api/payments", tags=["payments"])
-# app.include_router(price_feed.router, prefix="/api/price-feed", tags=["price-feed"])
-# app.include_router(central_bank.router, prefix="/api/central-bank", tags=["central-bank"])
-# app.include_router(grievance.router, prefix="/api/grievance", tags=["grievance"])
+# Register Sub-Routers
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication & DigiLocker KYC"])
+app.include_router(marketplace.router, prefix="/api/marketplace", tags=["Crop Marketplace & Bidding"])
+app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["WhatsApp Bot & Webhooks"])
+app.include_router(ai_grading.router, prefix="/api/ai", tags=["YOLOv8 AI Quality Grading"])
+app.include_router(decision.router, prefix="/api/decision", tags=["APMC Decision & Price Intelligence"])
+app.include_router(escrow.router, prefix="/api/escrow", tags=["Milestone Escrow & Settlements"])
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the AgMarknet API"}
+@app.get("/", tags=["System Health"])
+def root():
+    return {
+        "status": "ONLINE",
+        "service": "KisanSetu Agricultural Market Linkage API",
+        "version": "2.0.0",
+        "docs_url": "/docs",
+        "modules": [
+            "WhatsApp Farmer Conversational Bot",
+            "YOLOv8 AI Quality Grading",
+            "Geospatial Freight Pooling (PostGIS)",
+            "APMC Price Intelligence & Loss Estimation",
+            "Milestone Escrow Rails (4-digit OTP Handshake)"
+        ]
+    }

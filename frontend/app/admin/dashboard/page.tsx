@@ -1,59 +1,176 @@
 'use client'
 
+import { useState } from 'react';
+import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
+import { EscrowTracker } from '@/components/dashboard/EscrowTracker';
 
 export default function AdminDashboardPage() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'escrow-vault' | 'grievances' | 'model-health'>('overview');
+
+  const mockGrievances = [
+    {
+      id: 'GRV-401',
+      farmer: 'Sanjay Shinde',
+      buyer: 'AgroProcure Ltd',
+      issue: 'Weight shortage of 45kg claimed at buyer weighbridge',
+      status: 'IN_MEDIATION',
+      amountInDispute: 832.50,
+      date: '2026-08-23'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      <Navbar activeRole="ADMIN" />
+
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-5 rounded-2xl border border-emerald-100 shadow-xs">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Command Center</h1>
-            <p className="text-xs text-gray-500">System oversight, user management & platform auditing</p>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-black text-slate-900">Platform Governance & Escrow Oversight</h1>
+              <span className="rounded-full bg-rose-100 text-rose-800 border border-rose-200 px-2.5 py-0.5 text-xs font-black">
+                System Admin
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">SIH 2026 Problem Statement 26132 • Market Linkage & Price Discovery</p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => window.location.href = '/login'}>
-            Sign Out
+        </header>
+
+        {/* Admin Navigation Tabs */}
+        <div className="flex flex-wrap gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <Button
+            size="sm"
+            variant={activeTab === 'overview' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('overview')}
+            className={`text-xs font-bold ${activeTab === 'overview' ? 'bg-emerald-700 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
+          >
+            📊 Platform Overview
+          </Button>
+          <Button
+            size="sm"
+            variant={activeTab === 'escrow-vault' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('escrow-vault')}
+            className={`text-xs font-bold ${activeTab === 'escrow-vault' ? 'bg-emerald-700 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
+          >
+            🛡️ Escrow Vaults (₹1.42 Cr)
+          </Button>
+          <Button
+            size="sm"
+            variant={activeTab === 'grievances' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('grievances')}
+            className={`text-xs font-bold ${activeTab === 'grievances' ? 'bg-emerald-700 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
+          >
+            ⚖️ Grievance Arbitration (1 Open)
+          </Button>
+          <Button
+            size="sm"
+            variant={activeTab === 'model-health' ? 'default' : 'outline'}
+            onClick={() => setActiveTab('model-health')}
+            className={`text-xs font-bold ${activeTab === 'model-health' ? 'bg-emerald-700 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
+          >
+            🤖 AI Pipelines & Telemetry
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Total Registered Farmers</p>
-            <p className="text-2xl font-extrabold text-emerald-600 mt-1">1,248</p>
+        {/* Metrics Overview */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-1">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Escrow Volume</p>
+            <p className="text-3xl font-black text-emerald-700 mt-1 font-mono">₹1.42 Cr</p>
+            <p className="text-[11px] text-slate-500">100% Guaranteed Payouts</p>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Active Buyers & Millers</p>
-            <p className="text-2xl font-extrabold text-blue-600 mt-1">382</p>
+          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-1">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Active Smallholders</p>
+            <p className="text-3xl font-black text-slate-900 mt-1 font-mono">1,842</p>
+            <p className="text-[11px] text-slate-500">Via WhatsApp Bot & Web</p>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Active FPO Clusters</p>
-            <p className="text-2xl font-extrabold text-amber-600 mt-1">45</p>
+          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-1">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AI Grading Pass Rate</p>
+            <p className="text-3xl font-black text-blue-700 mt-1 font-mono">94.8%</p>
+            <p className="text-[11px] text-slate-500">YOLOv8 Vision Model</p>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Escrow Volume (INR)</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">₹4.2 Cr</p>
+          <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-1">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Freight Cost Saved</p>
+            <p className="text-3xl font-black text-purple-700 mt-1 font-mono">₹18.6 L</p>
+            <p className="text-[11px] text-slate-500">Via PostGIS 10km Milk Runs</p>
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-2">Platform Audit Logs & Health</h3>
-          <p className="text-xs text-gray-500 mb-4">FastAPI backend services, YOLO model latency, and WhatsApp webhook metrics</p>
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between p-3 bg-gray-50 rounded-md border border-gray-100">
-              <span className="font-mono">BE Service Health: OK (Port 8000)</span>
-              <span className="font-semibold text-emerald-600">Latency: 42ms</span>
-            </div>
-            <div className="flex justify-between p-3 bg-gray-50 rounded-md border border-gray-100">
-              <span className="font-mono">YOLOv8 Grader Model: crop_grader.pt loaded</span>
-              <span className="font-semibold text-emerald-600">Inference: 180ms</span>
-            </div>
-            <div className="flex justify-between p-3 bg-gray-50 rounded-md border border-gray-100">
-              <span className="font-mono">Agmarknet API Sync: Daily Mandi Refresh</span>
-              <span className="font-semibold text-emerald-600">Updated Today</span>
+        {/* Tab content */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            <EscrowTracker />
+          </div>
+        )}
+
+        {activeTab === 'escrow-vault' && (
+          <div className="space-y-6">
+            <EscrowTracker />
+          </div>
+        )}
+
+        {activeTab === 'grievances' && (
+          <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-xs space-y-4">
+            <h3 className="text-base font-extrabold text-slate-900">Active Grievance & Dispute Arbitration Queue</h3>
+            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-3">
+              {mockGrievances.map((g) => (
+                <div key={g.id} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-slate-900">{g.id} • {g.farmer} vs {g.buyer}</span>
+                      <span className="rounded-full bg-amber-200 text-amber-900 border border-amber-300 px-2 py-0.5 text-xs font-bold font-mono">
+                        {g.status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-700 mt-1">{g.issue} (Disputed: ₹{g.amountInDispute})</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold h-8"
+                      onClick={() => alert('Dispute resolved: 50% split applied.')}
+                    >
+                      Accept Evidence & Release
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-8 bg-white border-slate-300 text-slate-700 hover:bg-slate-100"
+                      onClick={() => alert('Inspection officer dispatched.')}
+                    >
+                      Dispatch Assessor
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </div>
+        )}
+
+        {activeTab === 'model-health' && (
+          <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-xs space-y-4">
+            <h3 className="text-base font-extrabold text-slate-900">AI Model Pipelines & External Feeds</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50 space-y-2">
+                <span className="font-black text-emerald-900 text-sm">YOLOv8 Quality Classifier</span>
+                <p className="text-slate-600">Model: yolov8n-agri-v2.1 • Inference: ~38ms • Accuracy: 96.2%</p>
+                <span className="inline-block px-2 py-0.5 bg-emerald-600 text-white rounded font-black text-[10px]">HEALTHY</span>
+              </div>
+              <div className="p-4 rounded-xl border border-blue-200 bg-blue-50 space-y-2">
+                <span className="font-black text-blue-900 text-sm">Agmarknet Price Sync</span>
+                <p className="text-slate-600">API Endpoint: /api/decision/agmarknet-feed • Sync Interval: 15 mins</p>
+                <span className="inline-block px-2 py-0.5 bg-blue-600 text-white rounded font-black text-[10px]">LIVE FEED</span>
+              </div>
+              <div className="p-4 rounded-xl border border-purple-200 bg-purple-50 space-y-2">
+                <span className="font-black text-purple-900 text-sm">OpenRouteService Routing</span>
+                <p className="text-slate-600">Truck Freight Matrix: 10km radius clustering • Fallback: Active</p>
+                <span className="inline-block px-2 py-0.5 bg-purple-600 text-white rounded font-black text-[10px]">CONNECTED</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

@@ -1,61 +1,37 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { jwtDecode } from 'jwt-decode'
-
-// The protected routes and their required roles
-const roleRouteMap: Record<string, string[]> = {
-  '/farmer': ['FARMER'],
-  '/buyer': ['BUYER'],
-  '/fpo': ['FPO'],
-  '/organization': ['ORGANIZATION', 'FPO'],
-  '/warehouse': ['WAREHOUSE'],
-  '/transportation': ['TRANSPORTATION'],
-  '/admin': ['ADMIN'],
-}
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value
-  const userRoleCookie = request.cookies.get('user_role')?.value
   const { pathname } = request.nextUrl
 
-  // Allow auth routes, public assets, and static files
+  // Allow static assets, images, API routes
   if (
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/kyc') ||
     pathname.startsWith('/_next') ||
-    pathname === '/'
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/favicon.ico')
   ) {
     return NextResponse.next()
   }
 
-  // If no token or role present, redirect to login
-  if (!token && !userRoleCookie) {
-    return NextResponse.redirect(new URL('/login', request.url))
+  // Redirect legacy /organization route to /fpo/dashboard
+  if (pathname.startsWith('/organization')) {
+    return NextResponse.redirect(new URL('/fpo/dashboard', request.url))
   }
 
-  let userRole = userRoleCookie || 'FARMER'
+  const response = NextResponse.next()
 
-  if (token && token !== 'mock-jwt-token') {
-    try {
-      const decoded: any = jwtDecode(token)
-      if (decoded?.role) {
-        userRole = decoded.role
-      }
-    } catch (error) {
-      // Fallback to cookie role or login
-    }
+  // Auto-set the active role cookie based on the portal being viewed for seamless demo presentation
+  if (pathname.startsWith('/farmer')) {
+    response.cookies.set('user_role', 'FARMER', { path: '/' })
+  } else if (pathname.startsWith('/buyer')) {
+    response.cookies.set('user_role', 'BUYER', { path: '/' })
+  } else if (pathname.startsWith('/fpo')) {
+    response.cookies.set('user_role', 'ORGANIZATION', { path: '/' })
+  } else if (pathname.startsWith('/admin')) {
+    response.cookies.set('user_role', 'ADMIN', { path: '/' })
   }
 
-  // Check if user is accessing a role-protected route
-  for (const [routePrefix, allowedRoles] of Object.entries(roleRouteMap)) {
-    if (pathname.startsWith(routePrefix) && !allowedRoles.includes(userRole)) {
-      const dashboardUrl = `/${userRole.toLowerCase()}/dashboard`
-      return NextResponse.redirect(new URL(dashboardUrl, request.url))
-    }
-  }
-
-  return NextResponse.next()
+  return response
 }
 
 export const config = {

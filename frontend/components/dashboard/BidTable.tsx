@@ -1,7 +1,6 @@
 'use client'
 
 import { Bid } from '@/lib/types';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 
 interface BidTableProps {
@@ -12,61 +11,80 @@ interface BidTableProps {
 
 export function BidTable({ bids, onAcceptBid, isFarmerView }: BidTableProps) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-900">Active Bids & Escrow Status</h3>
-        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+    <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm space-y-4">
+      <div className="flex items-center justify-between border-b border-emerald-50 pb-3">
+        <div className="flex items-center gap-2.5">
+          <span className="text-xl">💼</span>
+          <div>
+            <h3 className="text-base font-extrabold text-slate-900">Active Buyer Bids & Escrow Status</h3>
+            <p className="text-xs text-slate-500">Institutional tenders backed by 100% bank escrow locking</p>
+          </div>
+        </div>
+        <span className="rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-bold font-mono">
           {bids.length} Live Bids
         </span>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Buyer</TableHead>
-            <TableHead>Offer / Kg</TableHead>
-            <TableHead>Total Valuation</TableHead>
-            <TableHead>Escrow Status</TableHead>
-            <TableHead>Date</TableHead>
-            {isFarmerView && <TableHead className="text-right">Action</TableHead>}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {bids.map((bid) => (
-            <TableRow key={bid.id}>
-              <TableCell className="font-medium text-gray-900">{bid.buyerName}</TableCell>
-              <TableCell className="font-semibold text-emerald-700">₹{bid.amountPerKg}/kg</TableCell>
-              <TableCell className="font-bold text-gray-900">₹{bid.totalAmount.toLocaleString('en-IN')}</TableCell>
-              <TableCell>
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  bid.escrowStatus === 'LOCKED' ? 'bg-emerald-100 text-emerald-800' :
-                  bid.escrowStatus === 'RELEASED' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'
-                }`}>
-                  {bid.escrowStatus}
-                </span>
-              </TableCell>
-              <TableCell className="text-gray-500">{bid.createdAt}</TableCell>
-              {isFarmerView && (
-                <TableCell className="text-right">
-                  <Button
-                    size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                    onClick={() => onAcceptBid && onAcceptBid(bid.id)}
-                  >
-                    Accept Bid
-                  </Button>
-                </TableCell>
-              )}
-            </TableRow>
-          ))}
-          {bids.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={isFarmerView ? 6 : 5} className="text-center py-6 text-gray-500">
-                No active bids placed yet.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr className="border-b border-slate-200 text-[10px] uppercase font-bold text-slate-500 bg-slate-50">
+              <th className="py-3 px-3 rounded-l-lg">Institutional Buyer</th>
+              <th className="py-3 px-3">Offer Rate</th>
+              <th className="py-3 px-3">Total Valuation</th>
+              <th className="py-3 px-3">Escrow Status</th>
+              <th className="py-3 px-3">Timestamp</th>
+              {isFarmerView && <th className="py-3 px-3 text-right rounded-r-lg">Action</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {bids.map((bid) => (
+              <tr key={bid.id} className="hover:bg-emerald-50/50 transition-colors">
+                <td className="py-3.5 px-3 font-bold text-slate-900 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
+                  {bid.buyerName}
+                </td>
+                <td className="py-3.5 px-3 font-black text-emerald-700 font-mono text-sm">
+                  ₹{bid.amountPerKg}/kg
+                </td>
+                <td className="py-3.5 px-3 font-bold text-slate-900 font-mono">
+                  ₹{bid.totalAmount.toLocaleString('en-IN')}
+                </td>
+                <td className="py-3.5 px-3">
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                    bid.escrowStatus === 'LOCKED'
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                      : bid.escrowStatus === 'RELEASED'
+                      ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                      : 'bg-amber-100 text-amber-800 border border-amber-200'
+                  }`}>
+                    {bid.escrowStatus}
+                  </span>
+                </td>
+                <td className="py-3.5 px-3 text-slate-500 font-mono text-[11px]">{bid.createdAt}</td>
+                {isFarmerView && (
+                  <td className="py-3.5 px-3 text-right">
+                    <Button
+                      size="sm"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-8 px-3.5 shadow-sm"
+                      onClick={() => onAcceptBid && onAcceptBid(bid.id)}
+                    >
+                      Accept Bid & Lock Escrow
+                    </Button>
+                  </td>
+                )}
+              </tr>
+            ))}
+            {bids.length === 0 && (
+              <tr>
+                <td colSpan={isFarmerView ? 6 : 5} className="text-center py-8 text-slate-400">
+                  No active bids placed yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

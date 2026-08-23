@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # 1. PostGIS Enabled PostgreSQL Database
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: kisansetu_postgis_db
+    restart: always
+    environment:
+      POSTGRES_DB: kisansetu_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d kisansetu_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. FastAPI Backend Microservice
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kisansetu_fastapi_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@db:5432/kisansetu_db
+      - SECRET_KEY=kisan-setu-sih26132-super-secret-key-change-in-prod-2026
+      - WHATSAPP_VERIFY_TOKEN=kisan_setu_whatsapp_token_2026
+      - OPENROUTESERVICE_API_KEY=5b3ce3597851110001cf6248e89f82df362e49c7bf5689196b0b0bb1
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+
+  # 3. Next.js Frontend Dashboard
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kisansetu_nextjs_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  postgres_data:
