@@ -88,9 +88,25 @@ class YOLOCropGradingModel:
                 except Exception:
                     pass
 
-            # 2. Multi-Spectral HSV & RGB Computer Vision Classifier (Fallback/Verification)
+            # 2. Salient Foreground Object Segmentation (Isolates produce from background tables/floors)
             if not detected_commodity:
-                mean_r, mean_g, mean_b = float(np.mean(r)), float(np.mean(g)), float(np.mean(b))
+                # Extract central Region of Interest
+                roi = img_np[int(height * 0.15):int(height * 0.85), int(width * 0.15):int(width * 0.85)]
+                pixels = roi.reshape(-1, 3).astype(float)
+
+                # Sample core object patch
+                center_patch = roi[int(roi.shape[0] * 0.25):int(roi.shape[0] * 0.75), int(roi.shape[1] * 0.25):int(roi.shape[1] * 0.75)]
+                center_color = np.median(center_patch.reshape(-1, 3), axis=0)
+
+                # Isolate foreground pixels belonging to the crop
+                dists = np.linalg.norm(pixels - center_color, axis=1)
+                object_pixels = pixels[dists < 65]
+
+                if len(object_pixels) > 50:
+                    mean_r, mean_g, mean_b = np.mean(object_pixels, axis=0)
+                else:
+                    mean_r, mean_g, mean_b = center_color
+
                 nr, ng, nb = mean_r / 255.0, mean_g / 255.0, mean_b / 255.0
                 cmax, cmin = max(nr, ng, nb), min(nr, ng, nb)
                 diff = cmax - cmin
@@ -106,19 +122,19 @@ class YOLOCropGradingModel:
 
                 sat = 0.0 if cmax == 0 else (diff / cmax)
 
-                # Spectral Mapping
-                if (75 <= hue <= 170) or (mean_g > mean_r * 1.1 and mean_g > mean_b):
-                    detected_commodity = "Green Chilli / Vegetables"
-                elif ((hue >= 345 or hue <= 15) and sat > 0.40 and mean_b < 95) or (mean_r > 160 and mean_g < 85 and mean_b < 85):
+                # Spectral Classification Matrix
+                if (65 <= hue <= 170) or (mean_g > mean_r * 1.15):
+                    detected_commodity = "Green Chilli / Capsicum"
+                elif ((hue >= 345 or hue <= 18) and sat > 0.40 and mean_b < 95) or (mean_r > 165 and mean_g < 80 and mean_b < 80):
                     detected_commodity = "Tomato"
-                elif (270 <= hue < 345) or (hue >= 330 and mean_b > 65) or (mean_r > 100 and mean_r - mean_g > 30):
+                elif (260 <= hue < 345) or (hue >= 325 and mean_b > 50) or (mean_r > 100 and mean_r - mean_g >= 32):
                     detected_commodity = "Onion"
-                elif (15 <= hue < 40) and (mean_r - mean_g > 30) and sat > 0.35:
+                elif (12 <= hue < 40) and (mean_r - mean_g >= 32) and sat > 0.35:
                     detected_commodity = "Onion"
-                elif (15 <= hue <= 45) and sat <= 0.35:
-                    detected_commodity = "Potato"
-                elif (mean_r > 160 and mean_g > 140 and abs(mean_r - mean_g) <= 35 and mean_b < 150):
+                elif (mean_r > 180 and mean_g > 165 and abs(mean_r - mean_g) <= 30 and mean_b < 155):
                     detected_commodity = "Wheat"
+                elif (15 <= hue <= 48) and sat <= 0.38 and abs(mean_r - mean_g) < 30 and mean_r <= 180:
+                    detected_commodity = "Potato"
                 elif (mean_r > 170 and mean_g > 170 and mean_b > 150):
                     detected_commodity = "Paddy / Rice"
                 else:
