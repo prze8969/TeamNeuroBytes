@@ -164,20 +164,24 @@ class YOLOCropGradingModel:
                     }
 
                 # Spectral Classification Matrix (Valid Agricultural Produce)
-                if (65 <= hue <= 170) or (mean_g > mean_r * 1.15):
+                if (65 <= hue <= 170) or (mean_g > mean_r * 1.12 and mean_g > 80):
                     detected_commodity = "Green Chilli / Capsicum"
-                elif ((hue >= 345 or hue <= 18) and sat > 0.40 and mean_b < 95) or (mean_r > 165 and mean_g < 80 and mean_b < 80):
+                elif ((hue >= 345 or hue <= 18) and mean_r > 145 and mean_r > mean_g * 1.35 and sat > 0.35):
                     detected_commodity = "Tomato"
-                elif (260 <= hue < 345) or (hue >= 325 and mean_b > 50) or (mean_r > 100 and mean_r - mean_g >= 32):
+                elif (260 <= hue < 345) or ((hue >= 330 or hue <= 15) and mean_b > 70 and mean_r > 110 and mean_b > mean_g * 0.72):
+                    # Red Onions have purplish/magenta undertones with high blue/violet spectrum
                     detected_commodity = "Onion"
-                elif (12 <= hue < 40) and (mean_r - mean_g >= 32) and sat > 0.35:
-                    detected_commodity = "Onion"
+                elif (16 <= hue <= 58) and (mean_r > 130 and mean_g > 100 and mean_r >= mean_g) and (mean_b < mean_g):
+                    # Potatoes have warm golden-ochre/khaki tones (R > G > B) with low blue
+                    detected_commodity = "Potato"
                 elif (mean_r > 180 and mean_g > 165 and abs(mean_r - mean_g) <= 30 and mean_b < 155):
                     detected_commodity = "Wheat"
-                elif (15 <= hue <= 48) and sat <= 0.38 and abs(mean_r - mean_g) < 30 and mean_r <= 180:
-                    detected_commodity = "Potato"
-                elif (mean_r > 170 and mean_g > 170 and mean_b > 150):
+                elif (mean_r > 170 and mean_g > 170 and mean_b > 150 and sat < 0.22):
                     detected_commodity = "Paddy / Rice"
+                elif (25 <= hue <= 65 and sat > 0.40 and mean_r > 160 and mean_g > 140):
+                    detected_commodity = "Yellow Soybean"
+                elif mean_r > mean_g and mean_g > mean_b:
+                    detected_commodity = "Potato"
                 else:
                     return {
                         "commodity_detected": "Unrecognized Produce",
