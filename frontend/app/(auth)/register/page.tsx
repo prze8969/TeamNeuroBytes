@@ -33,6 +33,11 @@ export default function RegisterPage() {
 
       document.cookie = `token=mock-jwt-token; path=/;`;
       document.cookie = `user_role=${role}; path=/;`;
+      if (role === 'BUYER') {
+        try {
+          localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
+        } catch {}
+      }
 
       if (role === 'FARMER') {
         router.push('/kyc?role=FARMER');
@@ -46,6 +51,11 @@ export default function RegisterPage() {
     } catch {
       document.cookie = `token=mock-jwt-token; path=/;`;
       document.cookie = `user_role=${role}; path=/;`;
+      if (role === 'BUYER') {
+        try {
+          localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
+        } catch {}
+      }
 
       if (role === 'FARMER') {
         router.push('/kyc?role=FARMER');

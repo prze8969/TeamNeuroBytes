@@ -47,39 +47,15 @@ export const DEFAULT_ESCROW_VAULT: EscrowVaultData = {
 };
 
 export function useBuyerState() {
-  // Navigation State with Lazy Initializer
-  const [activeTab, setActiveTab] = useState<BuyerTabType>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('kisansetu_buyer_tab');
-        if (saved === 'active_deals' || saved === 'ledger' || saved === 'marketplace') {
-          return saved;
-        }
-      } catch {}
-    }
-    return 'marketplace';
-  });
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
-  // Core Data with Lazy Initializers
+  // Navigation State
+  const [activeTab, setActiveTab] = useState<BuyerTabType>('marketplace');
+
+  // Core Data
   const [lots, setLots] = useState<CropLot[]>(MOCK_CROP_LOTS);
-  const [bids, setBids] = useState<Bid[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('kisansetu_bids');
-        if (saved) return JSON.parse(saved);
-      } catch {}
-    }
-    return [];
-  });
-  const [orders, setOrders] = useState<InvoiceOrderData[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('kisansetu_orders');
-        if (saved) return JSON.parse(saved);
-      } catch {}
-    }
-    return [];
-  });
+  const [bids, setBids] = useState<Bid[]>([]);
+  const [orders, setOrders] = useState<InvoiceOrderData[]>([]);
   const [analytics, setAnalytics] = useState<BuyerAnalyticsData>({
     total_spend_inr: 1842850,
     spend_change_pct: 14.2,
@@ -103,16 +79,8 @@ export function useBuyerState() {
   const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<InvoiceOrderData | null>(null);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState<boolean>(false);
 
-  // Active Deal / Escrow Vault State with Lazy Initializer
-  const [activeVault, setActiveVault] = useState<EscrowVaultData>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('kisansetu_active_vault');
-        if (saved) return JSON.parse(saved);
-      } catch {}
-    }
-    return DEFAULT_ESCROW_VAULT;
-  });
+  // Active Deal / Escrow Vault State
+  const [activeVault, setActiveVault] = useState<EscrowVaultData>(DEFAULT_ESCROW_VAULT);
 
   // Loading & Feedback
   const [loadingBidLotId, setLoadingBidLotId] = useState<string | null>(null);
@@ -150,24 +118,57 @@ export function useBuyerState() {
     } catch {}
   }, []);
 
-  // Automatic LocalStorage Persistence via pure useEffects
+  // Load persisted state on mount once to avoid SSR hydration mismatches
   useEffect(() => {
+    setIsMounted(true);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlTab = params.get('tab');
+      if (urlTab === 'active_deals' || urlTab === 'ledger' || urlTab === 'marketplace') {
+        setActiveTab(urlTab);
+      } else {
+        const savedTab = localStorage.getItem('kisansetu_buyer_tab') as BuyerTabType;
+        if (savedTab === 'active_deals' || savedTab === 'ledger' || savedTab === 'marketplace') {
+          setActiveTab(savedTab);
+        }
+      }
+
+      const savedVault = localStorage.getItem('kisansetu_active_vault');
+      if (savedVault) {
+        setActiveVault(JSON.parse(savedVault));
+      }
+      const savedOrders = localStorage.getItem('kisansetu_orders');
+      if (savedOrders) {
+        setOrders(JSON.parse(savedOrders));
+      }
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      if (savedBids) {
+        setBids(JSON.parse(savedBids));
+      }
+    } catch {}
+  }, []);
+
+  // Automatic LocalStorage Persistence (only when mounted)
+  useEffect(() => {
+    if (!isMounted) return;
     try {
       localStorage.setItem('kisansetu_active_vault', JSON.stringify(activeVault));
     } catch {}
-  }, [activeVault]);
+  }, [activeVault, isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
     try {
       localStorage.setItem('kisansetu_orders', JSON.stringify(orders));
     } catch {}
-  }, [orders]);
+  }, [orders, isMounted]);
 
   useEffect(() => {
+    if (!isMounted) return;
     try {
       localStorage.setItem('kisansetu_bids', JSON.stringify(bids));
     } catch {}
-  }, [bids]);
+  }, [bids, isMounted]);
 
   // Listen to cross-window storage updates
   useEffect(() => {
@@ -476,6 +477,7 @@ export function useBuyerState() {
   const activeDealsCount = (activeVault && activeVault.status !== 'SETTLED') ? 1 : 0;
 
   return {
+    isMounted,
     activeTab,
     setActiveTab,
     lots,

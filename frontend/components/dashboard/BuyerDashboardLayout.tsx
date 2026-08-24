@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CropListingCard } from '@/components/dashboard/CropListingCard';
+import { CropListingListItem } from '@/components/dashboard/CropListingListItem';
+import { CropDetailModal } from '@/components/dashboard/CropDetailModal';
 import { BuyerBadge } from '@/components/ui/BuyerBadge';
 import { BidTable } from '@/components/dashboard/BidTable';
 import { EscrowRails } from '@/components/dashboard/EscrowRails';
@@ -33,6 +35,7 @@ import { AIInspectionModal } from '@/components/dashboard/AIInspectionModal';
 import { TaxInvoiceModal } from '@/components/dashboard/TaxInvoiceModal';
 import { EmptyListingState } from '@/components/dashboard/EmptyListingState';
 import { useBuyerState, BuyerTabType } from '@/lib/useBuyerState';
+import { CropLot } from '@/lib/types';
 
 const MANDI_TICKER_ITEMS = [
   { mandi: 'Nashik APMC', crop: 'Sharbati Wheat', price: '₹2,450/qtl', trend: '+1.8%' },
@@ -45,6 +48,7 @@ const MANDI_TICKER_ITEMS = [
 
 export function BuyerDashboardLayout() {
   const {
+    isMounted,
     activeTab,
     setActiveTab,
     lots,
@@ -83,6 +87,8 @@ export function BuyerDashboardLayout() {
     // Refresh
     fetchLiveMarketplaceData
   } = useBuyerState();
+
+  const [selectedDetailLot, setSelectedDetailLot] = React.useState<CropLot | null>(null);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -210,7 +216,7 @@ export function BuyerDashboardLayout() {
             >
               <Store size={15} />
               <span>Marketplace &amp; Live Feed</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+              <span suppressHydrationWarning className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === 'marketplace' ? 'bg-emerald-800 text-white' : 'bg-slate-200 text-slate-700'
               }`}>
                 {lots.length} Lots
@@ -230,7 +236,7 @@ export function BuyerDashboardLayout() {
               <Truck size={15} />
               <span>Active Procurement &amp; Fulfillment</span>
               {activeDealsCount > 0 && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-amber-400 text-amber-950 animate-pulse">
+                <span suppressHydrationWarning className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-amber-400 text-amber-950 animate-pulse">
                   {activeDealsCount} Active
                 </span>
               )}
@@ -248,7 +254,7 @@ export function BuyerDashboardLayout() {
             >
               <Receipt size={15} />
               <span>Settled Ledger &amp; Tax Invoices</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+              <span suppressHydrationWarning className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === 'ledger' ? 'bg-emerald-800 text-white' : 'bg-slate-200 text-slate-700'
               }`}>
                 {orders.length} Settled
@@ -302,20 +308,16 @@ export function BuyerDashboardLayout() {
               </div>
             </div>
 
-            {/* Crop Listing Cards Grid */}
+            {/* Crop Listing List Format */}
             {lots.length === 0 ? (
               <EmptyListingState onResetFilters={fetchLiveMarketplaceData} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div className="space-y-3">
                 {lots.map((lot) => (
-                  <CropListingCard
+                  <CropListingListItem
                     key={lot.id}
                     lot={lot}
-                    onInspect={(targetLot) => openInspection(targetLot)}
-                    onPlaceBid={(lotId, bidAmt, landedCost, totalAmount) => {
-                      openBidding(lot);
-                    }}
-                    isPlacingBid={loadingBidLotId === lot.id}
+                    onOpenDetails={(targetLot) => setSelectedDetailLot(targetLot)}
                   />
                 ))}
               </div>
@@ -453,6 +455,23 @@ export function BuyerDashboardLayout() {
           isOpen={isInvoiceOpen}
           onClose={closeInvoice}
           order={selectedInvoiceOrder}
+        />
+      )}
+
+      {/* 5. Crop Full Detail & Bidding Popup Modal */}
+      {selectedDetailLot && (
+        <CropDetailModal
+          isOpen={selectedDetailLot !== null}
+          onClose={() => setSelectedDetailLot(null)}
+          lot={selectedDetailLot}
+          onInspect={(lot) => {
+            setSelectedDetailLot(null);
+            openInspection(lot);
+          }}
+          onPlaceBid={(lot) => {
+            setSelectedDetailLot(null);
+            openBidding(lot);
+          }}
         />
       )}
 
