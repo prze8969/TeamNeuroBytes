@@ -59,16 +59,70 @@ class YOLOCropGradingModel:
             base_score = 96.0 - (defect_percent * 2.8) + (ripeness_index * 0.05)
             quality_score = round(max(min(base_score, 99.5), 45.0), 1)
 
-            detected_commodity = "Wheat"
-            mean_r, mean_g, mean_b = np.mean(r), np.mean(g), np.mean(b)
-            if mean_r > 140 and mean_g < 100 and mean_b < 100:
-                detected_commodity = "Tomato"
-            elif mean_r > 120 and mean_g > 100 and mean_b < 80:
-                detected_commodity = "Onion"
-            elif mean_r > 160 and mean_g > 140 and mean_b < 120:
-                detected_commodity = "Wheat"
-            elif mean_r > 150 and mean_g > 150 and mean_b > 140:
-                detected_commodity = "Paddy / Rice"
+            # 1. Neural Network Detection (if available)
+            detected_commodity = None
+            if self.model is not None:
+                try:
+                    preds = self.model(image, verbose=False)
+                    if len(preds) > 0 and len(preds[0].boxes) > 0:
+                        top_box = preds[0].boxes[0]
+                        cls_id = int(top_box.cls[0])
+                        cls_name = preds[0].names.get(cls_id, "")
+                        if cls_name:
+                            clean_name = cls_name.replace("_", " ").title()
+                            # Normalize class names
+                            if "onion" in clean_name.lower():
+                                detected_commodity = "Onion"
+                            elif "tomato" in clean_name.lower():
+                                detected_commodity = "Tomato"
+                            elif "potato" in clean_name.lower():
+                                detected_commodity = "Potato"
+                            elif "wheat" in clean_name.lower():
+                                detected_commodity = "Wheat"
+                            elif "rice" in clean_name.lower() or "paddy" in clean_name.lower():
+                                detected_commodity = "Paddy / Rice"
+                            elif "chilli" in clean_name.lower() or "capsicum" in clean_name.lower():
+                                detected_commodity = "Green Chilli / Capsicum"
+                            else:
+                                detected_commodity = clean_name
+                except Exception:
+                    pass
+
+            # 2. Multi-Spectral HSV & RGB Computer Vision Classifier (Fallback/Verification)
+            if not detected_commodity:
+                mean_r, mean_g, mean_b = float(np.mean(r)), float(np.mean(g)), float(np.mean(b))
+                nr, ng, nb = mean_r / 255.0, mean_g / 255.0, mean_b / 255.0
+                cmax, cmin = max(nr, ng, nb), min(nr, ng, nb)
+                diff = cmax - cmin
+
+                if diff == 0:
+                    hue = 0.0
+                elif cmax == nr:
+                    hue = (60.0 * ((ng - nb) / diff) + 360.0) % 360.0
+                elif cmax == ng:
+                    hue = (60.0 * ((nb - nr) / diff) + 120.0) % 360.0
+                else:
+                    hue = (60.0 * ((nr - ng) / diff) + 240.0) % 360.0
+
+                sat = 0.0 if cmax == 0 else (diff / cmax)
+
+                # Spectral Mapping
+                if (75 <= hue <= 170) or (mean_g > mean_r * 1.1 and mean_g > mean_b):
+                    detected_commodity = "Green Chilli / Vegetables"
+                elif ((hue >= 345 or hue <= 15) and sat > 0.40 and mean_b < 95) or (mean_r > 160 and mean_g < 85 and mean_b < 85):
+                    detected_commodity = "Tomato"
+                elif (270 <= hue < 345) or (hue >= 330 and mean_b > 65) or (mean_r > 100 and mean_r - mean_g > 30):
+                    detected_commodity = "Onion"
+                elif (15 <= hue < 40) and (mean_r - mean_g > 30) and sat > 0.35:
+                    detected_commodity = "Onion"
+                elif (15 <= hue <= 45) and sat <= 0.35:
+                    detected_commodity = "Potato"
+                elif (mean_r > 160 and mean_g > 140 and abs(mean_r - mean_g) <= 35 and mean_b < 150):
+                    detected_commodity = "Wheat"
+                elif (mean_r > 170 and mean_g > 170 and mean_b > 150):
+                    detected_commodity = "Paddy / Rice"
+                else:
+                    detected_commodity = "Onion" if (mean_r > mean_g) else "Wheat"
         except Exception:
             # Fallback deterministic analysis based on image byte checksum
             byte_len = len(image_bytes) if image_bytes else 1024
