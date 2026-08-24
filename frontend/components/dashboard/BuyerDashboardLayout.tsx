@@ -305,9 +305,9 @@ export function BuyerDashboardLayout() {
               <EmptyListingState onResetFilters={fetchLiveMarketplaceData} />
             ) : (
               <div className="space-y-3">
-                {lots.map((lot) => (
+                {lots.map((lot, idx) => (
                   <CropListingListItem
-                    key={lot.id}
+                    key={`marketplace-lot-${lot.id}-${idx}`}
                     lot={lot}
                     onOpenDetails={(targetLot) => setSelectedDetailLot(targetLot)}
                   />
@@ -378,7 +378,7 @@ export function BuyerDashboardLayout() {
 
                       return (
                         <button
-                          key={`deal-${deal.id}-${idx}`}
+                          key={`deal-tab-${deal.id}-${idx}`}
                           type="button"
                           onClick={() => setSelectedDealId(deal.id)}
                           className={`p-4 rounded-2xl text-left transition-all border cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-2xs ${
@@ -452,7 +452,7 @@ export function BuyerDashboardLayout() {
                 {/* 3. Milestone Escrow Rails (4-Stage State Machine for selected deal) */}
                 {selectedVault && (
                   <EscrowRails
-                    key={selectedVault.id}
+                    key={`escrow-rails-${selectedVault.id}`}
                     initialVault={selectedVault}
                     onOpenWeighbridge={openWeighbridge}
                     onRefresh={fetchLiveMarketplaceData}
@@ -464,7 +464,7 @@ export function BuyerDashboardLayout() {
                 {/* 4. In-Transit Geospatial Logistics Map (Leaflet) */}
                 {selectedVault && (
                   <ShipmentTracker
-                    key={selectedVault.id}
+                    key={`shipment-tracker-${selectedVault.id}-${selectedVault.lot_id || 'default'}`}
                     lotId={`LOT-${selectedVault.lot_id || 1}`}
                     cropName={selectedVault.crop_name || 'Sharbati Wheat'}
                     farmerName={selectedVault.farmer_name || 'Ramesh Patil'}
