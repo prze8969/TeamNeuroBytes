@@ -18,6 +18,7 @@ export default function LoginPage() {
     { role: 'FARMER', email: 'farmer@kisansetu.in', label: '🚜 Farmer' },
     { role: 'BUYER', email: 'buyer@kisansetu.in', label: '🏢 Buyer' },
     { role: 'ORGANIZATION', email: 'fpo@kisansetu.in', label: '👥 FPO Co.' },
+    { role: 'TRANSPORTATION', email: 'transporter@kisansetu.in', label: '🚚 Transporter' },
     { role: 'ADMIN', email: 'admin@kisansetu.in', label: '⚖️ Admin' },
   ]
 

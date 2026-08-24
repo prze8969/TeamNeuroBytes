@@ -16,9 +16,21 @@ export interface CropLot {
   cropName: string;
   variety: string;
   quantityKg: number;
+  quantityTons?: number;
   grade: 'A' | 'B' | 'C' | 'UNGRADED';
-  qualityScore: number; // e.g. 92.5 from YOLO model
+  qualityGrade?: 'Grade A' | 'Grade B' | 'Grade C';
+  qualityScore: number; // e.g. 94.2 from YOLO model
   basePricePerKg: number;
+  askingFloorPerKg?: number;
+  mandiAvgPerKg?: number;
+  defectArea?: number; // percentage e.g. 2.1
+  moisture?: number; // percentage e.g. 11.8
+  imageUrl?: string;
+  origin?: string;
+  distanceKm?: number;
+  logisticsType?: 'Direct' | 'Shared Freight';
+  freightPerKg?: number;
+  freightSavingsPercent?: number;
   location: {
     lat: number;
     lng: number;

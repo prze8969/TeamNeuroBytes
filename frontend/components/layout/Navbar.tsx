@@ -11,6 +11,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
     { label: '🚜 Farmer Portal', href: '/farmer/dashboard' },
     { label: '🏢 Buyer Market', href: '/buyer/dashboard' },
     { label: '👥 FPO Collective', href: '/fpo/dashboard' },
+    { label: '🚚 Transporter Hub', href: '/transportation/dashboard' },
     { label: '⚖️ Governance', href: '/admin/dashboard' },
   ];
 

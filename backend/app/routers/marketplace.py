@@ -89,7 +89,8 @@ def get_crop_lot_by_id(lot_id: int, session: Session = Depends(get_session)):
 def submit_buyer_bid(req: CreateBidRequest, session: Session = Depends(get_session)):
     """
     Submits a competitive buyer bid on an AI-verified crop lot.
-    Enforces Agmarknet minimum reserve price threshold.
+    Enforces Agmarknet minimum reserve price threshold and prevents duplicate bids at identical prices.
+    Updates existing active tender if the buyer offers a revised rate.
     """
     lot = session.get(CropLot, req.lot_id)
     if not lot:
@@ -98,8 +99,36 @@ def submit_buyer_bid(req: CreateBidRequest, session: Session = Depends(get_sessi
     if req.amount_per_kg < (lot.base_price_per_kg * 0.85):
         raise HTTPException(
             status_code=400,
-            detail=f"Bid rate ₹{req.amount_per_kg}/kg is below the permissible market reserve threshold (₹{lot.base_price_per_kg * 0.85:.2f}/kg)"
+            detail=f"Bid rate ₹{req.amount_per_kg:.2f}/kg is below the permissible market reserve threshold (₹{lot.base_price_per_kg * 0.85:.2f}/kg)"
         )
+
+    # Check for existing active bid from this buyer on this lot
+    existing_bid = session.exec(
+        select(Bid).where(
+            Bid.lot_id == req.lot_id,
+            Bid.buyer_id == req.buyer_id,
+            Bid.status.in_([BidStatus.PENDING, BidStatus.ACCEPTED])
+        )
+    ).first()
+
+    if existing_bid:
+        # Check if the buyer submitted the exact same price
+        if abs(existing_bid.amount_per_kg - req.amount_per_kg) < 0.001:
+            raise HTTPException(
+                status_code=400,
+                detail=f"You already have an active bid of ₹{req.amount_per_kg:.2f}/kg on {lot.commodity}. To adjust your bid, enter a revised rate."
+            )
+        
+        # Update existing bid in place
+        existing_bid.amount_per_kg = req.amount_per_kg
+        existing_bid.total_amount = round(lot.quantity_kg * req.amount_per_kg, 2)
+        existing_bid.delivery_deadline_days = req.delivery_deadline_days
+        existing_bid.note = req.note or existing_bid.note
+        existing_bid.buyer_name = req.buyer_name or existing_bid.buyer_name
+        session.add(existing_bid)
+        session.commit()
+        session.refresh(existing_bid)
+        return existing_bid
 
     total_amount = round(lot.quantity_kg * req.amount_per_kg, 2)
     new_bid = Bid(

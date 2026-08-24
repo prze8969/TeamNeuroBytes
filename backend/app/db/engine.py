@@ -13,7 +13,7 @@ else:
 
 def create_db_and_tables():
     from app.models.database import (
-        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance
+        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance, BuyerProfile
     )
     SQLModel.metadata.create_all(engine)
     seed_initial_demo_data()
@@ -24,7 +24,7 @@ def get_session():
 
 def seed_initial_demo_data():
     """Seeds rich Agmarknet prices, verified crop lots, and user accounts for SIH demo."""
-    from app.models.database import User, CropLot, MandiPrice, GeoCluster, QualityGrade, LotStatus
+    from app.models.database import User, CropLot, MandiPrice, GeoCluster, QualityGrade, LotStatus, BuyerProfile, BuyerType
     
     with Session(engine) as session:
         # Check if users already seeded
@@ -84,6 +84,25 @@ def seed_initial_demo_data():
                 hashed_password=get_password_hash("trans123")
             )
             session.add_all([farmer, buyer, fpo, transporter])
+            session.commit()
+            
+            # Seed Demo Buyer Profile
+            buyer_profile = BuyerProfile(
+                user_id=buyer.id,
+                business_name="AgroProcure Private Ltd",
+                buyer_type=BuyerType.PROCESSOR,
+                gstin="27AABCA1234F1Z5",
+                apmc_license_no="APMC-MH-NSK-2024-892",
+                contact_person="Vikram Singhania",
+                contact_phone="+919820198201",
+                is_verified=True,
+                kyc_document_url="/documents/gst_cert_agroprocure.pdf",
+                delivery_address="Plot 42, Vashi Industrial Area, Navi Mumbai, Maharashtra 400703",
+                delivery_latitude=19.0760,
+                delivery_longitude=72.8777,
+                preferred_apmc_mandi="Vashi APMC Mandi"
+            )
+            session.add(buyer_profile)
             session.commit()
             
             # Seed Demo Mandi Price Benchmarks

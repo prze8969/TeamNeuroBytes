@@ -35,9 +35,9 @@ export default function RegisterPage() {
       document.cookie = `user_role=${role}; path=/;`;
 
       if (role === 'FARMER') {
-        router.push('/kyc');
+        router.push('/kyc?role=FARMER');
       } else if (role === 'BUYER') {
-        router.push('/buyer/dashboard');
+        router.push('/kyc?role=BUYER');
       } else if (role === 'FPO' || role === 'ORGANIZATION') {
         router.push('/fpo/dashboard');
       } else {
@@ -48,9 +48,9 @@ export default function RegisterPage() {
       document.cookie = `user_role=${role}; path=/;`;
 
       if (role === 'FARMER') {
-        router.push('/kyc');
+        router.push('/kyc?role=FARMER');
       } else if (role === 'BUYER') {
-        router.push('/buyer/dashboard');
+        router.push('/kyc?role=BUYER');
       } else if (role === 'FPO' || role === 'ORGANIZATION') {
         router.push('/fpo/dashboard');
       } else {

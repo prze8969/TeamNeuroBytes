@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.db.engine import create_db_and_tables
 
 # Import all API Routers
-from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow
+from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,7 +20,7 @@ app = FastAPI(
         "Production-ready backend for Smart India Hackathon (SIH Problem Statement 26132: "
         "'Strengthening market linkages and price discovery for farmers'). "
         "Orchestrates YOLOv8 AI Crop Grading, Geospatial Freight Pooling, Price Intelligence, "
-        "WhatsApp Business Conversational Bot, and Milestone Escrow Rails."
+        "WhatsApp Business Conversational Bot, Milestone Escrow Rails, and Buyer Institutional KYC."
     ),
     version="2.0.0",
     lifespan=lifespan
@@ -37,11 +37,14 @@ app.add_middleware(
 
 # Register Sub-Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication & DigiLocker KYC"])
+app.include_router(buyer.router, prefix="/api/buyer", tags=["Buyer Institutional KYC & Onboarding"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["Crop Marketplace & Bidding"])
+app.include_router(escrow.router, prefix="/api/bids", tags=["Bidding & Direct Escrow Vault"])
 app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["WhatsApp Bot & Webhooks"])
 app.include_router(ai_grading.router, prefix="/api/ai", tags=["YOLOv8 AI Quality Grading"])
 app.include_router(decision.router, prefix="/api/decision", tags=["APMC Decision & Price Intelligence"])
 app.include_router(escrow.router, prefix="/api/escrow", tags=["Milestone Escrow & Settlements"])
+app.include_router(transporter.router, prefix="/api/transporter", tags=["Transporter & Fleet Portal"])
 
 @app.get("/", tags=["System Health"])
 def root():
@@ -51,6 +54,7 @@ def root():
         "version": "2.0.0",
         "docs_url": "/docs",
         "modules": [
+            "Institutional Buyer e-KYC & GSTIN Verification",
             "WhatsApp Farmer Conversational Bot",
             "YOLOv8 AI Quality Grading",
             "Geospatial Freight Pooling (PostGIS)",

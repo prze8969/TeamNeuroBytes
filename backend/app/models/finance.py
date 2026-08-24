@@ -4,14 +4,18 @@ from enum import Enum
 from sqlmodel import SQLModel, Field
 
 class BidStatus(str, Enum):
+    INITIATED = "INITIATED"
     PENDING = "PENDING"
     ACCEPTED = "ACCEPTED"
+    OUTBID = "OUTBID"
     REJECTED = "REJECTED"
+    COMPLETED = "COMPLETED"
     EXPIRED = "EXPIRED"
 
 class EscrowStatus(str, Enum):
     INITIATED = "INITIATED"
     FUNDS_LOCKED = "LOCKED"
+    FREIGHT_ADVANCE_PAID = "FREIGHT_ADVANCE_PAID"
     ADVANCE_DISBURSED = "ADVANCE_DISBURSED" # 30% Freight released
     IN_TRANSIT = "IN_TRANSIT"               # OTP Verified at farm gate
     INSPECTION_PASSED = "INSPECTION_PASSED" # Quality check passed at buyer
@@ -24,9 +28,15 @@ class BidBase(SQLModel):
     buyer_id: int = Field(index=True)
     buyer_name: Optional[str] = "Institutional Buyer"
     amount_per_kg: float = Field(gt=0)
+    bid_price_per_kg: Optional[float] = Field(default=None) # Alias
+    total_crop_value: Optional[float] = Field(default=None)
+    estimated_freight: Optional[float] = Field(default=None)
+    apmc_cess_fee: Optional[float] = Field(default=None)
+    total_escrow_amount: Optional[float] = Field(default=None)
     total_amount: float = Field(gt=0)
-    status: BidStatus = Field(default=BidStatus.PENDING)
+    status: BidStatus = Field(default=BidStatus.INITIATED)
     delivery_deadline_days: int = 3
+    payment_method: Optional[str] = "VIRTUAL_ESCROW"
     note: Optional[str] = None
 
 class Bid(BidBase, table=True):
@@ -35,39 +45,52 @@ class Bid(BidBase, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-class EscrowTransactionBase(SQLModel):
+class EscrowVaultBase(SQLModel):
     bid_id: int = Field(unique=True, index=True)
     lot_id: int = Field(index=True)
     buyer_id: int = Field(index=True)
     farmer_id: int = Field(index=True)
-    transporter_id: Optional[int] = None
+    transporter_id: Optional[int] = 4
     
     # Financial Rails Breakdown (INR)
     crop_total_amount: float
     total_freight_cost: float
-    total_locked_deposit: float # 100% Crop + 100% Freight + Platform fee
+    total_locked_amount: float
+    total_locked_deposit: Optional[float] = None
     
-    advance_freight_disbursed: float = 0.0 # 30% advance
-    final_freight_disbursed: float = 0.0   # 70% upon delivery
-    farmer_payout_disbursed: float = 0.0   # 100% upon delivery pass
-    platform_fee_inr: float = 0.0
+    advance_freight_amount: float = 0.0      # 30% advance (fuel & toll)
+    advance_freight_disbursed: float = 0.0   # Compatibility alias
+    balance_freight_amount: float = 0.0      # 70% upon delivery settlement
+    final_freight_disbursed: float = 0.0     # Compatibility alias
+    farmer_payout_amount: float = 0.0        # 100% crop value
+    farmer_payout_disbursed: float = 0.0     # Compatibility alias
+    platform_fee_inr: float = 0.0            # 1.5% APMC & Mandi Cess
     
-    status: EscrowStatus = Field(default=EscrowStatus.INITIATED)
+    current_milestone: str = "LOCKED"        # "LOCKED", "FREIGHT_ADVANCE_PAID", "IN_TRANSIT", "SETTLED", "DISPUTED"
+    status: EscrowStatus = Field(default=EscrowStatus.FUNDS_LOCKED)
     
-    # 4-Digit Verification OTPs
-    farmgate_pickup_otp: str = Field(default="4821")
+    # 4-Digit Verification OTPs & Document Proofs
+    farm_gate_otp: str = Field(default="4821")
+    farmgate_pickup_otp: Optional[str] = Field(default="4821") # Alias
     destination_delivery_otp: str = Field(default="7394")
+    weighbridge_receipt_url: Optional[str] = None
+    tax_invoice_number: Optional[str] = None
+    carrier_name: Optional[str] = "Kisan Express Logistics"
+    vehicle_number: Optional[str] = "MH-15-EG-8942"
     
     is_pickup_verified: bool = Field(default=False)
     is_delivery_verified: bool = Field(default=False)
-    
     dispute_reason: Optional[str] = None
 
-class EscrowTransaction(EscrowTransactionBase, table=True):
-    __tablename__ = "escrow_transactions"
+class EscrowVault(EscrowVaultBase, table=True):
+    __tablename__ = "escrow_vaults"
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+# Legacy alias for backward compatibility
+EscrowTransaction = EscrowVault
+EscrowTransactionBase = EscrowVaultBase
 
 class InvoiceBase(SQLModel):
     transaction_id: int = Field(index=True)

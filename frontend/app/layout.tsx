@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "Smart India Hackathon SIH26132: Omnichannel agricultural trade platform with YOLOv8 crop grading, PostGIS freight pooling, and milestone escrow rails.",
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,6 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white">
         {children}
+        <Toaster position="top-right" richColors closeButton expand={false} />
       </body>
     </html>
   );
