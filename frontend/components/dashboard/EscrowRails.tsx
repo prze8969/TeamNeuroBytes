@@ -56,13 +56,15 @@ export interface EscrowRailsProps {
   onOpenWeighbridge?: () => void;
   onRefresh?: () => void;
   onReturnToMarketplace?: () => void;
+  onVaultUpdate?: (updatedVault: EscrowVaultData) => void;
 }
 
 export function EscrowRails({
   initialVault,
   onOpenWeighbridge,
   onRefresh,
-  onReturnToMarketplace
+  onReturnToMarketplace,
+  onVaultUpdate
 }: EscrowRailsProps) {
   // Default interactive demo vault state with Lazy Initializer
   const [vault, setVault] = useState<EscrowVaultData>(() => {
@@ -117,9 +119,16 @@ export function EscrowRails({
     return v?.current_milestone === 'DECLINED' || v?.status === 'REFUNDED';
   });
 
+  const [enteredOtp, setEnteredOtp] = useState<string>('');
+  const [destinationOtp, setDestinationOtp] = useState<string>('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState<boolean>(false);
+  const [isDisbursingFuel, setIsDisbursingFuel] = useState<boolean>(false);
+  const [isDisputeOpen, setIsDisputeOpen] = useState<boolean>(false);
+  const [disputeReason, setDisputeReason] = useState<string>('Quality / Blemish Grade Mismatch');
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Sync initialVault updates into local state
   useEffect(() => {
     if (initialVault) {
       setVault(initialVault);
@@ -138,6 +147,13 @@ export function EscrowRails({
       );
     }
   }, [initialVault]);
+
+  // Notify parent component on state mutation
+  useEffect(() => {
+    if (onVaultUpdate) {
+      onVaultUpdate(vault);
+    }
+  }, [vault, onVaultUpdate]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);

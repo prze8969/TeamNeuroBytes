@@ -3,27 +3,24 @@
 import React from 'react';
 import { 
   Building2, 
-  MapPin, 
   ShieldCheck, 
-  FileText, 
   RefreshCw, 
-  TrendingUp, 
-  Store, 
+  Sparkles, 
+  LayoutGrid, 
   Truck, 
-  Receipt, 
-  Scale, 
-  CheckCircle2, 
-  Sparkles,
-  ArrowRight,
-  Gavel,
+  Receipt,
+  Search,
+  CheckCircle2,
   Lock,
+  Fuel,
+  ArrowRight,
+  AlertTriangle,
+  PackageCheck,
   Layers
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CropListingCard } from '@/components/dashboard/CropListingCard';
 import { CropListingListItem } from '@/components/dashboard/CropListingListItem';
 import { CropDetailModal } from '@/components/dashboard/CropDetailModal';
-import { BuyerBadge } from '@/components/ui/BuyerBadge';
 import { BidTable } from '@/components/dashboard/BidTable';
 import { EscrowRails } from '@/components/dashboard/EscrowRails';
 import { ShipmentTracker } from '@/components/dashboard/ShipmentTracker';
@@ -55,8 +52,14 @@ export function BuyerDashboardLayout() {
     bids,
     orders,
     analytics,
-    activeVault,
+    // Multi-Deal State
+    activeVaults,
+    selectedDealId,
+    setSelectedDealId,
+    selectedVault,
+    updateDealMilestone,
     activeDealsCount,
+    // Profile & Notifications
     buyerProfile,
     toastMsg,
     setToastMsg,
@@ -179,32 +182,21 @@ export function BuyerDashboardLayout() {
             <Button
               variant="outline"
               size="sm"
-              className="text-xs h-8 rounded-xl font-bold border-slate-300 text-slate-700 hover:bg-slate-100"
-              onClick={() => {
-                window.location.href = '/kyc?role=BUYER';
-              }}
-            >
-              <FileText size={12} className="mr-1" />
-              e-KYC
-            </Button>
-
-            <Button
-              size="sm"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-8 rounded-xl shadow-xs"
               onClick={fetchLiveMarketplaceData}
+              className="h-8 text-xs font-bold gap-1.5 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer"
             >
-              <RefreshCw size={12} className="mr-1" />
-              Refresh
+              <RefreshCw size={13} className="text-slate-500" />
+              Sync Mandi Live
             </Button>
           </div>
 
         </div>
 
-        {/* Sub-Navigation Tab Switcher */}
+        {/* 3-Tab Command Center Navigation Bar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100">
-          <nav className="flex space-x-1 sm:space-x-4 py-2">
+          <nav className="flex items-center gap-2 py-2 overflow-x-auto no-scrollbar">
             
-            {/* Tab 1: Marketplace & Live Feed */}
+            {/* Tab 1: Marketplace & Discovery */}
             <button
               type="button"
               onClick={() => setActiveTab('marketplace')}
@@ -214,16 +206,16 @@ export function BuyerDashboardLayout() {
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Store size={15} />
-              <span>Marketplace &amp; Live Feed</span>
-              <span suppressHydrationWarning className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+              <LayoutGrid size={15} />
+              <span>Verified Lots Marketplace</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === 'marketplace' ? 'bg-emerald-800 text-white' : 'bg-slate-200 text-slate-700'
               }`}>
                 {lots.length} Lots
               </span>
             </button>
 
-            {/* Tab 2: Active Procurement & Fulfillment */}
+            {/* Tab 2: Active Procurement Corridors (Multi-Deal Collection) */}
             <button
               type="button"
               onClick={() => setActiveTab('active_deals')}
@@ -236,7 +228,7 @@ export function BuyerDashboardLayout() {
               <Truck size={15} />
               <span>Active Procurement &amp; Fulfillment</span>
               {activeDealsCount > 0 && (
-                <span suppressHydrationWarning className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-amber-400 text-amber-950 animate-pulse">
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono bg-amber-400 text-slate-950 font-bold animate-pulse">
                   {activeDealsCount} Active
                 </span>
               )}
@@ -254,7 +246,7 @@ export function BuyerDashboardLayout() {
             >
               <Receipt size={15} />
               <span>Settled Ledger &amp; Tax Invoices</span>
-              <span suppressHydrationWarning className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === 'ledger' ? 'bg-emerald-800 text-white' : 'bg-slate-200 text-slate-700'
               }`}>
                 {orders.length} Settled
@@ -330,55 +322,164 @@ export function BuyerDashboardLayout() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 2: ACTIVE PROCUREMENT & FULFILLMENT */}
+        {/* VIEW 2: ACTIVE PROCUREMENT & FULFILLMENT (MULTI-DEAL SELECTION) */}
         {/* ========================================================================= */}
         {activeTab === 'active_deals' && (
           <div className="space-y-6 animate-in fade-in duration-200">
             
-            {/* Active Deal Status Header */}
-            <div className="p-4 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="space-y-0.5">
-                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 font-mono">
-                  ● Active Procurement Corridor
-                </span>
-                <h3 className="text-base font-extrabold text-slate-900">
-                  {activeVault.crop_name || 'Sharbati Wheat'} • {activeVault.carrier_name || 'Kisan Express Logistics'}
-                </h3>
-                <p className="text-xs text-slate-600">
-                  Farmer: <strong>{activeVault.farmer_name || 'Ramesh Patil'}</strong> • Total Escrow Locked: <strong className="font-mono text-emerald-800">₹{(activeVault.total_locked_amount || 130338).toLocaleString('en-IN')}</strong>
-                </p>
+            {/* If zero active deals exist */}
+            {activeVaults.length === 0 ? (
+              <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-12 text-center space-y-4 shadow-xs">
+                <div className="h-16 w-16 mx-auto rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl">
+                  📦
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900">No Active Procurement Corridors</h3>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
+                    You do not have any live escrow shipments currently in transit. Place a bid on the verified marketplace to initiate 4-stage escrow fulfillment.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={() => setActiveTab('marketplace')}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 h-10 rounded-xl cursor-pointer"
+                >
+                  Browse Verified Marketplace →
+                </Button>
               </div>
+            ) : (
+              <>
+                {/* 1. Multi-Deal Carousel / Selector Bar */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 font-mono">
+                        Active Procurement Deals ({activeVaults.length})
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                        Click deal to focus
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-mono text-slate-500">
+                      Total Capital Locked: <strong className="text-emerald-800">₹{activeVaults.reduce((acc, v) => acc + (v.total_locked_amount || 0), 0).toLocaleString('en-IN')}</strong>
+                    </span>
+                  </div>
 
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping shrink-0" />
-                  Vehicle: {activeVault.vehicle_number || 'MH-15-EG-4421'} • {activeVault.status || 'IN_TRANSIT'}
-                </span>
-              </div>
-            </div>
+                  {/* Horizontal Multi-Deal Strip */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {activeVaults.map((deal) => {
+                      const isSelected = selectedDealId === deal.id;
+                      const milestoneLabel = 
+                        deal.current_milestone === 'LOCKED' ? '🔒 1. Funds Locked' :
+                        deal.current_milestone === 'FREIGHT_ADVANCE_PAID' ? '⛽ 2. Fuel Advance' :
+                        deal.current_milestone === 'IN_TRANSIT' ? '🚚 3. In Transit' :
+                        deal.current_milestone === 'DISPUTED' ? '🚨 Disputed' :
+                        '✅ 4. Settled';
 
-            {/* Milestone Escrow Rails (4-Stage State Machine) */}
-            <EscrowRails
-              initialVault={activeVault}
-              onOpenWeighbridge={openWeighbridge}
-              onRefresh={fetchLiveMarketplaceData}
-              onReturnToMarketplace={() => setActiveTab('marketplace')}
-            />
+                      return (
+                        <button
+                          key={deal.id}
+                          type="button"
+                          onClick={() => setSelectedDealId(deal.id)}
+                          className={`p-4 rounded-2xl text-left transition-all border cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-2xs ${
+                            isSelected
+                              ? 'bg-gradient-to-br from-emerald-50 via-teal-50 to-white border-emerald-500 ring-2 ring-emerald-400 shadow-md'
+                              : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
+                          }`}
+                        >
+                          {isSelected && (
+                            <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-bl-lg font-mono">
+                              ACTIVE FOCUS
+                            </div>
+                          )}
 
-            {/* In-Transit Geospatial Logistics Map (Leaflet) */}
-            <ShipmentTracker
-              lotId={`LOT-${activeVault.lot_id || 1}`}
-              cropName={activeVault.crop_name || 'Sharbati Wheat'}
-              farmerName={activeVault.farmer_name || 'Ramesh Patil'}
-              carrierName={activeVault.carrier_name || 'Kisan Express Logistics'}
-              vehicleNumber={activeVault.vehicle_number || 'MH-15-EG-4421'}
-              originName={activeVault.farmer_district || 'Nashik Farm Gate Cluster'}
-              destinationName="Vashi APMC Mandi Yard (Navi Mumbai)"
-              onArriveAtTerminal={() => {
-                openWeighbridge();
-                triggerToast('🚛 Mandi Arrival Confirmed! Opening Certified APMC Weighbridge Pass & Settlement.');
-              }}
-            />
+                          <div className="space-y-1 pr-12">
+                            <span className="text-[10px] font-black font-mono text-emerald-800">
+                              VAULT #{deal.id} • LOT #{deal.lot_id}
+                            </span>
+                            <h4 className="text-sm font-extrabold text-slate-900 truncate">
+                              {deal.crop_name}
+                            </h4>
+                            <p className="text-[11px] text-slate-500 truncate">
+                              Farmer: <strong>{deal.farmer_name}</strong>
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
+                            <span className="font-mono font-black text-emerald-900">
+                              ₹{(deal.total_locked_amount || 0).toLocaleString('en-IN')}
+                            </span>
+                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full font-mono ${
+                              deal.current_milestone === 'DISPUTED'
+                                ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                                : deal.current_milestone === 'IN_TRANSIT'
+                                ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                                : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                            }`}>
+                              {milestoneLabel}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2. Focused Deal Status Banner */}
+                {selectedVault && (
+                  <div className="p-4 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-0.5">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 font-mono">
+                        ● Focused Procurement Corridor • Vault #{selectedVault.id}
+                      </span>
+                      <h3 className="text-base font-extrabold text-slate-900">
+                        {selectedVault.crop_name} • {selectedVault.carrier_name || 'Kisan Express Logistics'}
+                      </h3>
+                      <p className="text-xs text-slate-600">
+                        Farmer: <strong>{selectedVault.farmer_name}</strong> • Total Escrow Locked: <strong className="font-mono text-emerald-800">₹{(selectedVault.total_locked_amount || 0).toLocaleString('en-IN')}</strong>
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping shrink-0" />
+                        Vehicle: {selectedVault.vehicle_number || 'MH-15-EG-4421'} • {selectedVault.status || 'IN_TRANSIT'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. Milestone Escrow Rails (4-Stage State Machine for selected deal) */}
+                {selectedVault && (
+                  <EscrowRails
+                    key={selectedVault.id}
+                    initialVault={selectedVault}
+                    onOpenWeighbridge={openWeighbridge}
+                    onRefresh={fetchLiveMarketplaceData}
+                    onReturnToMarketplace={() => setActiveTab('marketplace')}
+                    onVaultUpdate={(updated) => updateDealMilestone(selectedVault.id, updated)}
+                  />
+                )}
+
+                {/* 4. In-Transit Geospatial Logistics Map (Leaflet) */}
+                {selectedVault && (
+                  <ShipmentTracker
+                    key={selectedVault.id}
+                    lotId={`LOT-${selectedVault.lot_id || 1}`}
+                    cropName={selectedVault.crop_name || 'Sharbati Wheat'}
+                    farmerName={selectedVault.farmer_name || 'Ramesh Patil'}
+                    carrierName={selectedVault.carrier_name || 'Kisan Express Logistics'}
+                    vehicleNumber={selectedVault.vehicle_number || 'MH-15-EG-4421'}
+                    originName={selectedVault.farmer_district || 'Nashik Farm Gate Cluster'}
+                    destinationName="Vashi APMC Mandi Yard (Navi Mumbai)"
+                    onArriveAtTerminal={() => {
+                      openWeighbridge();
+                      triggerToast('🚛 Mandi Arrival Confirmed! Opening Certified APMC Weighbridge Pass & Settlement.');
+                    }}
+                  />
+                )}
+              </>
+            )}
 
           </div>
         )}
@@ -417,51 +518,10 @@ export function BuyerDashboardLayout() {
         />
       )}
 
-      {/* 2. Interactive Bidding & Escrow Drawer */}
-      {isBiddingOpen && biddingLot && (
-        <BiddingDrawer
-          isOpen={isBiddingOpen}
-          onClose={closeBidding}
-          lot={biddingLot}
-          isSubmitting={loadingBidLotId !== null}
-          onConfirmBidAndEscrow={handleConfirmBidAndEscrow}
-        />
-      )}
-
-      {/* 3. Certified Weighbridge Settlement & Dispute Modal */}
-      {isWeighbridgeOpen && (
-        <WeighbridgeSettlement
-          isOpen={isWeighbridgeOpen}
-          onClose={closeWeighbridge}
-          vaultId={activeVault.id || 1}
-          lotId={`LOT-${activeVault.lot_id || 1}`}
-          cropName={activeVault.crop_name || 'Sharbati Wheat'}
-          variety={activeVault.variety || 'Lok-1 (Clean Grain)'}
-          farmerName={activeVault.farmer_name || 'Ramesh Patil'}
-          carrierName={activeVault.carrier_name || 'Kisan Express Logistics'}
-          vehicleNumber={activeVault.vehicle_number || 'MH-15-EG-4421'}
-          listedQuantityKg={5000}
-          cropTotalAmount={activeVault.crop_total_amount || 122500}
-          balanceFreightAmount={activeVault.balance_freight_amount || 4200}
-          totalEscrowAmount={activeVault.total_locked_amount || 130338}
-          onSettlementComplete={handleSettlementComplete}
-          onDisputeRaised={handleDisputeRaised}
-        />
-      )}
-
-      {/* 4. GST-Compliant Digital Tax Invoice Modal */}
-      {isInvoiceOpen && selectedInvoiceOrder && (
-        <TaxInvoiceModal
-          isOpen={isInvoiceOpen}
-          onClose={closeInvoice}
-          order={selectedInvoiceOrder}
-        />
-      )}
-
-      {/* 5. Crop Full Detail & Bidding Popup Modal */}
+      {/* 2. Crop Details Pop-up Modal */}
       {selectedDetailLot && (
         <CropDetailModal
-          isOpen={selectedDetailLot !== null}
+          isOpen={!!selectedDetailLot}
           onClose={() => setSelectedDetailLot(null)}
           lot={selectedDetailLot}
           onInspect={(lot) => {
@@ -472,6 +532,46 @@ export function BuyerDashboardLayout() {
             setSelectedDetailLot(null);
             openBidding(lot);
           }}
+        />
+      )}
+
+      {/* 3. 3-Tier Bidding & Logistics Drawer */}
+      {isBiddingOpen && biddingLot && (
+        <BiddingDrawer
+          isOpen={isBiddingOpen}
+          onClose={closeBidding}
+          lot={biddingLot}
+          onConfirmBidAndEscrow={handleConfirmBidAndEscrow}
+        />
+      )}
+
+      {/* 4. Certified Weighbridge Gross/Tare Settlement Modal */}
+      {isWeighbridgeOpen && selectedVault && (
+        <WeighbridgeSettlement
+          isOpen={isWeighbridgeOpen}
+          onClose={closeWeighbridge}
+          vaultId={selectedVault.id}
+          lotId={`LOT-${selectedVault.lot_id || 1}`}
+          cropName={selectedVault.crop_name}
+          variety={selectedVault.variety}
+          farmerName={selectedVault.farmer_name}
+          carrierName={selectedVault.carrier_name}
+          vehicleNumber={selectedVault.vehicle_number}
+          listedQuantityKg={5000}
+          cropTotalAmount={selectedVault.crop_total_amount}
+          balanceFreightAmount={selectedVault.balance_freight_amount}
+          totalEscrowAmount={selectedVault.total_locked_amount}
+          onSettlementComplete={handleSettlementComplete}
+          onDisputeRaised={handleDisputeRaised}
+        />
+      )}
+
+      {/* 5. Statutory Tax Invoice Modal */}
+      {isInvoiceOpen && selectedInvoiceOrder && (
+        <TaxInvoiceModal
+          isOpen={isInvoiceOpen}
+          onClose={closeInvoice}
+          order={selectedInvoiceOrder}
         />
       )}
 
