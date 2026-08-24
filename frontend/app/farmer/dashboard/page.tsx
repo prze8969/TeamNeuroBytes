@@ -12,6 +12,7 @@ import { SellVsWaitCard } from '@/components/dashboard/SellVsWaitCard';
 import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulatorModal';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { ListNewCropModal } from '@/components/farmer/ListNewCropModal';
+import { FPOCollectiveView } from '@/components/farmer/FPOCollectiveView';
 import { resolveCropImageUrl } from '@/lib/assayData';
 import { Trash2 } from 'lucide-react';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
@@ -391,14 +392,13 @@ export default function FarmerDashboard() {
     },
   ];
 
+  const handleUpdatePoolSelection = (updatedLots: CropLot[], pooledLotIds: string[]) => {
+    setMyLots(updatedLots);
+    setIsPooled(pooledLotIds.length > 0);
+  };
+
   const handleTogglePooling = () => {
-    if (!isPooled) {
-      setIsPooled(true);
-      triggerToast('🎉 Joined Nashik East FPO Freight Pool! Lot (5.0T) added to shared 45-Ton milk-run truck. Freight reduced by 31.5%.');
-    } else {
-      setIsPooled(false);
-      triggerToast('⚠️ Left FPO Freight Pool. Lot is now marked for direct individual transport.');
-    }
+    setActiveTab('fpo-pooling');
   };
 
   const highestBid = bids.length > 0
@@ -664,8 +664,12 @@ export default function FarmerDashboard() {
                               {lot.variety}
                             </p>
                           </div>
-                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
-                            {lot.status}
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
+                            lot.status === 'POOLED' || (lot as any).isPooled
+                              ? 'bg-purple-100 text-purple-900 border-purple-300 font-extrabold'
+                              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          }`}>
+                            {lot.status === 'POOLED' || (lot as any).isPooled ? '👥 POOLED' : lot.status}
                           </span>
                         </div>
                       </div>
@@ -825,73 +829,18 @@ export default function FarmerDashboard() {
           </div>
         )}
 
-        {/* Tab 3: FPO Pooling */}
+        {/* Tab 3: Selective Crop FPO Pooling Hub */}
         {activeTab === 'fpo-pooling' && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-xs space-y-4">
-              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-emerald-50 pb-4">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900">Nearby FPO Freight Pools (10-km Radius)</h3>
-                  <p className="text-xs text-slate-500">Shared milk-run transport routing powered by PostGIS & OpenRouteService</p>
-                </div>
-                <Button
-                  onClick={handleTogglePooling}
-                  className={`text-xs font-bold px-6 h-10 shadow-xs ${
-                    isPooled
-                      ? 'bg-rose-600 hover:bg-rose-700 text-white'
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white font-black'
-                  }`}
-                >
-                  {isPooled ? 'Leave Active Pool' : '⚡ Join Nashik East Collective'}
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockClusters.map((c) => (
-                  <div
-                    key={c.id}
-                    className={`rounded-2xl p-5 border transition-all space-y-3 ${
-                      c.id === 'CLST-01' && isPooled
-                        ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-400'
-                        : 'border-slate-200 bg-white'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-900">{c.clusterName}</h4>
-                        <p className="text-xs text-slate-500 mt-0.5">{c.participatingFarmersCount} Farmers • {(c.totalWeightKg / 1000).toFixed(1)} Tons Pooled</p>
-                      </div>
-                      <span className="text-xs font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">
-                        -{c.estimatedFreightSavingsPercent}% Freight
-                      </span>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[11px] font-bold text-slate-600">
-                        <span>Truck Target (50 Tons)</span>
-                        <span className="text-emerald-700 font-mono">{(c.totalWeightKg / 500).toFixed(0)}% Filled</span>
-                      </div>
-                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-emerald-600 rounded-full"
-                          style={{ width: `${Math.min((c.totalWeightKg / 50000) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center text-xs text-slate-600 pt-2 border-t border-slate-100">
-                      <span>Destination: <strong>Vashi APMC Mandi</strong></span>
-                      {c.id === 'CLST-01' && isPooled ? (
-                        <span className="text-emerald-700 font-extrabold">✓ Currently Enrolled</span>
-                      ) : (
-                        <span className="text-slate-400">Available to Join</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+            <FPOCollectiveView
+              activeLots={myLots}
+              onUpdatePoolSelection={handleUpdatePoolSelection}
+              onNavigateToTab={(tab) => {
+                if (tab === 'overview') setActiveTab('overview');
+                else if (tab === 'list-crop') setIsListModalOpen(true);
+                else setActiveTab(tab as any);
+              }}
+            />
             <ClusterMap clusters={mockClusters} />
           </div>
         )}
