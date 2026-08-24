@@ -185,7 +185,7 @@ export function AIInspectionModal({
               <>
                 {defectBoxes.map((box, idx) => (
                   <div
-                    key={idx}
+                    key={`defect-box-${idx}-${box.label.replace(/\s+/g, '-')}`}
                     className="absolute border-2 border-emerald-400 bg-emerald-500/15 rounded-lg pointer-events-none transition-all duration-300 animate-in fade-in"
                     style={{
                       top: box.top,

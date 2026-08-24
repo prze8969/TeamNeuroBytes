@@ -309,9 +309,9 @@ export function BiddingDrawer({
             </div>
 
             <div className="space-y-2">
-              {CARRIER_OPTIONS.map((carrier) => (
+              {CARRIER_OPTIONS.map((carrier, idx) => (
                 <div
-                  key={carrier.id}
+                  key={`carrier-${carrier.id}-${idx}`}
                   onClick={() => setSelectedCarrierId(carrier.id)}
                   className={`p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-3 ${
                     selectedCarrierId === carrier.id

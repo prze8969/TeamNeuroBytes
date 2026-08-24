@@ -359,9 +359,9 @@ export function OrderHistoryTable({ orders = DEFAULT_ORDERS }: OrderHistoryTable
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map((order) => (
+                filteredOrders.map((order, idx) => (
                   <tr 
-                    key={order.order_id}
+                    key={`order-${order.order_id}-${idx}`}
                     className={`hover:bg-slate-50/80 transition-colors ${
                       order.escrow_status === 'DISPUTED' ? 'bg-red-50/30 hover:bg-red-50/50' : ''
                     }`}
