@@ -184,3 +184,42 @@ export function getCropBySearch(query: string): CropVarietyOption {
   );
   return matched || CROP_VARIETY_CATALOG[0];
 }
+
+export function resolveCropImageUrl(cropName: string = '', customUrl?: string | null): string {
+  if (customUrl && customUrl.startsWith('http') && !customUrl.includes('placeholder') && !customUrl.includes('broken')) {
+    // If the image URL is not an onion image wrongly assigned to cotton or wheat, use it
+    if (!(cropName.toLowerCase().includes('cotton') && customUrl.includes('photo-1618512496248'))) {
+      return customUrl;
+    }
+  }
+
+  const norm = (cropName || '').toLowerCase();
+  if (norm.includes('wheat') || norm.includes('grain') || norm.includes('lok')) {
+    return 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('onion') || norm.includes('garva') || norm.includes('pyaz')) {
+    return 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('tomato') || norm.includes('abhinav') || norm.includes('tamatar')) {
+    return 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('rice') || norm.includes('basmati') || norm.includes('paddy')) {
+    return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('soybean') || norm.includes('js-335') || norm.includes('soya')) {
+    return 'https://images.unsplash.com/photo-1587393855524-087f83d95bc9?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('cotton') || norm.includes('kapas')) {
+    return 'https://images.unsplash.com/photo-1605000797499-95a51c5269ae?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('potato') || norm.includes('chandramukhi') || norm.includes('aloo')) {
+    return 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('chana') || norm.includes('gram') || norm.includes('chickpea')) {
+    return 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&w=800&q=80';
+  }
+  if (norm.includes('tur') || norm.includes('arhar') || norm.includes('dal')) {
+    return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80';
+  }
+  return 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
+}

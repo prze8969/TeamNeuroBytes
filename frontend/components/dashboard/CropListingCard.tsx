@@ -16,6 +16,7 @@ import { CropLot } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { resolveCropImageUrl } from '@/lib/assayData';
 
 export interface CropListingCardProps {
   lot: CropLot;
@@ -64,15 +65,7 @@ export function CropListingCard({
   const spreadPercent = Math.round((priceSpread / mandiPrice) * 100 * 10) / 10;
 
   // Fallback high-quality agricultural imagery
-  const cropImageSrc = lot.imageUrl || (
-    lot.cropName.toLowerCase().includes('onion')
-      ? 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=600&q=80'
-      : lot.cropName.toLowerCase().includes('tomato')
-      ? 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=600&q=80'
-      : lot.cropName.toLowerCase().includes('rice')
-      ? 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80'
-      : 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80'
-  );
+  const cropImageSrc = resolveCropImageUrl(lot.cropName, lot.imageUrl);
 
   const handleBidSubmit = () => {
     if (!isValidBid) return;

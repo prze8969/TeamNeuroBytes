@@ -12,6 +12,7 @@ import { SellVsWaitCard } from '@/components/dashboard/SellVsWaitCard';
 import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulatorModal';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { ListNewCropModal } from '@/components/farmer/ListNewCropModal';
+import { resolveCropImageUrl } from '@/lib/assayData';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
 
 export default function FarmerDashboard() {
@@ -65,13 +66,17 @@ export default function FarmerDashboard() {
   ];
 
   const fetchLiveBidsAndLots = async () => {
+    let localLots: CropLot[] = [];
     // 1. Sync from localStorage
     try {
       const savedLots = localStorage.getItem('kisansetu_crop_lots');
       if (savedLots) {
         const parsed = JSON.parse(savedLots);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setMyLots(parsed);
+          localLots = parsed.map((l: any) => ({
+            ...l,
+            imageUrl: resolveCropImageUrl(l.cropName || l.commodity, l.imageUrl || l.image_url)
+          }));
         }
       }
     } catch {}
@@ -96,62 +101,81 @@ export default function FarmerDashboard() {
             escrowStatus: b.status === 'ACCEPTED' ? 'LOCKED' : b.status === 'REJECTED' ? 'RELEASED' : 'INITIATED',
             createdAt: b.created_at ? b.created_at.replace('T', ' ').slice(0, 16) : '2026-08-23 15:10'
           }));
-          setBids(mappedBids);
+          setBids(prev => JSON.stringify(prev) === JSON.stringify(mappedBids) ? prev : mappedBids);
         } else {
-          setBids(defaultBids);
+          setBids(prev => JSON.stringify(prev) === JSON.stringify(defaultBids) ? prev : defaultBids);
         }
       }
 
       if (lotsRes.ok) {
         const rawLots = await lotsRes.json();
         if (Array.isArray(rawLots) && rawLots.length > 0) {
-          const mappedLots: CropLot[] = rawLots.map((l: any) => ({
-            id: `LOT-${l.id}`,
-            farmerId: String(l.farmer_id),
-            farmerName: l.farmer_name || 'Ramesh Patil',
-            cropName: l.commodity,
-            variety: l.variety || 'Standard Hybrid',
-            quantityKg: l.quantity_kg,
-            quantityTons: l.quantity_tons || (l.quantity_kg / 1000),
-            grade: (l.grade === 'B' ? 'B' : l.grade === 'C' ? 'C' : 'A') as 'A' | 'B' | 'C',
-            qualityGrade: (l.grade === 'B' ? 'Grade B' : l.grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
-            qualityScore: l.quality_score || 95.0,
-            basePricePerKg: l.base_price_per_kg,
-            askingFloorPerKg: l.base_price_per_kg,
-            mandiAvgPerKg: l.market_reference_price || (l.base_price_per_kg * 0.94),
-            freightPerKg: 1.20,
-            origin: l.farmer_district || 'Nashik East Cluster, Maharashtra',
-            distanceKm: l.distance_km || 38,
-            harvestDate: l.harvest_date || '2026-08-23',
-            status: l.status || 'LISTED',
-            location: {
-              lat: l.latitude || 20.0125,
-              lng: l.longitude || 73.7910,
-              district: l.district || 'Nashik',
-              state: l.state || 'Maharashtra'
-            },
-            defectPercentage: l.defect_percentage || 1.4,
-            defectArea: l.defect_percentage || 1.4,
-            ripenessIndex: l.ripeness_index || 95.0,
-            imageUrl: l.image_url
-          }));
+          const mappedLots: CropLot[] = rawLots.map((l: any) => {
+            const cropTitle = l.commodity || l.crop_name || 'Wheat';
+            return {
+              id: `LOT-${l.id}`,
+              farmerId: String(l.farmer_id || 1),
+              farmerName: l.farmer_name || 'Ramesh Patil',
+              cropName: cropTitle,
+              variety: l.variety || 'Standard Hybrid',
+              quantityKg: l.quantity_kg || 5000,
+              quantityTons: l.quantity_tons || ((l.quantity_kg || 5000) / 1000),
+              grade: (l.grade === 'B' ? 'B' : l.grade === 'C' ? 'C' : 'A') as 'A' | 'B' | 'C',
+              qualityGrade: (l.grade === 'B' ? 'Grade B' : l.grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
+              qualityScore: l.quality_score || 95.0,
+              basePricePerKg: l.base_price_per_kg || 25.50,
+              askingFloorPerKg: l.base_price_per_kg || 25.50,
+              mandiAvgPerKg: l.market_reference_price || ((l.base_price_per_kg || 25.50) * 0.94),
+              freightPerKg: 1.20,
+              origin: l.farmer_district || 'Nashik East Cluster, Maharashtra',
+              distanceKm: l.distance_km || 38,
+              harvestDate: l.harvest_date || '2026-08-23',
+              status: l.status || 'LISTED',
+              location: {
+                lat: l.latitude || 20.0125,
+                lng: l.longitude || 73.7910,
+                district: l.district || 'Nashik',
+                state: l.state || 'Maharashtra'
+              },
+              defectPercentage: l.defect_percentage || 1.4,
+              defectArea: l.defect_percentage || 1.4,
+              ripenessIndex: l.ripeness_index || 95.0,
+              imageUrl: resolveCropImageUrl(cropTitle, l.image_url)
+            };
+          });
 
-          // Merge local + backend lots
+          // Deduplicate and only update state if actual changes happened (stops flickering)
           setMyLots(prev => {
-            const combined = [...prev, ...mappedLots];
-            return Array.from(new Map(combined.map(item => [item.id, item])).values());
+            const combined = [...localLots, ...mappedLots, ...prev];
+            const deduplicated = Array.from(new Map(combined.map(item => [item.id, item])).values());
+            if (JSON.stringify(prev) === JSON.stringify(deduplicated)) {
+              return prev; // ZERO re-render, ZERO flicker
+            }
+            return deduplicated;
           });
         }
+      } else if (localLots.length > 0) {
+        setMyLots(prev => JSON.stringify(prev) === JSON.stringify(localLots) ? prev : localLots);
       }
     } catch {
-      setBids(defaultBids);
+      setBids(prev => JSON.stringify(prev) === JSON.stringify(defaultBids) ? prev : defaultBids);
+      if (localLots.length > 0) {
+        setMyLots(prev => JSON.stringify(prev) === JSON.stringify(localLots) ? prev : localLots);
+      }
     }
   };
 
   useEffect(() => {
     fetchLiveBidsAndLots();
-    const interval = setInterval(fetchLiveBidsAndLots, 4000);
-    return () => clearInterval(interval);
+    const handleUpdate = () => fetchLiveBidsAndLots();
+    window.addEventListener('storage', handleUpdate);
+    window.addEventListener('kisansetu_lots_updated', handleUpdate);
+    const interval = setInterval(fetchLiveBidsAndLots, 12000);
+    return () => {
+      window.removeEventListener('storage', handleUpdate);
+      window.removeEventListener('kisansetu_lots_updated', handleUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const handleCreateNewLot = async (e: React.FormEvent) => {
@@ -525,18 +549,20 @@ export default function FarmerDashboard() {
                       className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3 shadow-2xs hover:border-emerald-400 transition-all flex flex-col justify-between"
                     >
                       <div className="space-y-2">
-                        {lot.imageUrl && (
-                          <div className="relative rounded-xl overflow-hidden aspect-video bg-slate-100 border border-slate-200">
-                            <img
-                              src={lot.imageUrl}
-                              alt={lot.cropName}
-                              className="w-full h-full object-cover"
-                            />
-                            <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-emerald-400/40">
-                              {lot.qualityGrade} ({lot.qualityScore || 95}%)
-                            </span>
-                          </div>
-                        )}
+                        <div className="relative rounded-xl overflow-hidden aspect-video bg-slate-950/5 border border-slate-200">
+                          <img
+                            src={resolveCropImageUrl(lot.cropName, lot.imageUrl)}
+                            alt={lot.cropName}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = resolveCropImageUrl(lot.cropName);
+                            }}
+                          />
+                          <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-emerald-400/40">
+                            {lot.qualityGrade || 'Grade A'} ({lot.qualityScore || 95}%)
+                          </span>
+                        </div>
 
                         <div className="flex items-start justify-between gap-2">
                           <div>
