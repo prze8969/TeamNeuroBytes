@@ -23,6 +23,11 @@ class CreateLotRequest(BaseModel):
     latitude: float = 20.0125
     longitude: float = 73.7910
     destination_mandi: Optional[str] = "Nashik APMC"
+    image_url: Optional[str] = None
+    quality_grade: Optional[str] = "A"
+    quality_score: Optional[float] = 94.0
+    defect_percentage: Optional[float] = 1.5
+    ripeness_index: Optional[float] = 95.0
 
 class CreateBidRequest(BaseModel):
     lot_id: int
@@ -53,7 +58,17 @@ def get_all_crop_lots(
 
 @router.post("/lots", response_model=CropLot)
 def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_session)):
-    """Creates a new crop lot listing."""
+    """Creates a new crop lot listing with farmer's actual produce photo and AI grade."""
+    grade_enum = QualityGrade.GRADE_A
+    if req.quality_grade:
+        clean_g = req.quality_grade.upper()
+        if "B" in clean_g:
+            grade_enum = QualityGrade.GRADE_B
+        elif "C" in clean_g:
+            grade_enum = QualityGrade.GRADE_C
+        elif "REJECT" in clean_g:
+            grade_enum = QualityGrade.REJECTED
+
     new_lot = CropLot(
         farmer_id=req.farmer_id,
         farmer_name=req.farmer_name,
@@ -66,9 +81,11 @@ def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_sessio
         latitude=req.latitude,
         longitude=req.longitude,
         destination_mandi=req.destination_mandi,
-        quality_grade=QualityGrade.GRADE_A,
-        quality_score=92.5,
-        defect_percentage=2.0,
+        image_url=req.image_url,
+        quality_grade=grade_enum,
+        quality_score=req.quality_score or 94.0,
+        defect_percentage=req.defect_percentage or 1.5,
+        ripeness_index=req.ripeness_index or 95.0,
         is_ai_verified=True,
         status=LotStatus.LISTED
     )

@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, Camera, CheckCircle2, Sparkles, AlertCircle, RefreshCw, Layers } from 'lucide-react';
 
-interface GradingResult {
+export interface GradingResult {
   commodity: string;
   grade: string;
   score: number;
@@ -14,6 +14,7 @@ interface GradingResult {
   moisturePercent: number;
   modelVersion: string;
   isPassed: boolean;
+  imagePreviewUrl?: string;
 }
 
 export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingResult) => void }) {
@@ -33,7 +34,8 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
     moisturePercent: 10.4,
     recommendation: 'Premium Export & Institutional Grade (Eligible for highest mandi floor)',
     modelVersion: 'YOLOv8-AgriVision-v2.1',
-    isPassed: true
+    isPassed: true,
+    imagePreviewUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,9 +46,15 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
     setErrorMsg(null);
     setActivePreset('');
 
-    // Set local image preview
-    const previewUrl = URL.createObjectURL(file);
-    setImagePreview(previewUrl);
+    // Read as persistent Base64 Data URL so it can be saved in the database
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        setImagePreview(dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
 
     try {
       const formData = new FormData();
@@ -386,7 +394,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
               {onApplyToLot && (
                 <Button
                   type="button"
-                  onClick={() => onApplyToLot(result)}
+                  onClick={() => onApplyToLot({ ...result, imagePreviewUrl: imagePreview || undefined })}
                   className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-sm cursor-pointer"
                 >
                   <Layers className="w-4 h-4" />

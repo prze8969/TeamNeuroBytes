@@ -24,6 +24,8 @@ export interface CropLot {
   askingFloorPerKg?: number;
   mandiAvgPerKg?: number;
   defectArea?: number; // percentage e.g. 2.1
+  defectPercentage?: number;
+  ripenessIndex?: number;
   moisture?: number; // percentage e.g. 11.8
   imageUrl?: string;
   origin?: string;

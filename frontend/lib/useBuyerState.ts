@@ -244,6 +244,9 @@ export function useBuyerState() {
               district: item.district || item.farmer_district || 'Nashik',
               state: item.state || 'Maharashtra'
             },
+            defectPercentage: item.defect_percentage || 1.4,
+            defectArea: item.defect_percentage || 1.4,
+            ripenessIndex: item.ripeness_index || 95.0,
             imageUrl: item.image_url
           }));
           setLots(mappedLots);

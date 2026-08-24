@@ -27,6 +27,11 @@ export default function FarmerDashboard() {
   const [basePricePerKg, setBasePricePerKg] = useState(25.50);
   const [district, setDistrict] = useState('Nashik');
   const [mandi, setMandi] = useState('Nashik APMC');
+  const [lotPhotoUrl, setLotPhotoUrl] = useState<string>('https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80');
+  const [aiGrade, setAiGrade] = useState<string>('A');
+  const [aiScore, setAiScore] = useState<number>(96.5);
+  const [aiDefect, setAiDefect] = useState<number>(1.2);
+  const [aiRipeness, setAiRipeness] = useState<number>(95.0);
   const [isSubmittingLot, setIsSubmittingLot] = useState(false);
 
   const triggerToast = (msg: string) => {
@@ -94,8 +99,12 @@ export default function FarmerDashboard() {
             variety: l.variety || 'Standard Hybrid',
             quantityKg: l.quantity_kg,
             grade: l.quality_grade || 'A',
+            qualityGrade: (l.quality_grade === 'B' ? 'Grade B' : l.quality_grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
             qualityScore: l.quality_score || 94.2,
             basePricePerKg: l.base_price_per_kg,
+            askingFloorPerKg: l.base_price_per_kg,
+            mandiAvgPerKg: l.base_price_per_kg ? l.base_price_per_kg * 0.94 : 24.0,
+            imageUrl: l.image_url,
             location: {
               lat: l.latitude || 20.01,
               lng: l.longitude || 73.79,
@@ -140,13 +149,18 @@ export default function FarmerDashboard() {
           state: 'Maharashtra',
           latitude: 20.0125,
           longitude: 73.7910,
-          destination_mandi: mandi
+          destination_mandi: mandi,
+          image_url: lotPhotoUrl,
+          quality_grade: aiGrade,
+          quality_score: aiScore,
+          defect_percentage: aiDefect,
+          ripeness_index: aiRipeness
         })
       });
 
       if (res.ok) {
         const createdLot = await res.json();
-        triggerToast(`🎉 Crop Listed! Lot #LOT-${createdLot.id} (${quantityTons} Tons of ${cropName}) is now live on Buyer Marketplace with Grade A certification.`);
+        triggerToast(`🎉 Crop Listed! Lot #LOT-${createdLot.id} (${quantityTons} Tons of ${cropName}) is now live on Buyer Marketplace with Grade ${aiGrade} certification.`);
         await fetchLiveBidsAndLots();
         setActiveTab('overview');
       } else {
@@ -615,11 +629,18 @@ export default function FarmerDashboard() {
                 const baseCommodity = data.commodity.split(' ')[0] || 'Wheat';
                 setCropName(baseCommodity);
                 setVariety(`${data.commodity} • Grade ${data.grade} Certified`);
+                setAiGrade(data.grade);
+                setAiScore(data.score);
+                setAiDefect(data.defectPercent);
+                setAiRipeness(data.ripenessIndex);
+                if (data.imagePreviewUrl) {
+                  setLotPhotoUrl(data.imagePreviewUrl);
+                }
                 if (data.grade === 'A') setBasePricePerKg(28.50);
                 else if (data.grade === 'B') setBasePricePerKg(24.00);
                 else setBasePricePerKg(19.50);
                 setActiveTab('list-crop');
-                triggerToast(`🔬 AI Certified: ${data.commodity} (Grade ${data.grade}, ${data.score}% Score)! Applied to new lot listing.`);
+                triggerToast(`🔬 AI Certified: ${data.commodity} (Grade ${data.grade}, ${data.score}% Score)! Photo and certified grade transferred to listing.`);
               }}
             />
           </div>

@@ -37,64 +37,72 @@ export function AIInspectionModal({
 
   // Dynamic Image & Bounding Box Routing
   let cropTypeKey: 'tomato' | 'onion' | 'wheat' | 'rice' = 'wheat';
-  let dynamicImage = 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
+  let dynamicImage = lot.imageUrl || 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
   let defectBoxes = [{ top: '38%', left: '44%', width: '18%', height: '18%', label: 'Broken Grain: 1.2%', conf: '94.2%' }];
   let assayMetrics = {
-    uniformity: '97.4% (Lok-1 Premium)',
-    blemish: '1.2% (Agmarknet Pass)',
+    uniformity: `${lot.ripenessIndex || 97.4}% (Lok-1 Premium)`,
+    blemish: `${lot.defectPercentage || 1.2}% (Agmarknet Pass)`,
     size: '6.8 mm (Uniform Grain)',
     moisture: '10.8% (Target < 12%)'
   };
 
   if (cropNameLower.includes('tomato')) {
     cropTypeKey = 'tomato';
-    dynamicImage = 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80';
+    if (!lot.imageUrl) {
+      dynamicImage = 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80';
+    }
     defectBoxes = [
-      { top: '24%', left: '32%', width: '22%', height: '22%', label: 'Skin Blemish: 2.1%', conf: '96.1%' },
+      { top: '24%', left: '32%', width: '22%', height: '22%', label: `Skin Blemish: ${lot.defectPercentage || 1.4}%`, conf: '96.1%' },
       { top: '56%', left: '60%', width: '20%', height: '20%', label: 'Firm Red Ripeness', conf: '98.4%' },
       { top: '48%', left: '18%', width: '18%', height: '18%', label: 'Caliber: 62mm', conf: '94.8%' }
     ];
     assayMetrics = {
-      uniformity: '94.8% (Firm Red)',
-      blemish: '2.1% (Class-1 Grade)',
+      uniformity: `${lot.ripenessIndex || 94.8}% (Firm Red)`,
+      blemish: `${lot.defectPercentage || 1.4}% (Class-1 Grade)`,
       size: '62-68 mm (Grade A)',
       moisture: '91.2% (Optimal Firmness)'
     };
   } else if (cropNameLower.includes('onion')) {
     cropTypeKey = 'onion';
-    dynamicImage = 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=800&q=80';
+    if (!lot.imageUrl) {
+      dynamicImage = 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=800&q=80';
+    }
     defectBoxes = [
       { top: '30%', left: '38%', width: '28%', height: '28%', label: 'Outer Tunic Dry: 98%', conf: '97.5%' },
       { top: '62%', left: '22%', width: '24%', height: '24%', label: 'Diameter: 55mm (Grade A)', conf: '95.2%' }
     ];
     assayMetrics = {
-      uniformity: '96.2% (Garva Standard)',
-      blemish: '0.8% (Tight Skin)',
+      uniformity: `${lot.ripenessIndex || 96.2}% (Garva Standard)`,
+      blemish: `${lot.defectPercentage || 0.8}% (Tight Skin)`,
       size: '50-60 mm (Export Grade)',
       moisture: '12.4% (Cured Dry)'
     };
   } else if (cropNameLower.includes('rice') || cropNameLower.includes('basmati')) {
     cropTypeKey = 'rice';
-    dynamicImage = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80';
+    if (!lot.imageUrl) {
+      dynamicImage = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80';
+    }
     defectBoxes = [
       { top: '35%', left: '30%', width: '40%', height: '35%', label: '1121 Grain Length: 8.4mm', conf: '98.1%' },
       { top: '20%', left: '60%', width: '25%', height: '25%', label: 'Chalkiness: 0.4%', conf: '96.8%' }
     ];
     assayMetrics = {
-      uniformity: '98.6% (Steam Extra Long)',
-      blemish: '0.4% (Chalkiness < 1%)',
+      uniformity: `${lot.ripenessIndex || 98.6}% (Steam Extra Long)`,
+      blemish: `${lot.defectPercentage || 0.4}% (Chalkiness < 1%)`,
       size: '8.4 mm (Aged Basmati)',
       moisture: '11.8% (Milling Grade)'
     };
   } else if (cropNameLower.includes('soybean') || cropNameLower.includes('soya')) {
-    dynamicImage = 'https://images.unsplash.com/photo-1599579086118-ff3599903b41?auto=format&fit=crop&w=800&q=80';
+    if (!lot.imageUrl) {
+      dynamicImage = 'https://images.unsplash.com/photo-1599579086118-ff3599903b41?auto=format&fit=crop&w=800&q=80';
+    }
     defectBoxes = [
-      { top: '28%', left: '34%', width: '24%', height: '24%', label: 'Pod Blemish: 0.9%', conf: '95.5%' },
+      { top: '28%', left: '34%', width: '24%', height: '24%', label: `Pod Blemish: ${lot.defectPercentage || 0.9}%`, conf: '95.5%' },
       { top: '54%', left: '48%', width: '22%', height: '22%', label: 'Oil Content: 19.8%', conf: '97.2%' }
     ];
     assayMetrics = {
-      uniformity: '97.2% (JS-335 Yellow)',
-      blemish: '0.9% (Clean Pods)',
+      uniformity: `${lot.ripenessIndex || 97.2}% (JS-335 Yellow)`,
+      blemish: `${lot.defectPercentage || 0.9}% (Clean Pods)`,
       size: '7.2 mm (Bold Sieve)',
       moisture: '10.2% (Oil Milling Pass)'
     };
