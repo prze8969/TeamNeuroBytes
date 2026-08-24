@@ -57,6 +57,8 @@ export interface EscrowRailsProps {
   onRefresh?: () => void;
   onReturnToMarketplace?: () => void;
   onVaultUpdate?: (updatedVault: EscrowVaultData) => void;
+  isDemoMode?: boolean;
+  onToggleDemoMode?: () => void;
 }
 
 export function EscrowRails({
@@ -64,8 +66,13 @@ export function EscrowRails({
   onOpenWeighbridge,
   onRefresh,
   onReturnToMarketplace,
-  onVaultUpdate
+  onVaultUpdate,
+  isDemoMode = false,
+  onToggleDemoMode
 }: EscrowRailsProps) {
+  const [isLocalDemoExpanded, setIsLocalDemoExpanded] = useState<boolean>(false);
+  const showDemoBar = isDemoMode || isLocalDemoExpanded;
+
   // Default interactive demo vault state with Lazy Initializer
   const [vault, setVault] = useState<EscrowVaultData>(() => {
     if (initialVault) return initialVault;
@@ -847,77 +854,162 @@ Status: 100% PAID VIA ESCROW VAULT | WEIGHBRIDGE PASS VERIFIED
       </div>
 
       {/* ========================================================================= */}
-      {/* INTERACTIVE ACTION BAR (For Live Demos / Testing) */}
+      {/* CONTEXTUAL ACTION BAR (Production Clean vs Fast-Forward Demo Mode) */}
       {/* ========================================================================= */}
-      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles size={14} className="text-emerald-600" />
-            Interactive Milestone Simulation Controls
-          </span>
-          <span className="text-[11px] text-slate-500 font-mono">
-            Current: <strong className="text-emerald-700">{vault.current_milestone}</strong>
-          </span>
+      {!showDemoBar ? (
+        /* 1. AUTHENTIC PRODUCTION VIEW (Clean & Role-Specific) */
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
+              {currentStep === 4 ? <CheckCircle2 size={16} /> : <ShieldCheck size={16} />}
+            </div>
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 font-mono block">
+                Corridor Status • Stage {currentStep} of 4
+              </span>
+              <strong className="text-xs text-slate-900 font-bold">
+                {currentStep === 1 && '🔒 Funds Locked in RBI Nodal Vault • Awaiting Transporter 30% Fuel Advance'}
+                {currentStep === 2 && '⛽ Advance Disbursed • Loading Farmgate OTP (4821) Ready'}
+                {currentStep === 3 && !isArrivedAtMandi && '🚚 In Transit along NH-160 • Live Telemetry & GPS Broadcast Active'}
+                {currentStep === 3 && isArrivedAtMandi && '🚛 Mandi Arrival Verified • APMC Digital Weighbridge Pass Unlocked'}
+                {currentStep === 4 && '✅ 100% Escrow Settled • Statutory GST Invoice & Weighbridge Slip Issued'}
+                {isDisputed && '🚨 Escrow Vault Frozen Under APMC Statutory Grievance Arbitration'}
+              </strong>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            {/* Contextual Primary Action based on Current Milestone */}
+            {currentStep === 3 && isArrivedAtMandi && !isDisputed && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={onOpenWeighbridge || handleSettle}
+                className="h-9 px-4 rounded-xl font-black text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Scale size={13} />
+                <span>Open Weighbridge Settlement</span>
+              </Button>
+            )}
+
+            {currentStep === 3 && !isArrivedAtMandi && !isDisputed && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  setIsArrivedAtMandi(true);
+                  showToast('🚛 Vehicle MH-15-EG-4421 arrived at Vashi APMC Scale #4! Weighbridge pass unlocked.');
+                }}
+                className="h-9 px-3 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-white shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <MapPin size={12} className="text-emerald-400" />
+                <span>Mark Mandi Arrival</span>
+              </Button>
+            )}
+
+            {currentStep === 4 && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleDownloadInvoice}
+                className="h-9 px-3.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-white shadow-xs"
+              >
+                <Download size={13} className="mr-1.5 text-emerald-400" />
+                <span>Tax Invoice</span>
+              </Button>
+            )}
+
+            {!isDisputed && currentStep !== 4 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleDispute}
+                className="h-9 px-3 rounded-xl font-bold text-xs border-slate-300 text-rose-700 hover:bg-rose-50"
+              >
+                <AlertTriangle size={12} className="mr-1" />
+                <span>Dispute</span>
+              </Button>
+            )}
+
+            {/* Subtle Demo Mode Switch */}
+            <button
+              type="button"
+              onClick={() => {
+                if (onToggleDemoMode) onToggleDemoMode();
+                else setIsLocalDemoExpanded(true);
+              }}
+              className="h-9 px-2.5 rounded-xl text-[11px] font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all flex items-center gap-1 cursor-pointer font-mono ml-auto sm:ml-0"
+              title="Show interactive fast-forward simulation controls for live presentations"
+            >
+              <Sparkles size={12} className="text-amber-500" />
+              <span>⚡ Demo Tools</span>
+            </button>
+          </div>
         </div>
+      ) : (
+        /* 2. EXPANDED JUDGE / FAST-FORWARD TESTING BAR */
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50/70 via-slate-50 to-purple-50/50 border border-amber-200 space-y-3 animate-in fade-in">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles size={14} className="text-amber-600" />
+                ⚡ Hackathon Judge Fast-Forward Controls
+              </span>
+              <span className="text-[10px] bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full font-bold font-mono">
+                Simulate 3-Day Logistics in 10s
+              </span>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          
-          {/* Milestone 2 Action */}
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleAdvanceFreight}
-            disabled={currentStep !== 1 || !isFarmerAccepted || isDisputed || loadingAction === 'advance'}
-            className="h-9 px-3.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-700 text-white shadow-xs disabled:opacity-40"
-          >
-            {loadingAction === 'advance' ? (
-              <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full mr-1.5" />
-            ) : (
-              <Fuel size={13} className="mr-1.5" />
-            )}
-            ⚡ 2. Disburse 30% Freight Advance
-          </Button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (onToggleDemoMode) onToggleDemoMode();
+                  else setIsLocalDemoExpanded(false);
+                }}
+                className="text-[11px] font-bold text-slate-500 hover:text-slate-900 px-2 py-1 rounded-lg hover:bg-slate-200/60 font-mono cursor-pointer"
+              >
+                ✕ Hide Demo Tools
+              </button>
+            </div>
+          </div>
 
-          {/* Milestone 3 Action */}
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleVerifyOtp}
-            disabled={currentStep !== 2 || isDisputed || loadingAction === 'otp'}
-            className="h-9 px-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-40"
-          >
-            {loadingAction === 'otp' ? (
-              <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full mr-1.5" />
-            ) : (
-              <KeyRound size={13} className="mr-1.5" />
-            )}
-            🔑 2. Verify Farmgate OTP (4821)
-          </Button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            
+            {/* Milestone 2 Action */}
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleAdvanceFreight}
+              disabled={currentStep !== 1 || !isFarmerAccepted || isDisputed || loadingAction === 'advance'}
+              className="h-9 px-3.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-700 text-white shadow-xs disabled:opacity-40"
+            >
+              {loadingAction === 'advance' ? (
+                <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full mr-1.5" />
+              ) : (
+                <Fuel size={13} className="mr-1.5" />
+              )}
+              1. Disburse 30% Fuel
+            </Button>
 
-          {/* Milestone 4 Action */}
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => {
-              if (onOpenWeighbridge) {
-                onOpenWeighbridge();
-              } else {
-                handleSettle();
-              }
-            }}
-            disabled={currentStep !== 3 || !isArrivedAtMandi || isDisputed || loadingAction === 'settle'}
-            className="h-9 px-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs disabled:opacity-40"
-          >
-            {loadingAction === 'settle' ? (
-              <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full mr-1.5" />
-            ) : (
-              <Scale size={13} className="mr-1.5" />
-            )}
-            {currentStep === 3 && !isArrivedAtMandi ? '⏳ 3. Awaiting Mandi Arrival' : '⚖️ 3. Weighbridge Pass & Settle 100%'}
-          </Button>
+            {/* Milestone 3 Action */}
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleVerifyOtp}
+              disabled={currentStep !== 2 || isDisputed || loadingAction === 'otp'}
+              className="h-9 px-3.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-xs disabled:opacity-40"
+            >
+              {loadingAction === 'otp' ? (
+                <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full mr-1.5" />
+              ) : (
+                <KeyRound size={13} className="mr-1.5" />
+              )}
+              2. Verify OTP (4821)
+            </Button>
 
-          {/* Simulate Mandi Arrival Helper Button when In-Transit */}
-          {currentStep === 3 && !isArrivedAtMandi && !isDisputed && (
+            {/* Simulate Mandi Arrival Helper Button when In-Transit */}
             <Button
               type="button"
               size="sm"
@@ -925,54 +1017,64 @@ Status: 100% PAID VIA ESCROW VAULT | WEIGHBRIDGE PASS VERIFIED
                 setIsArrivedAtMandi(true);
                 showToast('🚛 Vehicle MH-15-EG-4421 arrived at Vashi APMC Terminal Scale #4! Weighbridge settlement is now unlocked.');
               }}
-              className="h-9 px-3 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-white shadow-xs animate-in fade-in cursor-pointer flex items-center gap-1"
+              disabled={currentStep !== 3 || isArrivedAtMandi || isDisputed}
+              className="h-9 px-3 rounded-xl font-bold text-xs bg-amber-500 hover:bg-amber-600 text-white shadow-xs cursor-pointer flex items-center gap-1 disabled:opacity-40"
             >
               <MapPin size={13} />
-              <span>📍 Transporter Marks Arrival</span>
+              <span>3. Mark Arrival</span>
             </Button>
-          )}
 
-          {/* Dispute Action */}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleDispute}
-            disabled={currentStep === 4 || isDisputed || loadingAction === 'dispute'}
-            className="h-9 px-3.5 rounded-xl font-bold text-xs border-red-300 text-red-700 hover:bg-red-50 disabled:opacity-40"
-          >
-            <AlertTriangle size={13} className="mr-1.5 text-red-600" />
-            🚨 Raise Dispute
-          </Button>
-
-          {/* Download Tax Invoice (Active when Settled) */}
-          {currentStep === 4 && (
+            {/* Milestone 4 Action */}
             <Button
               type="button"
               size="sm"
-              onClick={handleDownloadInvoice}
-              className="h-9 px-3.5 rounded-xl font-bold text-xs bg-slate-900 hover:bg-slate-800 text-white shadow-xs"
+              onClick={() => {
+                if (onOpenWeighbridge) {
+                  onOpenWeighbridge();
+                } else {
+                  handleSettle();
+                }
+              }}
+              disabled={currentStep !== 3 || !isArrivedAtMandi || isDisputed || loadingAction === 'settle'}
+              className="h-9 px-3.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs disabled:opacity-40"
             >
-              <Download size={13} className="mr-1.5 text-emerald-400" />
-              📄 Download Tax Invoice ({vault.tax_invoice_number || 'INV-2026-KS'})
+              {loadingAction === 'settle' ? (
+                <span className="animate-spin w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full mr-1.5" />
+              ) : (
+                <Scale size={13} className="mr-1.5" />
+              )}
+              4. Settle Weighbridge
             </Button>
-          )}
 
-          {/* Reset Demo Button */}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            disabled={loadingAction === 'reset'}
-            className="h-9 px-3 rounded-xl font-bold text-xs border-slate-300 text-slate-700 hover:bg-slate-100 ml-auto"
-          >
-            <RefreshCw size={13} className="mr-1" />
-            Reset Demo
-          </Button>
+            {/* Dispute Action */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDispute}
+              disabled={currentStep === 4 || isDisputed || loadingAction === 'dispute'}
+              className="h-9 px-3 rounded-xl font-bold text-xs border-red-300 text-red-700 hover:bg-red-50 disabled:opacity-40"
+            >
+              <AlertTriangle size={13} className="mr-1 text-red-600" />
+              🚨 Dispute
+            </Button>
 
+            {/* Reset Demo Button */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              disabled={loadingAction === 'reset'}
+              className="h-9 px-3 rounded-xl font-bold text-xs border-slate-300 text-slate-700 hover:bg-slate-100 ml-auto"
+            >
+              <RefreshCw size={13} className="mr-1" />
+              Reset
+            </Button>
+
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );

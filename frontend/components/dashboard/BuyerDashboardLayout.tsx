@@ -92,6 +92,7 @@ export function BuyerDashboardLayout() {
   } = useBuyerState();
 
   const [selectedDetailLot, setSelectedDetailLot] = React.useState<CropLot | null>(null);
+  const [isDemoMode, setIsDemoMode] = React.useState<boolean>(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -179,6 +180,19 @@ export function BuyerDashboardLayout() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsDemoMode(!isDemoMode)}
+              className={`h-8 px-3 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer border ${
+                isDemoMode
+                  ? 'bg-amber-400 text-slate-950 border-amber-500 ring-2 ring-amber-300 shadow-xs'
+                  : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              <Sparkles size={13} className={isDemoMode ? 'text-slate-950 animate-spin' : 'text-amber-500'} />
+              <span>{isDemoMode ? '⚡ Demo Mode: ON' : '⚡ Demo Mode: OFF'}</span>
+            </button>
+
             <Button
               variant="outline"
               size="sm"
@@ -454,6 +468,8 @@ export function BuyerDashboardLayout() {
                   <EscrowRails
                     key={`escrow-rails-${selectedVault.id}`}
                     initialVault={selectedVault}
+                    isDemoMode={isDemoMode}
+                    onToggleDemoMode={() => setIsDemoMode(!isDemoMode)}
                     onOpenWeighbridge={openWeighbridge}
                     onRefresh={fetchLiveMarketplaceData}
                     onReturnToMarketplace={() => setActiveTab('marketplace')}
