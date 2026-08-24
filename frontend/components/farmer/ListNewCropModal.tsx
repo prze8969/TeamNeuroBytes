@@ -272,9 +272,9 @@ export function ListNewCropModal({
           longitude: 73.7910,
           destination_mandi: 'Vashi APMC Mandi',
           image_url: activeDisplayImage,
-          quality_grade: currentCrop.typicalGrade.replace('Grade ', ''),
-          quality_score: 95.8,
-          defect_percentage: currentCrop.typicalDefectPct,
+          quality_grade: inferredGrade.replace(/grade\s*/i, '').trim() || 'A',
+          quality_score: inferredScore,
+          defect_percentage: inferredDefect,
           ripeness_index: 96.0
         })
       });
@@ -286,6 +286,14 @@ export function ListNewCropModal({
       }
     } catch {}
 
+    const cleanG = inferredGrade.includes('REJECT') 
+      ? 'REJECTED' 
+      : inferredGrade.includes('C') 
+      ? 'C' 
+      : inferredGrade.includes('B') 
+      ? 'B' 
+      : 'A';
+
     const newCropLot: CropLot = {
       id: finalLotId,
       farmerId: '1',
@@ -294,8 +302,8 @@ export function ListNewCropModal({
       variety: currentCrop.variety,
       quantityKg: totalQuantityKg,
       quantityTons: totalQuantityKg / 1000,
-      grade: inferredGrade === 'REJECTED' ? 'REJECTED' : (inferredGrade.includes('B') ? 'B' : inferredGrade.includes('C') ? 'C' : 'A'),
-      qualityGrade: inferredGrade === 'REJECTED' ? 'REJECTED' : (inferredGrade.includes('B') ? 'Grade B' : inferredGrade.includes('C') ? 'Grade C' : 'Grade A'),
+      grade: cleanG as any,
+      qualityGrade: cleanG === 'REJECTED' ? 'REJECTED' : (`Grade ${cleanG}` as any),
       qualityScore: inferredScore,
       basePricePerKg: askingPricePerKg,
       askingFloorPerKg: askingPricePerKg,
