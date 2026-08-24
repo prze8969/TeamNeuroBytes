@@ -186,10 +186,16 @@ export function getCropBySearch(query: string): CropVarietyOption {
 }
 
 export function resolveCropImageUrl(cropName: string = '', customUrl?: string | null): string {
-  if (customUrl && customUrl.startsWith('http') && !customUrl.includes('placeholder') && !customUrl.includes('broken')) {
-    // If the image URL is not an onion image wrongly assigned to cotton or wheat, use it
-    if (!(cropName.toLowerCase().includes('cotton') && customUrl.includes('photo-1618512496248'))) {
-      return customUrl;
+  // If a valid custom/uploaded image is provided (base64, blob, local path, or remote URL), use it directly!
+  if (customUrl && typeof customUrl === 'string' && customUrl.trim() !== '') {
+    const trimmed = customUrl.trim();
+    if (
+      trimmed.startsWith('data:image/') ||
+      trimmed.startsWith('blob:') ||
+      trimmed.startsWith('/') ||
+      (trimmed.startsWith('http') && !trimmed.includes('placeholder') && !trimmed.includes('broken'))
+    ) {
+      return trimmed;
     }
   }
 
