@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 export default function Home() {
@@ -77,6 +79,11 @@ export default function Home() {
           {/* Buyer Portal */}
           <Link
             href="/buyer/dashboard"
+            onClick={() => {
+              try {
+                localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
+              } catch {}
+            }}
             className="group p-6 rounded-2xl bg-emerald-900/60 border border-emerald-700/60 hover:border-emerald-400 hover:bg-emerald-900/90 transition-all hover:scale-[1.02] space-y-3.5 shadow-xl backdrop-blur-md"
           >
             <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl">

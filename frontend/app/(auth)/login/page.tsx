@@ -45,9 +45,15 @@ export default function LoginPage() {
 
       if (res.ok) {
         const data = await res.json()
+        const resolvedRole = data.role || role
         document.cookie = `token=${data.access_token}; path=/;`
-        document.cookie = `user_role=${data.role || role}; path=/;`
-        router.push(routeMap[data.role || role] || '/farmer/dashboard')
+        document.cookie = `user_role=${resolvedRole}; path=/;`
+        if (resolvedRole === 'BUYER') {
+          try {
+            localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
+          } catch {}
+        }
+        router.push(routeMap[resolvedRole] || '/farmer/dashboard')
         return
       }
     } catch {
@@ -56,6 +62,11 @@ export default function LoginPage() {
 
     document.cookie = "token=mock-jwt-token; path=/;"
     document.cookie = `user_role=${role}; path=/;`
+    if (role === 'BUYER') {
+      try {
+        localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
+      } catch {}
+    }
     router.push(routeMap[role] || '/farmer/dashboard')
     setLoading(false)
   }

@@ -57,6 +57,13 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => {
+                    if (link.href.includes('/buyer')) {
+                      try {
+                        localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
+                      } catch {}
+                    }
+                  }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     isActive
                       ? 'bg-emerald-500 text-slate-950 font-black shadow-md shadow-emerald-500/20'
@@ -85,6 +92,9 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
             onClick={() => {
               document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
               document.cookie = "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+              try {
+                localStorage.removeItem('kisansetu_buyer_tab');
+              } catch {}
               window.location.href = '/login';
             }}
           >
