@@ -108,7 +108,13 @@ export function CropListingCard({
 
         {/* Quality Grade Pill */}
         <div className="shrink-0">
-          {gradeKey.includes('A') ? (
+          {gradeKey.toUpperCase().includes('REJECT') ? (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-800 shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <span className="text-xs font-black tracking-wide">REJECTED</span>
+              <span className="text-[10px] font-bold text-rose-700 font-mono">({qualityScore}%)</span>
+            </div>
+          ) : gradeKey.includes('A') ? (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-black tracking-wide">{gradeKey}</span>

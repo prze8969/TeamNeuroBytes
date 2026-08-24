@@ -604,8 +604,12 @@ export default function FarmerDashboard() {
                               (e.currentTarget as HTMLImageElement).src = resolveCropImageUrl(lot.cropName);
                             }}
                           />
-                          <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-emerald-400/40">
-                            {lot.qualityGrade || 'Grade A'} ({lot.qualityScore || 95}%)
+                          <span className={`absolute top-2 right-2 backdrop-blur-md text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                            lot.grade === 'REJECTED' || lot.qualityGrade === 'REJECTED' || (lot.qualityScore && lot.qualityScore < 50)
+                              ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
+                              : 'bg-slate-950/80 text-emerald-300 border-emerald-400/40'
+                          }`}>
+                            {lot.qualityGrade || (lot.grade === 'REJECTED' ? 'REJECTED' : 'Grade A')} ({lot.qualityScore || 95}%)
                           </span>
 
                           {/* Quick Delist Button on Image Overlay */}

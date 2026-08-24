@@ -17,8 +17,8 @@ export interface CropLot {
   variety: string;
   quantityKg: number;
   quantityTons?: number;
-  grade: 'A' | 'B' | 'C' | 'UNGRADED';
-  qualityGrade?: 'Grade A' | 'Grade B' | 'Grade C';
+  grade: 'A' | 'B' | 'C' | 'REJECTED' | 'UNGRADED';
+  qualityGrade?: 'Grade A' | 'Grade B' | 'Grade C' | 'REJECTED' | 'Grade Rejected';
   qualityScore: number; // e.g. 94.2 from YOLO model
   basePricePerKg: number;
   askingFloorPerKg?: number;

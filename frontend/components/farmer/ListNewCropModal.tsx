@@ -70,6 +70,8 @@ export function ListNewCropModal({
   const [inferredMoisture, setInferredMoisture] = useState<number>(11.2);
   const [isLiveGraded, setIsLiveGraded] = useState<boolean>(false);
   const [autoDetectedCrop, setAutoDetectedCrop] = useState<string | null>(null);
+  const [isPassed, setIsPassed] = useState<boolean>(true);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
 
   // Section D: Price & Valuation
   const [askingPricePerKg, setAskingPricePerKg] = useState<number>(25.50);
@@ -159,32 +161,50 @@ export function ListNewCropModal({
         if (res.ok) {
           const data = await res.json();
           if (data) {
-            const rawGrade = data.quality_grade || 'A';
-            const gradeFull = rawGrade.startsWith('Grade') ? rawGrade : `Grade ${rawGrade}`;
-            setInferredGrade(gradeFull);
-            setInferredScore(Number(data.quality_score) || 95.4);
-            setInferredDefect(Number(data.defect_percentage) || 1.4);
-            setInferredMoisture(Number((10.0 + (data.defect_percentage || 1.4) * 0.5).toFixed(1)));
-            setIsLiveGraded(true);
+            const rawGrade = (data.quality_grade || 'A').toUpperCase();
+            const isLotPassed = data.is_passed !== false && rawGrade !== 'REJECTED';
+            setIsPassed(isLotPassed);
 
-            // AUTO-FILL CATEGORY & CROP VARIETY USING COMPUTER VISION DETECTION
-            const detectedCommodity = data.commodity_detected || file.name;
-            const matched = getCropBySearch(detectedCommodity);
-            if (matched) {
-              setSelectedCategory(matched.category);
-              setSelectedCropId(matched.id);
-              setAutoDetectedCrop(`${matched.name} (${matched.variety})`);
-              setAskingPricePerKg(matched.mandiBenchmarkPerKg + 1.00);
+            if (!isLotPassed) {
+              setInferredGrade('REJECTED');
+              setInferredScore(Number(data.quality_score) || 0.0);
+              setInferredDefect(Number(data.defect_percentage) || 100.0);
+              setInferredMoisture(0.0);
+              setRejectionReason(data.trade_recommendation || 'Produce rejected: Defect ratio exceeds 15% or non-agricultural image.');
+              setIsLiveGraded(true);
 
-              toast.success(`✨ YOLOv8 Auto-Detected: ${matched.name}`, {
-                description: `Auto-filled Category: "${matched.category}" • Variety: "${matched.variety}" • Grade: ${gradeFull} (${data.quality_score || 95}% Score)`,
-                duration: 5000,
+              toast.error('❌ AI Quality Assay: REJECTED', {
+                description: data.trade_recommendation || 'Produce failed Agmarknet quality standards. Cannot publish.',
+                duration: 6000,
               });
             } else {
-              toast.success('🔬 YOLOv8 Neural Assay Complete', {
-                description: `Live Vision Model certified ${gradeFull} with ${data.quality_score}% Quality Score.`,
-                duration: 4500,
-              });
+              const gradeFull = rawGrade.startsWith('GRADE') ? rawGrade.replace('GRADE', 'Grade') : `Grade ${rawGrade || 'A'}`;
+              setInferredGrade(gradeFull);
+              setInferredScore(Number(data.quality_score) || 95.4);
+              setInferredDefect(Number(data.defect_percentage) || 1.4);
+              setInferredMoisture(Number((10.0 + (data.defect_percentage || 1.4) * 0.5).toFixed(1)));
+              setRejectionReason(null);
+              setIsLiveGraded(true);
+
+              // AUTO-FILL CATEGORY & CROP VARIETY USING COMPUTER VISION DETECTION
+              const detectedCommodity = data.commodity_detected || file.name;
+              const matched = getCropBySearch(detectedCommodity);
+              if (matched) {
+                setSelectedCategory(matched.category);
+                setSelectedCropId(matched.id);
+                setAutoDetectedCrop(`${matched.name} (${matched.variety})`);
+                setAskingPricePerKg(matched.mandiBenchmarkPerKg + 1.00);
+
+                toast.success(`✨ YOLOv8 Auto-Detected: ${matched.name}`, {
+                  description: `Auto-filled Category: "${matched.category}" • Variety: "${matched.variety}" • Grade: ${gradeFull} (${data.quality_score || 95}% Score)`,
+                  duration: 5000,
+                });
+              } else {
+                toast.success('🔬 YOLOv8 Neural Assay Complete', {
+                  description: `Live Vision Model certified ${gradeFull} with ${data.quality_score}% Quality Score.`,
+                  duration: 4500,
+                });
+              }
             }
           }
         } else {
@@ -223,6 +243,14 @@ export function ListNewCropModal({
   // Submit Handler: Publish New Lot
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isPassed || inferredGrade === 'REJECTED') {
+      toast.error('❌ Cannot Publish Rejected Lot', {
+        description: rejectionReason || 'Your produce failed AI quality standards. Please upload a clear photo of healthy produce.',
+        duration: 5000,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     const newLotNumericId = Number(Date.now().toString().slice(-4));
@@ -236,8 +264,8 @@ export function ListNewCropModal({
       variety: currentCrop.variety,
       quantityKg: totalQuantityKg,
       quantityTons: totalQuantityKg / 1000,
-      grade: (inferredGrade.includes('B') ? 'B' : inferredGrade.includes('C') ? 'C' : 'A') as 'A' | 'B' | 'C',
-      qualityGrade: (inferredGrade.includes('B') ? 'Grade B' : inferredGrade.includes('C') ? 'Grade C' : 'Grade A') as any,
+      grade: inferredGrade === 'REJECTED' ? 'REJECTED' : (inferredGrade.includes('B') ? 'B' : inferredGrade.includes('C') ? 'C' : 'A'),
+      qualityGrade: inferredGrade === 'REJECTED' ? 'REJECTED' : (inferredGrade.includes('B') ? 'Grade B' : inferredGrade.includes('C') ? 'Grade C' : 'Grade A'),
       qualityScore: inferredScore,
       basePricePerKg: askingPricePerKg,
       askingFloorPerKg: askingPricePerKg,
@@ -597,6 +625,14 @@ export function ListNewCropModal({
                     onClick={() => {
                       setUploadedImage(null);
                       setUseSampleImage(true);
+                      setIsPassed(true);
+                      setRejectionReason(null);
+                      setInferredGrade(currentCrop.typicalGrade);
+                      setInferredDefect(currentCrop.typicalDefectPct);
+                      setInferredMoisture(currentCrop.typicalMoisturePct);
+                      setInferredScore(95.8);
+                      setIsLiveGraded(false);
+                      setAutoDetectedCrop(null);
                     }}
                     className={`px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono transition-all cursor-pointer ${
                       useSampleImage
@@ -656,8 +692,8 @@ export function ListNewCropModal({
 
                       {/* Top Overlay Badge */}
                       <div className="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-white text-[10px] font-mono border border-white/20 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        <span>Agmarknet Certified Quality</span>
+                        <span className={`w-1.5 h-1.5 rounded-full ${inferredGrade === 'REJECTED' || !isPassed ? 'bg-rose-500' : 'bg-emerald-400'}`} />
+                        <span>{inferredGrade === 'REJECTED' || !isPassed ? 'Assay Failed: Non-Compliant' : 'Agmarknet Certified Quality'}</span>
                       </div>
 
                       {/* Toggle Overlay Button */}
@@ -677,21 +713,33 @@ export function ListNewCropModal({
                 {/* 4 Inferred Quality Metrics Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                   
-                  <div className={`p-2.5 rounded-xl border transition-all ${isLiveGraded ? 'bg-emerald-50 border-emerald-300 ring-1 ring-emerald-400' : 'bg-emerald-50 border-emerald-200'}`}>
+                  <div className={`p-2.5 rounded-xl border transition-all ${
+                    inferredGrade === 'REJECTED' || !isPassed
+                      ? 'bg-rose-50 border-rose-300 ring-1 ring-rose-400'
+                      : isLiveGraded
+                      ? 'bg-emerald-50 border-emerald-300 ring-1 ring-emerald-400'
+                      : 'bg-emerald-50 border-emerald-200'
+                  }`}>
                     <div className="flex items-center justify-between">
                       <span className="text-slate-500 text-[9px] uppercase font-bold block font-mono">Assigned Grade</span>
-                      {isLiveGraded && (
+                      {inferredGrade === 'REJECTED' || !isPassed ? (
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+                      ) : isLiveGraded ? (
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                      )}
+                      ) : null}
                     </div>
-                    <strong className="text-emerald-950 font-black text-sm block">{inferredGrade}</strong>
-                    <span className="text-[9.5px] text-emerald-700 font-sans">{isLiveGraded ? 'Live YOLOv8 Certified' : 'Agmarknet Standard'}</span>
+                    <strong className={`font-black text-sm block ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-700' : 'text-emerald-950'}`}>
+                      {inferredGrade}
+                    </strong>
+                    <span className={`text-[9.5px] font-sans ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-600 font-bold' : 'text-emerald-700'}`}>
+                      {inferredGrade === 'REJECTED' || !isPassed ? '❌ Failed Standards' : isLiveGraded ? 'Live YOLOv8 Certified' : 'Agmarknet Standard'}
+                    </span>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className={`p-2.5 rounded-xl border ${inferredGrade === 'REJECTED' || !isPassed ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-500 text-[9px] uppercase font-bold block font-mono">Defect Surface</span>
-                    <strong className="text-slate-900 font-black text-sm block">{inferredDefect}%</strong>
-                    <span className="text-[9.5px] text-slate-500 font-sans">Blemish Segmentation</span>
+                    <strong className={`font-black text-sm block ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-700' : 'text-slate-900'}`}>{inferredDefect}%</strong>
+                    <span className="text-[9.5px] text-slate-500 font-sans">{inferredGrade === 'REJECTED' || !isPassed ? 'Exceeds Tolerance' : 'Blemish Ratio'}</span>
                   </div>
 
                   <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
@@ -700,13 +748,29 @@ export function ListNewCropModal({
                     <span className="text-[9.5px] text-emerald-700 font-sans">Optimal for Storage</span>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className={`p-2.5 rounded-xl border ${inferredGrade === 'REJECTED' || !isPassed ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-500 text-[9px] uppercase font-bold block font-mono">AI Quality Score</span>
-                    <strong className="text-emerald-700 font-black text-sm block">{inferredScore}%</strong>
+                    <strong className={`font-black text-sm block ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-700' : 'text-emerald-700'}`}>{inferredScore}%</strong>
                     <span className="text-[9.5px] text-slate-500 font-sans">{isLiveGraded ? 'Neural Confidence' : 'YOLOv8 Segmentation'}</span>
                   </div>
 
                 </div>
+
+                {/* Rejection Warning Banner */}
+                {rejectionReason && (
+                  <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-300 text-rose-950 text-xs flex items-start gap-2.5 animate-in fade-in shadow-2xs">
+                    <AlertTriangle size={18} className="text-rose-600 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <strong className="font-bold text-rose-900 block">❌ Quality Assay Failed: Produce Rejected</strong>
+                      <p className="text-[11px] text-rose-800 leading-relaxed">
+                        {rejectionReason}
+                      </p>
+                      <p className="text-[10px] text-rose-600 font-mono mt-1">
+                        Tip: Please upload a clear photo of healthy harvested produce or click &quot;Use Certified Sample Batch&quot;.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
               </div>
 
@@ -818,14 +882,20 @@ export function ListNewCropModal({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={isSubmitting || totalQuantityKg <= 0 || askingPricePerKg <= 0}
-            className="h-11 px-6 rounded-xl font-black text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            disabled={isSubmitting || totalQuantityKg <= 0 || askingPricePerKg <= 0 || !isPassed || inferredGrade === 'REJECTED'}
+            className={`h-11 px-6 rounded-xl font-black text-xs text-white shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-60 transition-all ${
+              !isPassed || inferredGrade === 'REJECTED'
+                ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
+                : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20'
+            }`}
           >
             {isSubmitting ? (
               <>
                 <span className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
                 <span>Minting Lot on KisanSetu &amp; APMC Clearinghouse...</span>
               </>
+            ) : !isPassed || inferredGrade === 'REJECTED' ? (
+              <span>❌ Cannot Publish: Produce Rejected by AI</span>
             ) : (
               <>
                 <span>🚀 Publish Lot &amp; Open Buyer Tenders</span>
