@@ -196,20 +196,37 @@ export function getCropBySearch(query: string): CropVarietyOption {
 }
 
 export function resolveCropImageUrl(cropName: string = '', customUrl?: string | null): string {
-  // If a valid custom/uploaded image is provided (base64, blob, local path, or remote URL), use it directly!
+  const norm = (cropName || '').toLowerCase();
+
+  // If a custom photo is uploaded by user (data:image/... or blob:), always preserve it!
   if (customUrl && typeof customUrl === 'string' && customUrl.trim() !== '') {
     const trimmed = customUrl.trim();
-    if (
-      trimmed.startsWith('data:image/') ||
-      trimmed.startsWith('blob:') ||
-      trimmed.startsWith('/') ||
-      (trimmed.startsWith('http') && !trimmed.includes('placeholder') && !trimmed.includes('broken'))
-    ) {
+    if (trimmed.startsWith('data:image/') || trimmed.startsWith('blob:')) {
+      return trimmed;
+    }
+
+    // Check if the URL is a mismatched stock photo (e.g. potato photo saved on an onion/wheat lot)
+    const isPotatoStock = trimmed.includes('photo-1518977676601');
+    const isOnionStock = trimmed.includes('photo-1618512496248');
+    const isTomatoStock = trimmed.includes('photo-1592924357228');
+    const isWheatStock = trimmed.includes('photo-1574323347407') || trimmed.includes('photo-1509440159596');
+    const isRiceStock = trimmed.includes('photo-1586201375761');
+    const isSoybeanStock = trimmed.includes('photo-1587393855524');
+
+    const isMismatched = 
+      (isPotatoStock && !norm.includes('potato') && !norm.includes('aloo')) ||
+      (isOnionStock && !norm.includes('onion') && !norm.includes('garva') && !norm.includes('pyaz')) ||
+      (isTomatoStock && !norm.includes('tomato') && !norm.includes('tamatar')) ||
+      (isWheatStock && !norm.includes('wheat') && !norm.includes('grain') && !norm.includes('lok')) ||
+      (isRiceStock && !norm.includes('rice') && !norm.includes('basmati') && !norm.includes('paddy') && !norm.includes('tur')) ||
+      (isSoybeanStock && !norm.includes('soybean') && !norm.includes('soya'));
+
+    if (!isMismatched && !trimmed.includes('placeholder') && !trimmed.includes('broken')) {
       return trimmed;
     }
   }
 
-  const norm = (cropName || '').toLowerCase();
+  // Fallback to calibrated specimen photo matching cropName
   if (norm.includes('wheat') || norm.includes('grain') || norm.includes('lok')) {
     return 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
   }
