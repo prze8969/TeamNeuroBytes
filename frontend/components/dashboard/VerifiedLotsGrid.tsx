@@ -370,9 +370,9 @@ export function VerifiedLotsGrid({
       {/* ========================================================================= */}
       {filteredAndSortedLots.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {filteredAndSortedLots.map((lot) => (
+          {filteredAndSortedLots.map((lot, idx) => (
             <CropListingCard
-              key={lot.id}
+              key={`crop-lot-card-${lot.id}-${idx}`}
               lot={lot}
               onInspect={handleInspect}
               onPlaceBid={handleCardBid}
