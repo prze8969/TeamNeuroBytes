@@ -253,11 +253,41 @@ export function ListNewCropModal({
 
     setIsSubmitting(true);
 
-    const newLotNumericId = Number(Date.now().toString().slice(-4));
-    const newLotId = `LOT-2026-NSK-${newLotNumericId}`;
+    // 1. Submit to FastAPI backend to obtain official centralized lot ID
+    let finalLotId = `LOT-2026-NSK-${Math.floor(1000 + Math.random() * 9000)}`;
+    try {
+      const res = await fetch('http://localhost:8000/api/marketplace/lots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          farmer_id: 1,
+          farmer_name: 'Ramesh Patil',
+          commodity: currentCrop.name,
+          variety: currentCrop.variety,
+          quantity_kg: totalQuantityKg,
+          base_price_per_kg: askingPricePerKg,
+          district: 'Nashik',
+          state: 'Maharashtra',
+          latitude: 20.0125,
+          longitude: 73.7910,
+          destination_mandi: 'Vashi APMC Mandi',
+          image_url: activeDisplayImage,
+          quality_grade: currentCrop.typicalGrade.replace('Grade ', ''),
+          quality_score: 95.8,
+          defect_percentage: currentCrop.typicalDefectPct,
+          ripeness_index: 96.0
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.id) {
+          finalLotId = `LOT-${data.id}`;
+        }
+      }
+    } catch {}
 
     const newCropLot: CropLot = {
-      id: newLotId,
+      id: finalLotId,
       farmerId: '1',
       farmerName: 'Ramesh Patil',
       cropName: currentCrop.name,
@@ -287,50 +317,28 @@ export function ListNewCropModal({
       imageUrl: activeDisplayImage
     };
 
-    // 1. Immediately store in localStorage so buyer marketplace syncs cross-tab
+    // 2. Immediately store in localStorage so buyer marketplace syncs cross-tab without duplicates
     try {
       const saved = localStorage.getItem('kisansetu_crop_lots');
       const currentLots = saved ? JSON.parse(saved) : [];
-      const updatedLots = [newCropLot, ...currentLots.filter((l: any) => l.id !== newLotId)];
+      // Clean any previous duplicate mock or random LOT ID with same crop parameters
+      const updatedLots = [
+        newCropLot,
+        ...currentLots.filter((l: any) => l.id !== finalLotId && !(l.cropName === currentCrop.name && l.quantityKg === totalQuantityKg && Math.abs((l.basePricePerKg || 0) - askingPricePerKg) < 0.01))
+      ];
       localStorage.setItem('kisansetu_crop_lots', JSON.stringify(updatedLots));
       window.dispatchEvent(new Event('kisansetu_lots_updated'));
-    } catch {}
-
-    // 2. Also attempt FastAPI backend submission
-    try {
-      await fetch('http://localhost:8000/api/marketplace/lots', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          farmer_id: 1,
-          farmer_name: 'Ramesh Patil',
-          commodity: currentCrop.name,
-          variety: currentCrop.variety,
-          quantity_kg: totalQuantityKg,
-          base_price_per_kg: askingPricePerKg,
-          district: 'Nashik',
-          state: 'Maharashtra',
-          latitude: 20.0125,
-          longitude: 73.7910,
-          destination_mandi: 'Vashi APMC Mandi',
-          image_url: activeDisplayImage,
-          quality_grade: currentCrop.typicalGrade.replace('Grade ', ''),
-          quality_score: 95.8,
-          defect_percentage: currentCrop.typicalDefectPct,
-          ripeness_index: 96.0
-        })
-      });
     } catch {}
 
     setTimeout(() => {
       setIsSubmitting(false);
       onLotPublished(newCropLot);
-      toast.success(`🎉 Lot ${newLotId} Published Successfully!`, {
+      toast.success(`🎉 Lot ${finalLotId} Published Successfully!`, {
         description: `Your ${(totalQuantityKg / 1000).toFixed(1)} MT of ${currentCrop.name} is now live for institutional bidding at ₹${askingPricePerKg.toFixed(2)}/kg.`,
         duration: 6000,
       });
       onClose();
-    }, 1200);
+    }, 600);
   };
 
   return (

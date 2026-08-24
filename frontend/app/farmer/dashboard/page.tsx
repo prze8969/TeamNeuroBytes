@@ -185,18 +185,44 @@ export default function FarmerDashboard() {
 
           // Deduplicate and only update state if actual changes happened
           setMyLots(prev => {
-            const combined = [...localLots, ...mappedLots, ...prev].filter(l => !deletedIds.includes(l.id));
-            const deduplicated = Array.from(new Map(combined.map(item => [item.id, item])).values());
-            if (JSON.stringify(prev) === JSON.stringify(deduplicated)) {
+            // Mapped lots from DB take precedence over local optimistic items
+            const combined = [...mappedLots, ...localLots, ...prev].filter(l => !deletedIds.includes(l.id));
+            
+            const finalLots: CropLot[] = [];
+            const seenIds = new Set<string>();
+            const seenSignatures = new Set<string>();
+
+            for (const lot of combined) {
+              if (seenIds.has(lot.id)) continue;
+              seenIds.add(lot.id);
+
+              const sig = `${(lot.cropName || '').toLowerCase()}|${(lot.variety || '').toLowerCase()}|${lot.quantityKg}|${Number(lot.basePricePerKg || lot.askingFloorPerKg || 0).toFixed(1)}`;
+              if (seenSignatures.has(sig)) {
+                // Skip duplicate listing with same commodity, variety, quantity and price
+                continue;
+              }
+              seenSignatures.add(sig);
+              finalLots.push(lot);
+            }
+
+            if (JSON.stringify(prev) === JSON.stringify(finalLots)) {
               return prev;
             }
-            return deduplicated;
+            return finalLots;
           });
         }
       } else if (localLots.length > 0) {
         setMyLots(prev => {
           const filtered = localLots.filter(l => !deletedIds.includes(l.id));
-          return JSON.stringify(prev) === JSON.stringify(filtered) ? prev : filtered;
+          const finalLots: CropLot[] = [];
+          const seenSignatures = new Set<string>();
+          for (const lot of filtered) {
+            const sig = `${(lot.cropName || '').toLowerCase()}|${(lot.variety || '').toLowerCase()}|${lot.quantityKg}|${Number(lot.basePricePerKg || lot.askingFloorPerKg || 0).toFixed(1)}`;
+            if (seenSignatures.has(sig)) continue;
+            seenSignatures.add(sig);
+            finalLots.push(lot);
+          }
+          return JSON.stringify(prev) === JSON.stringify(finalLots) ? prev : finalLots;
         });
       }
     } catch {

@@ -394,10 +394,22 @@ export function useBuyerState() {
             if (saved) localLots = JSON.parse(saved);
           } catch {}
 
-          const combined = [...localLots, ...mappedLots, ...MOCK_CROP_LOTS];
-          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
-            .filter(l => !deletedIds.includes(l.id));
-          setLots(unique);
+          const combined = [...mappedLots, ...localLots, ...MOCK_CROP_LOTS];
+          const finalLots: CropLot[] = [];
+          const seenIds = new Set<string>();
+          const seenSignatures = new Set<string>();
+
+          for (const lot of combined) {
+            if (deletedIds.includes(lot.id)) continue;
+            if (seenIds.has(lot.id)) continue;
+            seenIds.add(lot.id);
+
+            const sig = `${(lot.cropName || '').toLowerCase()}|${(lot.variety || '').toLowerCase()}|${lot.quantityKg}|${Number(lot.basePricePerKg || lot.askingFloorPerKg || 0).toFixed(1)}`;
+            if (seenSignatures.has(sig)) continue;
+            seenSignatures.add(sig);
+            finalLots.push(lot);
+          }
+          setLots(finalLots);
         } else {
           // If API returns empty, load local farmer uploads + mock lots
           let deletedIds: string[] = [];
@@ -412,9 +424,21 @@ export function useBuyerState() {
             if (saved) localLots = JSON.parse(saved);
           } catch {}
           const combined = [...localLots, ...MOCK_CROP_LOTS];
-          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
-            .filter(l => !deletedIds.includes(l.id));
-          setLots(unique);
+          const finalLots: CropLot[] = [];
+          const seenIds = new Set<string>();
+          const seenSignatures = new Set<string>();
+
+          for (const lot of combined) {
+            if (deletedIds.includes(lot.id)) continue;
+            if (seenIds.has(lot.id)) continue;
+            seenIds.add(lot.id);
+
+            const sig = `${(lot.cropName || '').toLowerCase()}|${(lot.variety || '').toLowerCase()}|${lot.quantityKg}|${Number(lot.basePricePerKg || lot.askingFloorPerKg || 0).toFixed(1)}`;
+            if (seenSignatures.has(sig)) continue;
+            seenSignatures.add(sig);
+            finalLots.push(lot);
+          }
+          setLots(finalLots);
         }
       } else {
         // If API fails (e.g. offline dev), fallback to localStorage farmer uploads + mock lots
@@ -430,9 +454,21 @@ export function useBuyerState() {
           if (saved) localLots = JSON.parse(saved);
         } catch {}
         const combined = [...localLots, ...MOCK_CROP_LOTS];
-        const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
-          .filter(l => !deletedIds.includes(l.id));
-        setLots(unique);
+        const finalLots: CropLot[] = [];
+        const seenIds = new Set<string>();
+        const seenSignatures = new Set<string>();
+
+        for (const lot of combined) {
+          if (deletedIds.includes(lot.id)) continue;
+          if (seenIds.has(lot.id)) continue;
+          seenIds.add(lot.id);
+
+          const sig = `${(lot.cropName || '').toLowerCase()}|${(lot.variety || '').toLowerCase()}|${lot.quantityKg}|${Number(lot.basePricePerKg || lot.askingFloorPerKg || 0).toFixed(1)}`;
+          if (seenSignatures.has(sig)) continue;
+          seenSignatures.add(sig);
+          finalLots.push(lot);
+        }
+        setLots(finalLots);
       }
 
       const resBids = await fetch('http://localhost:8000/api/escrow/bids');
