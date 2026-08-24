@@ -8,7 +8,14 @@ class YOLOCropGradingModel:
     Runs object detection, bounding box extraction, and spectral defect analysis.
     """
     def __init__(self, weights_path: Optional[str] = None):
-        self.weights_path = weights_path
+        if not weights_path:
+            local_weights = os.path.join(os.path.dirname(__file__), "yolov8_agriculture_weights.pt")
+            if os.path.exists(local_weights):
+                self.weights_path = local_weights
+            else:
+                self.weights_path = "yolov8_agriculture_weights.pt"
+        else:
+            self.weights_path = weights_path
         self.model = None
         self._load_model()
 

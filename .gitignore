@@ -10,6 +10,14 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
+# Large ML Model Weights (Keep local or use Git LFS)
+*.pt
+*.pth
+*.onnx
+*.weights
+*.bin
+backend/app/core/ml_models/*.pt
+
 # Python artifacts & virtual environments
 __pycache__/
 *.py[cod]
