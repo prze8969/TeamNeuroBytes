@@ -144,6 +144,19 @@ export function useBuyerState() {
         }
       }
 
+      // Sync crop lots from localStorage and MOCK_CROP_LOTS
+      const savedLots = localStorage.getItem('kisansetu_crop_lots');
+      if (savedLots) {
+        try {
+          const parsed = JSON.parse(savedLots);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const combined = [...parsed, ...MOCK_CROP_LOTS];
+            const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+            setLots(unique);
+          }
+        } catch {}
+      }
+
       const savedVaults = localStorage.getItem('kisansetu_active_vaults');
       if (savedVaults) {
         const parsed = JSON.parse(savedVaults);
@@ -170,7 +183,33 @@ export function useBuyerState() {
           setBids(uniqueBids);
         }
       }
+
+      // Initial live API sync
+      fetchLiveMarketplaceData();
     } catch {}
+
+    // Listen to real-time cross-tab crop listings
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('kisansetu_crop_lots');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            const combined = [...parsed, ...MOCK_CROP_LOTS];
+            const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+            setLots(unique);
+          }
+        }
+      } catch {}
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('kisansetu_lots_updated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('kisansetu_lots_updated', handleStorageChange);
+    };
   }, []);
 
   // Automatic LocalStorage Persistence
@@ -337,8 +376,37 @@ export function useBuyerState() {
             ripenessIndex: item.ripeness_index || 95.0,
             imageUrl: item.image_url
           }));
-          setLots(mappedLots);
+
+          let localLots: CropLot[] = [];
+          try {
+            const saved = localStorage.getItem('kisansetu_crop_lots');
+            if (saved) localLots = JSON.parse(saved);
+          } catch {}
+
+          const combined = [...localLots, ...mappedLots, ...MOCK_CROP_LOTS];
+          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+          setLots(unique);
+        } else {
+          // If API returns empty, load local farmer uploads + mock lots
+          let localLots: CropLot[] = [];
+          try {
+            const saved = localStorage.getItem('kisansetu_crop_lots');
+            if (saved) localLots = JSON.parse(saved);
+          } catch {}
+          const combined = [...localLots, ...MOCK_CROP_LOTS];
+          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+          setLots(unique);
         }
+      } else {
+        // If API fails (e.g. offline dev), fallback to localStorage farmer uploads + mock lots
+        let localLots: CropLot[] = [];
+        try {
+          const saved = localStorage.getItem('kisansetu_crop_lots');
+          if (saved) localLots = JSON.parse(saved);
+        } catch {}
+        const combined = [...localLots, ...MOCK_CROP_LOTS];
+        const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+        setLots(unique);
       }
 
       const resBids = await fetch('http://localhost:8000/api/escrow/bids');

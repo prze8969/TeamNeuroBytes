@@ -133,7 +133,50 @@ export default function FarmerDashboard() {
     setIsSubmittingLot(true);
 
     const quantityKg = quantityTons * 1000;
+    const newLotNumericId = Number(Date.now().toString().slice(-5));
+    const newLotId = `LOT-${newLotNumericId}`;
 
+    const newCropLot: CropLot = {
+      id: newLotId,
+      farmerId: '1',
+      farmerName: 'Ramesh Patil',
+      cropName: cropName,
+      variety: variety || 'Certified Hybrid',
+      quantityKg: quantityKg,
+      quantityTons: quantityTons,
+      grade: (aiGrade === 'B' ? 'B' : aiGrade === 'C' ? 'C' : 'A') as 'A' | 'B' | 'C',
+      qualityGrade: `Grade ${aiGrade || 'A'}` as any,
+      qualityScore: aiScore || 94.2,
+      basePricePerKg: basePricePerKg,
+      askingFloorPerKg: basePricePerKg,
+      mandiAvgPerKg: Number((basePricePerKg * 0.94).toFixed(2)),
+      freightPerKg: 1.20,
+      origin: `${district}, Maharashtra`,
+      distanceKm: 38,
+      harvestDate: new Date().toISOString().split('T')[0],
+      status: 'LISTED',
+      location: {
+        lat: 20.0125,
+        lng: 73.7910,
+        district: district,
+        state: 'Maharashtra'
+      },
+      defectPercentage: aiDefect || 1.4,
+      defectArea: aiDefect || 1.4,
+      ripenessIndex: aiRipeness || 95.0,
+      imageUrl: lotPhotoUrl
+    };
+
+    // 1. Immediately persist to localStorage for instant cross-tab Buyer sync
+    try {
+      const savedLotsStr = localStorage.getItem('kisansetu_crop_lots');
+      let currentLots: CropLot[] = savedLotsStr ? JSON.parse(savedLotsStr) : [];
+      currentLots = [newCropLot, ...currentLots.filter(l => l.id !== newLotId)];
+      localStorage.setItem('kisansetu_crop_lots', JSON.stringify(currentLots));
+      window.dispatchEvent(new Event('kisansetu_lots_updated'));
+    } catch {}
+
+    // 2. Also POST to backend API
     try {
       const res = await fetch('http://localhost:8000/api/marketplace/lots', {
         method: 'POST',
@@ -160,15 +203,15 @@ export default function FarmerDashboard() {
 
       if (res.ok) {
         const createdLot = await res.json();
-        triggerToast(`🎉 Crop Listed! Lot #LOT-${createdLot.id} (${quantityTons} Tons of ${cropName}) is now live on Buyer Marketplace with Grade ${aiGrade} certification.`);
+        triggerToast(`🎉 Crop Listed! Lot #LOT-${createdLot.id || newLotNumericId} (${quantityTons} Tons of ${cropName}) is now live on Buyer Marketplace with Grade ${aiGrade} certification.`);
         await fetchLiveBidsAndLots();
         setActiveTab('overview');
       } else {
-        triggerToast(`🎉 Crop Listed! ${quantityTons} Tons of ${cropName} is now live on Buyer Marketplace.`);
+        triggerToast(`🎉 Crop Listed! Lot #${newLotId} (${quantityTons} Tons of ${cropName}) is now live on Buyer Marketplace.`);
         setActiveTab('overview');
       }
     } catch {
-      triggerToast(`🎉 Crop Listed! ${quantityTons} Tons of ${cropName} is now live on Buyer Marketplace.`);
+      triggerToast(`🎉 Crop Listed! Lot #${newLotId} (${quantityTons} Tons of ${cropName}) is now live on Buyer Marketplace.`);
       setActiveTab('overview');
     } finally {
       setIsSubmittingLot(false);
