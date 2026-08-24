@@ -122,7 +122,48 @@ class YOLOCropGradingModel:
 
                 sat = 0.0 if cmax == 0 else (diff / cmax)
 
-                # Spectral Classification Matrix
+                # 3. Non-Agricultural Image Rejection Filter
+                # Check A: Extreme lighting (Pure Black or Pure White blank image)
+                mean_lum = float(np.mean(0.299 * pixels[:, 0] + 0.587 * pixels[:, 1] + 0.114 * pixels[:, 2]))
+                if mean_lum < 15 or mean_lum > 248:
+                    return {
+                        "commodity_detected": "Unrecognized / Blank Image",
+                        "quality_grade": "REJECTED",
+                        "quality_score": 0.0,
+                        "defect_percentage": 100.0,
+                        "ripeness_index": 0.0,
+                        "trade_recommendation": "❌ Image rejected: Blank or extreme lighting. Please upload a well-lit photo of your produce.",
+                        "model_version": "YOLOv8-AgriVision-v2.1",
+                        "is_passed": False
+                    }
+
+                # Check B: Unnatural non-organic colors (Cyan, Pure Blue, Electric Neon: 175° - 260° hue)
+                if 175 <= hue <= 260 and sat > 0.15:
+                    return {
+                        "commodity_detected": "Invalid / Non-Agricultural Subject",
+                        "quality_grade": "REJECTED",
+                        "quality_score": 0.0,
+                        "defect_percentage": 100.0,
+                        "ripeness_index": 0.0,
+                        "trade_recommendation": "❌ Image rejected: Non-agricultural subject detected (blue/synthetic hue). Please upload a clear photo of your harvested produce.",
+                        "model_version": "YOLOv8-AgriVision-v2.1",
+                        "is_passed": False
+                    }
+
+                # Check C: Monochrome / Flat metallic / document text
+                if sat < 0.08 and (mean_lum < 160 or mean_lum > 225):
+                    return {
+                        "commodity_detected": "Invalid / Non-Agricultural Subject",
+                        "quality_grade": "REJECTED",
+                        "quality_score": 0.0,
+                        "defect_percentage": 100.0,
+                        "ripeness_index": 0.0,
+                        "trade_recommendation": "❌ Image rejected: Monochrome or non-organic surface detected. Please upload a clear crop photo.",
+                        "model_version": "YOLOv8-AgriVision-v2.1",
+                        "is_passed": False
+                    }
+
+                # Spectral Classification Matrix (Valid Agricultural Produce)
                 if (65 <= hue <= 170) or (mean_g > mean_r * 1.15):
                     detected_commodity = "Green Chilli / Capsicum"
                 elif ((hue >= 345 or hue <= 18) and sat > 0.40 and mean_b < 95) or (mean_r > 165 and mean_g < 80 and mean_b < 80):
@@ -138,16 +179,29 @@ class YOLOCropGradingModel:
                 elif (mean_r > 170 and mean_g > 170 and mean_b > 150):
                     detected_commodity = "Paddy / Rice"
                 else:
-                    detected_commodity = "Onion" if (mean_r > mean_g) else "Wheat"
+                    return {
+                        "commodity_detected": "Unrecognized Produce",
+                        "quality_grade": "REJECTED",
+                        "quality_score": 0.0,
+                        "defect_percentage": 100.0,
+                        "ripeness_index": 0.0,
+                        "trade_recommendation": "❌ Could not verify agricultural produce. Please upload a clear photo of your harvested crop.",
+                        "model_version": "YOLOv8-AgriVision-v2.1",
+                        "is_passed": False
+                    }
         except Exception:
-            # Fallback deterministic analysis based on image byte checksum
-            byte_len = len(image_bytes) if image_bytes else 1024
-            quality_score = 94.2
-            defect_percent = 1.8
-            ripeness_index = 95.0
-            detected_commodity = "Wheat"
+            return {
+                "commodity_detected": "Invalid Image",
+                "quality_grade": "REJECTED",
+                "quality_score": 0.0,
+                "defect_percentage": 100.0,
+                "ripeness_index": 0.0,
+                "trade_recommendation": "❌ Could not process image. Please upload a valid JPEG/PNG photo.",
+                "model_version": "YOLOv8-AgriVision-v2.1",
+                "is_passed": False
+            }
 
-        # Determine Grade
+        # Determine Grade for valid crops
         if quality_score >= 90.0 and defect_percent <= 3.0:
             grade = "A"
             trade_recommendation = "Premium Export & Institutional Grade (Eligible for highest mandi floor)"

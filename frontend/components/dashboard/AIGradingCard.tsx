@@ -351,10 +351,10 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                       ? 'bg-blue-600 text-white'
                       : result.grade === 'C'
                       ? 'bg-amber-600 text-white'
-                      : 'bg-rose-600 text-white'
+                      : 'bg-rose-600 text-white animate-bounce'
                   }`}>
-                    <CheckCircle2 className="w-4 h-4" />
-                    Grade {result.grade}
+                    {result.isPassed ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                    {result.grade === 'REJECTED' ? 'REJECTED' : `Grade ${result.grade}`}
                   </span>
                 </div>
               </div>
@@ -363,7 +363,9 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Quality Score</span>
-                  <p className="text-xl font-black text-emerald-700">{result.score}%</p>
+                  <p className={`text-xl font-black ${result.isPassed ? 'text-emerald-700' : 'text-rose-600'}`}>
+                    {result.score}%
+                  </p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Surface Defect</span>
@@ -380,12 +382,25 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
               </div>
 
               {/* Agmarknet Trade Recommendation */}
-              <div className="p-3.5 rounded-xl bg-white border border-emerald-200 text-xs space-y-1.5 shadow-xs">
-                <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold uppercase text-[10px]">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  Agmarknet Commercial Trade Advisory
+              <div className={`p-3.5 rounded-xl border text-xs space-y-1.5 shadow-xs ${
+                result.isPassed
+                  ? 'bg-white border-emerald-200'
+                  : 'bg-rose-50 border-rose-200 text-rose-900'
+              }`}>
+                <div className="flex items-center gap-1.5 font-extrabold uppercase text-[10px]">
+                  {result.isPassed ? (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-800">Agmarknet Commercial Trade Advisory</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                      <span className="text-rose-800">Inspection & Validation Failure</span>
+                    </>
+                  )}
                 </div>
-                <p className="text-slate-700 leading-relaxed font-medium">
+                <p className={`leading-relaxed font-medium ${result.isPassed ? 'text-slate-700' : 'text-rose-800 font-bold'}`}>
                   {result.recommendation}
                 </p>
               </div>
@@ -394,11 +409,18 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
               {onApplyToLot && (
                 <Button
                   type="button"
+                  disabled={!result.isPassed}
                   onClick={() => onApplyToLot({ ...result, imagePreviewUrl: imagePreview || undefined })}
-                  className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-sm cursor-pointer"
+                  className={`w-full h-10 font-bold text-xs gap-1.5 shadow-sm ${
+                    result.isPassed
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
+                      : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                  }`}
                 >
                   <Layers className="w-4 h-4" />
-                  Use This Certified Grade to List New Crop Lot
+                  {result.isPassed
+                    ? 'Use This Certified Grade to List New Crop Lot'
+                    : '❌ Cannot List: Non-Agricultural Produce'}
                 </Button>
               )}
             </>
