@@ -191,15 +191,20 @@ export function useBuyerState() {
     // Listen to real-time cross-tab crop listings
     const handleStorageChange = () => {
       try {
+        let deletedIds: string[] = [];
+        const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
+        if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
+
         const saved = localStorage.getItem('kisansetu_crop_lots');
+        let localLots: CropLot[] = [];
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            const combined = [...parsed, ...MOCK_CROP_LOTS];
-            const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
-            setLots(unique);
-          }
+          if (Array.isArray(parsed)) localLots = parsed;
         }
+        const combined = [...localLots, ...MOCK_CROP_LOTS];
+        const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
+          .filter(l => !deletedIds.includes(l.id));
+        setLots(unique);
       } catch {}
     };
 
@@ -377,6 +382,12 @@ export function useBuyerState() {
             imageUrl: item.image_url
           }));
 
+          let deletedIds: string[] = [];
+          try {
+            const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
+            if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
+          } catch {}
+
           let localLots: CropLot[] = [];
           try {
             const saved = localStorage.getItem('kisansetu_crop_lots');
@@ -384,28 +395,43 @@ export function useBuyerState() {
           } catch {}
 
           const combined = [...localLots, ...mappedLots, ...MOCK_CROP_LOTS];
-          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
+            .filter(l => !deletedIds.includes(l.id));
           setLots(unique);
         } else {
           // If API returns empty, load local farmer uploads + mock lots
+          let deletedIds: string[] = [];
+          try {
+            const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
+            if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
+          } catch {}
+
           let localLots: CropLot[] = [];
           try {
             const saved = localStorage.getItem('kisansetu_crop_lots');
             if (saved) localLots = JSON.parse(saved);
           } catch {}
           const combined = [...localLots, ...MOCK_CROP_LOTS];
-          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+          const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
+            .filter(l => !deletedIds.includes(l.id));
           setLots(unique);
         }
       } else {
         // If API fails (e.g. offline dev), fallback to localStorage farmer uploads + mock lots
+        let deletedIds: string[] = [];
+        try {
+          const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
+          if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
+        } catch {}
+
         let localLots: CropLot[] = [];
         try {
           const saved = localStorage.getItem('kisansetu_crop_lots');
           if (saved) localLots = JSON.parse(saved);
         } catch {}
         const combined = [...localLots, ...MOCK_CROP_LOTS];
-        const unique = Array.from(new Map(combined.map(l => [l.id, l])).values());
+        const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
+          .filter(l => !deletedIds.includes(l.id));
         setLots(unique);
       }
 

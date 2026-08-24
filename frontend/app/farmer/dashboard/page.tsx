@@ -13,6 +13,7 @@ import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulator
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { ListNewCropModal } from '@/components/farmer/ListNewCropModal';
 import { resolveCropImageUrl } from '@/lib/assayData';
+import { Trash2 } from 'lucide-react';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
 
 export default function FarmerDashboard() {
@@ -65,18 +66,54 @@ export default function FarmerDashboard() {
     },
   ];
 
+  const handleDeleteLot = (lotId: string, cropName: string) => {
+    // 1. Remove from local state
+    setMyLots(prev => prev.filter(l => l.id !== lotId));
+
+    // 2. Remove from localStorage and register in blacklist
+    try {
+      const saved = localStorage.getItem('kisansetu_crop_lots');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const filtered = parsed.filter((l: any) => l.id !== lotId);
+        localStorage.setItem('kisansetu_crop_lots', JSON.stringify(filtered));
+      }
+
+      const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
+      const deletedIds: string[] = deletedSaved ? JSON.parse(deletedSaved) : [];
+      if (!deletedIds.includes(lotId)) {
+        deletedIds.push(lotId);
+        localStorage.setItem('kisansetu_deleted_lot_ids', JSON.stringify(deletedIds));
+      }
+
+      // Broadcast update across tabs
+      window.dispatchEvent(new Event('kisansetu_lots_updated'));
+    } catch {}
+
+    triggerToast(`🗑️ Lot ${lotId} (${cropName}) delisted and removed.`);
+  };
+
   const fetchLiveBidsAndLots = async () => {
     let localLots: CropLot[] = [];
+    let deletedIds: string[] = [];
+
+    try {
+      const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
+      if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
+    } catch {}
+
     // 1. Sync from localStorage
     try {
       const savedLots = localStorage.getItem('kisansetu_crop_lots');
       if (savedLots) {
         const parsed = JSON.parse(savedLots);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          localLots = parsed.map((l: any) => ({
-            ...l,
-            imageUrl: resolveCropImageUrl(l.cropName || l.commodity, l.imageUrl || l.image_url)
-          }));
+          localLots = parsed
+            .filter((l: any) => !deletedIds.includes(l.id))
+            .map((l: any) => ({
+              ...l,
+              imageUrl: resolveCropImageUrl(l.cropName || l.commodity, l.imageUrl || l.image_url)
+            }));
         }
       }
     } catch {}
@@ -110,57 +147,65 @@ export default function FarmerDashboard() {
       if (lotsRes.ok) {
         const rawLots = await lotsRes.json();
         if (Array.isArray(rawLots) && rawLots.length > 0) {
-          const mappedLots: CropLot[] = rawLots.map((l: any) => {
-            const cropTitle = l.commodity || l.crop_name || 'Wheat';
-            return {
-              id: `LOT-${l.id}`,
-              farmerId: String(l.farmer_id || 1),
-              farmerName: l.farmer_name || 'Ramesh Patil',
-              cropName: cropTitle,
-              variety: l.variety || 'Standard Hybrid',
-              quantityKg: l.quantity_kg || 5000,
-              quantityTons: l.quantity_tons || ((l.quantity_kg || 5000) / 1000),
-              grade: (l.grade === 'B' ? 'B' : l.grade === 'C' ? 'C' : 'A') as 'A' | 'B' | 'C',
-              qualityGrade: (l.grade === 'B' ? 'Grade B' : l.grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
-              qualityScore: l.quality_score || 95.0,
-              basePricePerKg: l.base_price_per_kg || 25.50,
-              askingFloorPerKg: l.base_price_per_kg || 25.50,
-              mandiAvgPerKg: l.market_reference_price || ((l.base_price_per_kg || 25.50) * 0.94),
-              freightPerKg: 1.20,
-              origin: l.farmer_district || 'Nashik East Cluster, Maharashtra',
-              distanceKm: l.distance_km || 38,
-              harvestDate: l.harvest_date || '2026-08-23',
-              status: l.status || 'LISTED',
-              location: {
-                lat: l.latitude || 20.0125,
-                lng: l.longitude || 73.7910,
-                district: l.district || 'Nashik',
-                state: l.state || 'Maharashtra'
-              },
-              defectPercentage: l.defect_percentage || 1.4,
-              defectArea: l.defect_percentage || 1.4,
-              ripenessIndex: l.ripeness_index || 95.0,
-              imageUrl: resolveCropImageUrl(cropTitle, l.image_url)
-            };
-          });
+          const mappedLots: CropLot[] = rawLots
+            .filter((l: any) => !deletedIds.includes(`LOT-${l.id}`) && !deletedIds.includes(String(l.id)))
+            .map((l: any) => {
+              const cropTitle = l.commodity || l.crop_name || 'Wheat';
+              return {
+                id: `LOT-${l.id}`,
+                farmerId: String(l.farmer_id || 1),
+                farmerName: l.farmer_name || 'Ramesh Patil',
+                cropName: cropTitle,
+                variety: l.variety || 'Standard Hybrid',
+                quantityKg: l.quantity_kg || 5000,
+                quantityTons: l.quantity_tons || ((l.quantity_kg || 5000) / 1000),
+                grade: (l.grade === 'B' ? 'B' : l.grade === 'C' ? 'C' : 'A') as 'A' | 'B' | 'C',
+                qualityGrade: (l.grade === 'B' ? 'Grade B' : l.grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
+                qualityScore: l.quality_score || 95.0,
+                basePricePerKg: l.base_price_per_kg || 25.50,
+                askingFloorPerKg: l.base_price_per_kg || 25.50,
+                mandiAvgPerKg: l.market_reference_price || ((l.base_price_per_kg || 25.50) * 0.94),
+                freightPerKg: 1.20,
+                origin: l.farmer_district || 'Nashik East Cluster, Maharashtra',
+                distanceKm: l.distance_km || 38,
+                harvestDate: l.harvest_date || '2026-08-23',
+                status: l.status || 'LISTED',
+                location: {
+                  lat: l.latitude || 20.0125,
+                  lng: l.longitude || 73.7910,
+                  district: l.district || 'Nashik',
+                  state: l.state || 'Maharashtra'
+                },
+                defectPercentage: l.defect_percentage || 1.4,
+                defectArea: l.defect_percentage || 1.4,
+                ripenessIndex: l.ripeness_index || 95.0,
+                imageUrl: resolveCropImageUrl(cropTitle, l.image_url)
+              };
+            });
 
-          // Deduplicate and only update state if actual changes happened (stops flickering)
+          // Deduplicate and only update state if actual changes happened
           setMyLots(prev => {
-            const combined = [...localLots, ...mappedLots, ...prev];
+            const combined = [...localLots, ...mappedLots, ...prev].filter(l => !deletedIds.includes(l.id));
             const deduplicated = Array.from(new Map(combined.map(item => [item.id, item])).values());
             if (JSON.stringify(prev) === JSON.stringify(deduplicated)) {
-              return prev; // ZERO re-render, ZERO flicker
+              return prev;
             }
             return deduplicated;
           });
         }
       } else if (localLots.length > 0) {
-        setMyLots(prev => JSON.stringify(prev) === JSON.stringify(localLots) ? prev : localLots);
+        setMyLots(prev => {
+          const filtered = localLots.filter(l => !deletedIds.includes(l.id));
+          return JSON.stringify(prev) === JSON.stringify(filtered) ? prev : filtered;
+        });
       }
     } catch {
       setBids(prev => JSON.stringify(prev) === JSON.stringify(defaultBids) ? prev : defaultBids);
       if (localLots.length > 0) {
-        setMyLots(prev => JSON.stringify(prev) === JSON.stringify(localLots) ? prev : localLots);
+        setMyLots(prev => {
+          const filtered = localLots.filter(l => !deletedIds.includes(l.id));
+          return JSON.stringify(prev) === JSON.stringify(filtered) ? prev : filtered;
+        });
       }
     }
   };
@@ -549,11 +594,11 @@ export default function FarmerDashboard() {
                       className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3 shadow-2xs hover:border-emerald-400 transition-all flex flex-col justify-between"
                     >
                       <div className="space-y-2">
-                        <div className="relative rounded-xl overflow-hidden aspect-video bg-slate-950/5 border border-slate-200">
+                        <div className="relative rounded-xl overflow-hidden aspect-video bg-slate-950/5 border border-slate-200 group/img">
                           <img
                             src={resolveCropImageUrl(lot.cropName, lot.imageUrl)}
                             alt={lot.cropName}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover/img:scale-105"
                             loading="lazy"
                             onError={(e) => {
                               (e.currentTarget as HTMLImageElement).src = resolveCropImageUrl(lot.cropName);
@@ -562,6 +607,19 @@ export default function FarmerDashboard() {
                           <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-emerald-400/40">
                             {lot.qualityGrade || 'Grade A'} ({lot.qualityScore || 95}%)
                           </span>
+
+                          {/* Quick Delist Button on Image Overlay */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteLot(lot.id, lot.cropName);
+                            }}
+                            className="absolute top-2 left-2 bg-slate-950/70 hover:bg-rose-600 text-white/80 hover:text-white p-1.5 rounded-lg backdrop-blur-xs transition-all border border-white/20 cursor-pointer shadow-sm"
+                            title="Remove / Delist this lot"
+                          >
+                            <Trash2 size={13} />
+                          </button>
                         </div>
 
                         <div className="flex items-start justify-between gap-2">
@@ -586,9 +644,20 @@ export default function FarmerDashboard() {
                         <span className="text-slate-600 font-bold">
                           {(lot.quantityTons || (lot.quantityKg / 1000)).toFixed(1)} MT
                         </span>
-                        <strong className="text-emerald-900 font-black text-sm">
-                          ₹{lot.basePricePerKg.toFixed(2)}/kg
-                        </strong>
+
+                        <div className="flex items-center gap-2">
+                          <strong className="text-emerald-900 font-black text-sm">
+                            ₹{lot.basePricePerKg.toFixed(2)}/kg
+                          </strong>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteLot(lot.id, lot.cropName)}
+                            className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all cursor-pointer"
+                            title="Delist & Remove Produce Lot"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
