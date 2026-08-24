@@ -11,6 +11,7 @@ import { AIGradingCard } from '@/components/dashboard/AIGradingCard';
 import { SellVsWaitCard } from '@/components/dashboard/SellVsWaitCard';
 import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulatorModal';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
+import { ListNewCropModal } from '@/components/farmer/ListNewCropModal';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
 
 export default function FarmerDashboard() {
@@ -19,6 +20,7 @@ export default function FarmerDashboard() {
   const [bids, setBids] = useState<Bid[]>([]);
   const [myLots, setMyLots] = useState<CropLot[]>([]);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [isListModalOpen, setIsListModalOpen] = useState<boolean>(false);
 
   // New Crop Form State
   const [cropName, setCropName] = useState('Sharbati Wheat');
@@ -63,6 +65,18 @@ export default function FarmerDashboard() {
   ];
 
   const fetchLiveBidsAndLots = async () => {
+    // 1. Sync from localStorage
+    try {
+      const savedLots = localStorage.getItem('kisansetu_crop_lots');
+      if (savedLots) {
+        const parsed = JSON.parse(savedLots);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMyLots(parsed);
+        }
+      }
+    } catch {}
+
+    // 2. Fetch from backend API
     try {
       const [bidsRes, lotsRes] = await Promise.all([
         fetch('http://localhost:8000/api/marketplace/bids'),
@@ -98,23 +112,35 @@ export default function FarmerDashboard() {
             cropName: l.commodity,
             variety: l.variety || 'Standard Hybrid',
             quantityKg: l.quantity_kg,
-            grade: l.quality_grade || 'A',
-            qualityGrade: (l.quality_grade === 'B' ? 'Grade B' : l.quality_grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
-            qualityScore: l.quality_score || 94.2,
+            quantityTons: l.quantity_tons || (l.quantity_kg / 1000),
+            grade: (l.grade === 'B' ? 'B' : l.grade === 'C' ? 'C' : 'A') as 'A' | 'B' | 'C',
+            qualityGrade: (l.grade === 'B' ? 'Grade B' : l.grade === 'C' ? 'Grade C' : 'Grade A') as ('Grade A' | 'Grade B' | 'Grade C'),
+            qualityScore: l.quality_score || 95.0,
             basePricePerKg: l.base_price_per_kg,
             askingFloorPerKg: l.base_price_per_kg,
-            mandiAvgPerKg: l.base_price_per_kg ? l.base_price_per_kg * 0.94 : 24.0,
-            imageUrl: l.image_url,
+            mandiAvgPerKg: l.market_reference_price || (l.base_price_per_kg * 0.94),
+            freightPerKg: 1.20,
+            origin: l.farmer_district || 'Nashik East Cluster, Maharashtra',
+            distanceKm: l.distance_km || 38,
+            harvestDate: l.harvest_date || '2026-08-23',
+            status: l.status || 'LISTED',
             location: {
-              lat: l.latitude || 20.01,
-              lng: l.longitude || 73.79,
+              lat: l.latitude || 20.0125,
+              lng: l.longitude || 73.7910,
               district: l.district || 'Nashik',
               state: l.state || 'Maharashtra'
             },
-            harvestDate: l.harvest_date ? l.harvest_date.split('T')[0] : '2026-08-23',
-            status: l.status || 'LISTED'
+            defectPercentage: l.defect_percentage || 1.4,
+            defectArea: l.defect_percentage || 1.4,
+            ripenessIndex: l.ripeness_index || 95.0,
+            imageUrl: l.image_url
           }));
-          setMyLots(mappedLots);
+
+          // Merge local + backend lots
+          setMyLots(prev => {
+            const combined = [...prev, ...mappedLots];
+            return Array.from(new Map(combined.map(item => [item.id, item])).values());
+          });
         }
       }
     } catch {
@@ -124,7 +150,7 @@ export default function FarmerDashboard() {
 
   useEffect(() => {
     fetchLiveBidsAndLots();
-    const interval = setInterval(fetchLiveBidsAndLots, 3000);
+    const interval = setInterval(fetchLiveBidsAndLots, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -311,10 +337,10 @@ export default function FarmerDashboard() {
           </div>
 
           <Button
-            onClick={() => setActiveTab('list-crop')}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs h-10 px-5 shadow-sm whitespace-nowrap"
+            onClick={() => setIsListModalOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs h-10 px-5 shadow-sm whitespace-nowrap cursor-pointer flex items-center gap-1.5"
           >
-            ➕ List New Crop Produce
+            <span>➕ List New Crop Produce</span>
           </Button>
         </div>
 
@@ -329,12 +355,10 @@ export default function FarmerDashboard() {
             📊 Overview
           </button>
           <button
-            onClick={() => setActiveTab('list-crop')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'list-crop' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
+            onClick={() => setIsListModalOpen(true)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-white`}
           >
-            ➕ List New Crop
+            ➕ List New Crop (Modal)
           </button>
           <button
             onClick={() => setActiveTab('fpo-pooling')}
@@ -358,7 +382,7 @@ export default function FarmerDashboard() {
               activeTab === 'decision-engine' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            📈 Sell vs. Wait
+            📈 Market Intelligence
           </button>
           <button
             onClick={() => setActiveTab('escrow')}
@@ -462,6 +486,88 @@ export default function FarmerDashboard() {
               >
                 {isPooled ? 'Leave FPO Pool' : '⚡ Join Nashik East Pool (-31.5% Freight)'}
               </Button>
+            </div>
+
+            {/* My Active Harvest Lots */}
+            <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="space-y-0.5">
+                  <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <span>🌾</span> My Active Produce Listings ({myLots.length})
+                  </h3>
+                  <p className="text-xs text-slate-500">Live harvest lots published to KisanSetu institutional buyer network</p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => setIsListModalOpen(true)}
+                  className="h-8 text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs"
+                >
+                  + Add Another Lot
+                </Button>
+              </div>
+
+              {myLots.length === 0 ? (
+                <div className="p-8 text-center border border-dashed border-slate-200 rounded-xl space-y-2">
+                  <p className="text-xs text-slate-500 font-mono">No active harvest lots listed yet.</p>
+                  <Button
+                    size="sm"
+                    onClick={() => setIsListModalOpen(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl"
+                  >
+                    ➕ List First Harvest Lot
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {myLots.map((lot, idx) => (
+                    <div
+                      key={`farmer-lot-${lot.id}-${idx}`}
+                      className="rounded-2xl border border-slate-200 bg-white p-4 space-y-3 shadow-2xs hover:border-emerald-400 transition-all flex flex-col justify-between"
+                    >
+                      <div className="space-y-2">
+                        {lot.imageUrl && (
+                          <div className="relative rounded-xl overflow-hidden aspect-video bg-slate-100 border border-slate-200">
+                            <img
+                              src={lot.imageUrl}
+                              alt={lot.cropName}
+                              className="w-full h-full object-cover"
+                            />
+                            <span className="absolute top-2 right-2 bg-slate-950/80 backdrop-blur-md text-emerald-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-emerald-400/40">
+                              {lot.qualityGrade} ({lot.qualityScore || 95}%)
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <span className="text-[10px] font-black font-mono text-emerald-800">
+                              {lot.id}
+                            </span>
+                            <h4 className="text-sm font-extrabold text-slate-900 truncate">
+                              {lot.cropName}
+                            </h4>
+                            <p className="text-[11px] text-slate-500 truncate">
+                              {lot.variety}
+                            </p>
+                          </div>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            {lot.status}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-mono">
+                        <span className="text-slate-600 font-bold">
+                          {(lot.quantityTons || (lot.quantityKg / 1000)).toFixed(1)} MT
+                        </span>
+                        <strong className="text-emerald-900 font-black text-sm">
+                          ₹{lot.basePricePerKg.toFixed(2)}/kg
+                        </strong>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <PriceChart commodity="Sharbati Wheat" mandiPrices={mockPrices} />
@@ -707,6 +813,16 @@ export default function FarmerDashboard() {
             <WhatsAppSimulatorModal />
           </div>
         )}
+
+        {/* Feature 1: Multi-Modal Crop Listing & YOLOv8 Visual Assay Modal */}
+        <ListNewCropModal
+          isOpen={isListModalOpen}
+          onClose={() => setIsListModalOpen(false)}
+          onLotPublished={(newLot) => {
+            setMyLots(prev => [newLot, ...prev.filter(l => l.id !== newLot.id)]);
+            fetchLiveBidsAndLots();
+          }}
+        />
       </main>
     </div>
   );
