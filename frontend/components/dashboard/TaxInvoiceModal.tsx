@@ -261,7 +261,7 @@ Statutory Note: Issued in accordance with Section 31 of CGST Act, 2017.
                 </div>
                 <div>
                   <h1 className="text-lg font-black text-slate-900 tracking-tight leading-none">
-                    kisaan<span className="text-emerald-800">setu</span> <span className="text-xs text-slate-500 font-sans font-bold">• Tax Settlement Voucher</span>
+                    Kisan<span className="text-emerald-800">Setu</span> <span className="text-xs text-slate-500 font-sans font-bold">• Tax Settlement Voucher</span>
                   </h1>
                   <span className="text-[10px] text-emerald-800 font-medium">Smart Trading, समृद्ध किसान</span>
                 </div>
