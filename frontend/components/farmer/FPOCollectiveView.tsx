@@ -48,12 +48,39 @@ export function FPOCollectiveView({
   const POOLED_FREIGHT_PER_KG = 1.20;
   const FREIGHT_DISCOUNT_PCT = 35.1;
 
-  // Initialize selected lots from existing lot status or isPooled flag
+  // Initialize selected lots from existing lot status or is_fpo_pooled / isPooled flag
   const [selectedLotIds, setSelectedLotIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('kisansetu_fpo_pooled_lots');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
     return activeLots
-      .filter(l => l.status === 'POOLED' || (l as any).isPooled === true)
+      .filter(l => l.is_fpo_pooled === true || l.isPooled === true || l.status === 'POOLED')
       .map(l => l.id);
   });
+
+  // Keep selectedLotIds in sync when activeLots load
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('kisansetu_fpo_pooled_lots');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSelectedLotIds(parsed);
+          return;
+        }
+      }
+      const existing = activeLots
+        .filter(l => l.is_fpo_pooled === true || l.isPooled === true || l.status === 'POOLED')
+        .map(l => l.id);
+      if (existing.length > 0) {
+        setSelectedLotIds(existing);
+      }
+    } catch {}
+  }, [activeLots]);
 
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'DRY' | 'PERISHABLE'>('ALL');
   const [isSaving, setIsSaving] = useState(false);
@@ -149,13 +176,14 @@ export function FPOCollectiveView({
       const isSelected = selectedLotIds.includes(l.id);
       return {
         ...l,
-        status: isSelected ? 'POOLED' : (l.status === 'POOLED' ? 'LISTED' : l.status),
+        is_fpo_pooled: isSelected,
+        isPooled: isSelected,
+        fpo_collective_name: isSelected ? FPO_NAME : undefined,
         freightPerKg: isSelected ? POOLED_FREIGHT_PER_KG : SOLO_FREIGHT_PER_KG,
         freightSavingsPercent: isSelected ? FREIGHT_DISCOUNT_PCT : 0,
         logisticsType: isSelected ? 'Shared Freight' : 'Direct',
-        isPooled: isSelected,
         pooledClusterId: isSelected ? 'CLST-01' : undefined
-      } as any;
+      };
     });
 
     // Save to localStorage for cross-tab synchronicity
@@ -187,13 +215,14 @@ export function FPOCollectiveView({
     setSelectedLotIds([]);
     const updatedLots: CropLot[] = activeLots.map(l => ({
       ...l,
-      status: l.status === 'POOLED' ? 'LISTED' : l.status,
+      is_fpo_pooled: false,
+      isPooled: false,
+      fpo_collective_name: undefined,
       freightPerKg: SOLO_FREIGHT_PER_KG,
       freightSavingsPercent: 0,
       logisticsType: 'Direct',
-      isPooled: false,
       pooledClusterId: undefined
-    } as any));
+    }));
 
     try {
       localStorage.setItem('kisansetu_crop_lots', JSON.stringify(updatedLots));

@@ -40,7 +40,11 @@ export interface CropLot {
     state: string;
   };
   harvestDate: string;
-  status: 'LISTED' | 'POOLED' | 'BIDDING' | 'SOLD';
+  status: 'LISTED' | 'POOLED' | 'BIDDING' | 'BID_ACCEPTED' | 'IN_TRANSIT' | 'SOLD' | 'SETTLED';
+  is_fpo_pooled?: boolean;
+  isPooled?: boolean;
+  fpo_collective_name?: string;
+  pooledClusterId?: string;
 }
 
 export interface Bid {

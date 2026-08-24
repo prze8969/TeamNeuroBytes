@@ -97,10 +97,16 @@ export default function FarmerDashboard() {
   const fetchLiveBidsAndLots = async () => {
     let localLots: CropLot[] = [];
     let deletedIds: string[] = [];
+    let pooledIds: string[] = [];
 
     try {
       const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
       if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
+    } catch {}
+
+    try {
+      const pooledSaved = localStorage.getItem('kisansetu_fpo_pooled_lots');
+      if (pooledSaved) pooledIds = JSON.parse(pooledSaved);
     } catch {}
 
     // 1. Sync from localStorage
@@ -111,10 +117,17 @@ export default function FarmerDashboard() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           localLots = parsed
             .filter((l: any) => !deletedIds.includes(l.id))
-            .map((l: any) => ({
-              ...l,
-              imageUrl: resolveCropImageUrl(l.cropName || l.commodity, l.imageUrl || l.image_url)
-            }));
+            .map((l: any) => {
+              const isLotPooled = pooledIds.includes(l.id) || l.is_fpo_pooled === true || l.isPooled === true || l.status === 'POOLED';
+              return {
+                ...l,
+                status: l.status === 'POOLED' ? 'LISTED' : (l.status || 'LISTED'),
+                is_fpo_pooled: isLotPooled,
+                isPooled: isLotPooled,
+                fpo_collective_name: isLotPooled ? 'Nashik East Farmers Producer Company' : undefined,
+                imageUrl: resolveCropImageUrl(l.cropName || l.commodity, l.imageUrl || l.image_url)
+              };
+            });
         }
       }
     } catch {}
@@ -152,8 +165,10 @@ export default function FarmerDashboard() {
             .filter((l: any) => !deletedIds.includes(`LOT-${l.id}`) && !deletedIds.includes(String(l.id)))
             .map((l: any) => {
               const cropTitle = l.commodity || l.crop_name || 'Wheat';
+              const lotId = `LOT-${l.id}`;
+              const isLotPooled = pooledIds.includes(lotId) || pooledIds.includes(String(l.id)) || l.is_fpo_pooled === true || l.isPooled === true || l.status === 'POOLED';
               return {
-                id: `LOT-${l.id}`,
+                id: lotId,
                 farmerId: String(l.farmer_id || 1),
                 farmerName: l.farmer_name || 'Ramesh Patil',
                 cropName: cropTitle,
@@ -166,11 +181,15 @@ export default function FarmerDashboard() {
                 basePricePerKg: l.base_price_per_kg || 25.50,
                 askingFloorPerKg: l.base_price_per_kg || 25.50,
                 mandiAvgPerKg: l.market_reference_price || ((l.base_price_per_kg || 25.50) * 0.94),
-                freightPerKg: 1.20,
+                freightPerKg: isLotPooled ? 1.20 : 1.85,
                 origin: l.farmer_district || 'Nashik East Cluster, Maharashtra',
                 distanceKm: l.distance_km || 38,
                 harvestDate: l.harvest_date || '2026-08-23',
-                status: l.status || 'LISTED',
+                status: l.status === 'POOLED' ? 'LISTED' : (l.status || 'LISTED'),
+                is_fpo_pooled: isLotPooled,
+                isPooled: isLotPooled,
+                fpo_collective_name: isLotPooled ? 'Nashik East Farmers Producer Company' : undefined,
+                logisticsType: isLotPooled ? 'Shared Freight' : 'Direct',
                 location: {
                   lat: l.latitude || 20.0125,
                   lng: l.longitude || 73.7910,
@@ -664,13 +683,29 @@ export default function FarmerDashboard() {
                               {lot.variety}
                             </p>
                           </div>
-                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-                            lot.status === 'POOLED' || (lot as any).isPooled
-                              ? 'bg-purple-100 text-purple-900 border-purple-300 font-extrabold'
-                              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                          }`}>
-                            {lot.status === 'POOLED' || (lot as any).isPooled ? '👥 POOLED' : lot.status}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                            {/* 1. Trade Lifecycle Status Badge */}
+                            <span className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded border ${
+                              lot.status === 'BID_ACCEPTED' || lot.status === 'SOLD'
+                                ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                                : lot.status === 'IN_TRANSIT'
+                                ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                : 'bg-blue-50 text-blue-800 border-blue-200'
+                            }`}>
+                              {lot.status === 'POOLED' ? 'LISTED' : (lot.status || 'LISTED')}
+                            </span>
+
+                            {/* 2. FPO Logistics Mode Badge */}
+                            {Boolean(lot.is_fpo_pooled || (lot as any).isPooled) ? (
+                              <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-300 flex items-center gap-1">
+                                👥 POOLED
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-300">
+                                🚛 SOLO
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
