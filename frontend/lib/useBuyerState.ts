@@ -148,8 +148,11 @@ export function useBuyerState() {
       if (savedVaults) {
         const parsed = JSON.parse(savedVaults);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setActiveVaults(parsed);
-          setSelectedDealId(parsed[0]?.id || 101);
+          const uniqueVaults = Array.from(
+            new Map(parsed.filter(Boolean).map((v: EscrowVaultData) => [v.id, v])).values()
+          );
+          setActiveVaults(uniqueVaults);
+          setSelectedDealId(uniqueVaults[0]?.id || 101);
         }
       }
 
@@ -159,7 +162,13 @@ export function useBuyerState() {
       }
       const savedBids = localStorage.getItem('kisansetu_bids');
       if (savedBids) {
-        setBids(JSON.parse(savedBids));
+        const parsedBids = JSON.parse(savedBids);
+        if (Array.isArray(parsedBids)) {
+          const uniqueBids = Array.from(
+            new Map(parsedBids.filter(Boolean).map((b: Bid) => [b.id, b])).values()
+          );
+          setBids(uniqueBids);
+        }
       }
     } catch {}
   }, []);

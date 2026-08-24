@@ -367,7 +367,7 @@ export function BuyerDashboardLayout() {
 
                   {/* Horizontal Multi-Deal Strip */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {activeVaults.map((deal) => {
+                    {activeVaults.map((deal, idx) => {
                       const isSelected = selectedDealId === deal.id;
                       const milestoneLabel = 
                         deal.current_milestone === 'LOCKED' ? '🔒 1. Funds Locked' :
@@ -378,7 +378,7 @@ export function BuyerDashboardLayout() {
 
                       return (
                         <button
-                          key={deal.id}
+                          key={`deal-${deal.id}-${idx}`}
                           type="button"
                           onClick={() => setSelectedDealId(deal.id)}
                           className={`p-4 rounded-2xl text-left transition-all border cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-2xs ${

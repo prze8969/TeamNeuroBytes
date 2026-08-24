@@ -38,8 +38,8 @@ export function BidTable({ bids, onAcceptBid, isFarmerView }: BidTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {bids.map((bid) => (
-              <tr key={bid.id} className="hover:bg-emerald-50/50 transition-colors">
+            {bids.map((bid, idx) => (
+              <tr key={`bid-${bid.id || 'item'}-${idx}`} className="hover:bg-emerald-50/50 transition-colors">
                 <td className="py-3.5 px-3 font-bold text-slate-900 flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
                   {bid.buyerName}
