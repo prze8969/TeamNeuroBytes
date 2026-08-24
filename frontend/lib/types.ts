@@ -45,6 +45,10 @@ export interface CropLot {
   isPooled?: boolean;
   fpo_collective_name?: string;
   pooledClusterId?: string;
+  storageFacility?: 'FARMGATE' | 'WAREHOUSE';
+  warehouseName?: string;
+  warehouseBay?: string;
+  enwrCertificateNumber?: string;
 }
 
 export interface Bid {

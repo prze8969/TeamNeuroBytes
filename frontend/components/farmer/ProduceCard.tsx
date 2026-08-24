@@ -110,6 +110,17 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
                 🚛 SOLO
               </span>
             )}
+
+            {/* Badge 3: Storage Facility Type */}
+            {lot.storageFacility === 'WAREHOUSE' ? (
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
+                🏭 Niphad Cold Storage (e-NWR)
+              </span>
+            ) : (
+              <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                🏡 Farmgate
+              </span>
+            )}
           </div>
 
         </div>

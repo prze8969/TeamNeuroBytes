@@ -49,10 +49,12 @@ export function ListNewCropModal({
   const [selectedCropId, setSelectedCropId] = useState<string>('wheat-lok1');
   const [harvestDate, setHarvestDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
-  // Section B: Volume & Packaging
+  // Section B: Volume, Packaging & Storage Facility
   const [quantityValue, setQuantityValue] = useState<number>(5.0);
   const [quantityUnit, setQuantityUnit] = useState<'MT' | 'QTL'>('MT');
   const [packagingType, setPackagingType] = useState<'JUTE_BAGS' | 'CRATES' | 'BULK'>('JUTE_BAGS');
+  const [storageFacility, setStorageFacility] = useState<'FARMGATE' | 'WAREHOUSE'>('FARMGATE');
+  const [warehouseBay, setWarehouseBay] = useState<string>('Niphad Cold Bay A-1 (12.4°C • Perishables)');
   const [farmLocation, setFarmLocation] = useState<string>('Niphad, Nashik, Maharashtra');
   const [isEditingLocation, setIsEditingLocation] = useState<boolean>(false);
 
@@ -322,7 +324,11 @@ export function ListNewCropModal({
       defectPercentage: inferredDefect,
       defectArea: inferredDefect,
       ripenessIndex: 96.0,
-      imageUrl: activeDisplayImage
+      imageUrl: activeDisplayImage,
+      storageFacility: storageFacility,
+      warehouseName: storageFacility === 'WAREHOUSE' ? 'Niphad Central Aggregation Yard & Cold Storage Terminal' : undefined,
+      warehouseBay: storageFacility === 'WAREHOUSE' ? warehouseBay : undefined,
+      enwrCertificateNumber: storageFacility === 'WAREHOUSE' ? `eNWR-WDRA-2026-${Math.floor(1000 + Math.random() * 9000)}` : undefined
     };
 
     // 2. Immediately store in localStorage so buyer marketplace syncs cross-tab without duplicates
@@ -556,13 +562,104 @@ export function ListNewCropModal({
 
             </div>
 
-            {/* Farmgate Location Banner */}
+            {/* Storage Facility Selection: Farmgate vs Certified Warehouse */}
+            <div className="space-y-2 pt-1 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-bold text-slate-700">Storage &amp; Holding Facility</label>
+                <span className="text-[10px] text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                  Optional Cold Chain Hub
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Option 1: Farmgate */}
+                <button
+                  type="button"
+                  onClick={() => setStorageFacility('FARMGATE')}
+                  className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
+                    storageFacility === 'FARMGATE'
+                      ? 'border-emerald-500 bg-emerald-50/70 text-emerald-950 font-black shadow-xs ring-1 ring-emerald-400'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black flex items-center gap-1.5">
+                      🏡 Keep at Farmgate
+                    </span>
+                    <span className="text-[10px] bg-slate-100 px-1.5 py-0.2 rounded font-mono font-bold text-slate-600">
+                      ₹0 Fee
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-tight">
+                    Store on your farm. Transporter truck will pick up from your farm coordinates upon trade acceptance.
+                  </p>
+                </button>
+
+                {/* Option 2: Certified Warehouse & Cold Storage */}
+                <button
+                  type="button"
+                  onClick={() => setStorageFacility('WAREHOUSE')}
+                  className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between space-y-1.5 ${
+                    storageFacility === 'WAREHOUSE'
+                      ? 'border-blue-500 bg-blue-50/70 text-blue-950 font-black shadow-xs ring-1 ring-blue-400'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black flex items-center gap-1.5 text-blue-900">
+                      🏭 Certified Cold Storage Hub
+                    </span>
+                    <span className="text-[10px] bg-blue-100 px-1.5 py-0.2 rounded font-mono font-bold text-blue-800">
+                      ₹0.12/kg/mo
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 leading-tight">
+                    Niphad Central Yard. Zero spoilage, e-NWR receipt (70% bank credit). Deducted automatically on sale.
+                  </p>
+                </button>
+              </div>
+
+              {storageFacility === 'WAREHOUSE' && (
+                <div className="p-3 rounded-2xl bg-blue-50/80 border border-blue-200 text-xs space-y-2 animate-in fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-blue-900 uppercase">Allocated Storage Bay &amp; Climate</span>
+                    <span className="text-[10px] font-mono text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded-full">
+                      WDRA Verified
+                    </span>
+                  </div>
+                  <select
+                    value={warehouseBay}
+                    onChange={(e) => setWarehouseBay(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-blue-200 bg-white text-xs font-bold text-slate-900"
+                  >
+                    <option value="Niphad Cold Bay A-1 (12.4°C • Perishables: Tomatoes & Bananas)">
+                      Cold Bay A-1 (12.4°C • Perishables: Tomatoes &amp; Bananas)
+                    </option>
+                    <option value="Niphad Cold Bay A-2 (14.5°C • Onions & Root Crops)">
+                      Cold Bay A-2 (14.5°C • Onions &amp; Root Crops)
+                    </option>
+                    <option value="Central Dry Grain Silo B-1 (24.0°C • Wheat/Rice)">
+                      Central Dry Silo B-1 (24.0°C • Wheat &amp; Grains)
+                    </option>
+                    <option value="Controlled Atmosphere Silo C-1 (18.0°C • Pulses)">
+                      CA Silo C-1 (18.0°C • Pulses &amp; Soybeans)
+                    </option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Farmgate / Warehouse Location Banner */}
             <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <MapPin size={15} className="text-emerald-600 shrink-0" />
                 <div>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold block font-mono">Farmgate Dispatch Hub</span>
-                  {isEditingLocation ? (
+                  <span className="text-slate-500 text-[10px] uppercase font-bold block font-mono">
+                    {storageFacility === 'WAREHOUSE' ? 'Warehouse Pickup Terminal' : 'Farmgate Dispatch Hub'}
+                  </span>
+                  {storageFacility === 'WAREHOUSE' ? (
+                    <strong className="text-blue-900 font-bold">Niphad Central Cold Storage Terminal (Dock #2)</strong>
+                  ) : isEditingLocation ? (
                     <Input
                       type="text"
                       value={farmLocation}
@@ -575,13 +672,15 @@ export function ListNewCropModal({
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsEditingLocation(!isEditingLocation)}
-                className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 font-mono underline cursor-pointer self-end sm:self-center"
-              >
-                {isEditingLocation ? 'Done Editing' : 'Change Location'}
-              </button>
+              {storageFacility === 'FARMGATE' && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditingLocation(!isEditingLocation)}
+                  className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 font-mono underline cursor-pointer self-end sm:self-center"
+                >
+                  {isEditingLocation ? 'Done Editing' : 'Change Location'}
+                </button>
+              )}
             </div>
           </div>
 
