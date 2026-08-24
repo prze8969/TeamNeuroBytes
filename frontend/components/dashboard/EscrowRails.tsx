@@ -128,10 +128,22 @@ export function EscrowRails({
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Sync initialVault updates into local state
+  // Sync initialVault updates into local state with strict primitive dependency guard
   useEffect(() => {
     if (initialVault) {
-      setVault(initialVault);
+      setVault(prev => {
+        if (
+          prev.id === initialVault.id &&
+          prev.current_milestone === initialVault.current_milestone &&
+          prev.status === initialVault.status &&
+          prev.total_locked_amount === initialVault.total_locked_amount &&
+          prev.advance_freight_disbursed === initialVault.advance_freight_disbursed
+        ) {
+          return prev;
+        }
+        return initialVault;
+      });
+
       setIsFarmerAccepted(
         initialVault.current_milestone === 'FREIGHT_ADVANCE_PAID' || 
         initialVault.current_milestone === 'IN_TRANSIT' || 
@@ -146,14 +158,13 @@ export function EscrowRails({
         initialVault.status === 'REFUNDED'
       );
     }
-  }, [initialVault]);
-
-  // Notify parent component on state mutation
-  useEffect(() => {
-    if (onVaultUpdate) {
-      onVaultUpdate(vault);
-    }
-  }, [vault, onVaultUpdate]);
+  }, [
+    initialVault?.id,
+    initialVault?.current_milestone,
+    initialVault?.status,
+    initialVault?.total_locked_amount,
+    initialVault?.advance_freight_disbursed
+  ]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -184,19 +195,17 @@ export function EscrowRails({
     try {
       const savedTripsStr = localStorage.getItem('kisansetu_carrier_trips');
       let trips: any[] = savedTripsStr ? JSON.parse(savedTripsStr) : [];
-      const tripIndex = trips.findIndex(t => t.vault_id === v.id || t.lot_id === `LOT-${v.lot_id || 1}`);
       const isAdvanceDisbursed = (v.advance_freight_disbursed || 0) > 0 || v.current_milestone === 'FREIGHT_ADVANCE_PAID' || v.current_milestone === 'IN_TRANSIT' || v.current_milestone === 'SETTLED';
+      const tripIndex = trips.findIndex(t => t.id === v.id || t.lot_id === `LOT-${v.lot_id}`);
       
       const tripData = {
-        id: v.id || 1,
-        vault_id: v.id || 1,
+        id: v.id,
         lot_id: `LOT-${v.lot_id || 1}`,
         crop_name: v.crop_name || 'Sharbati Wheat',
-        variety: v.variety || 'Lok-1 Clean Grain',
         farmer_name: v.farmer_name || 'Ramesh Patil',
-        farmer_phone: '+91 98231 49821',
-        origin: v.farmer_district || 'Nashik Cluster Farmgate, Maharashtra',
-        destination: 'Vashi APMC Mandi Scale #4 (Navi Mumbai)',
+        farmer_phone: '+91 98221 48210',
+        origin_mandi: v.farmer_district || 'Nashik East Cluster',
+        destination_mandi: 'Vashi APMC Mandi Terminal (Navi Mumbai)',
         quantity_tons: 5.0,
         quantity_kg: 5000,
         total_freight_inr: v.total_freight_cost || 6000.0,
@@ -228,7 +237,13 @@ export function EscrowRails({
   };
 
   const updateVaultState = (updater: (prev: EscrowVaultData) => EscrowVaultData) => {
-    setVault(updater);
+    setVault(prev => {
+      const next = updater(prev);
+      if (onVaultUpdate) {
+        onVaultUpdate(next);
+      }
+      return next;
+    });
   };
 
   useEffect(() => {

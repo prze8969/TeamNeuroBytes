@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { CropLot, Bid } from '@/lib/types';
 import { EscrowVaultData } from '@/components/dashboard/EscrowRails';
 import { InvoiceOrderData } from '@/components/dashboard/TaxInvoiceModal';
@@ -290,9 +290,10 @@ export function useBuyerState() {
     triggerToast(`🚨 Escrow Vault #${dealId} FROZEN! APMC Arbitration Ticket #${ticketId} opened.`);
   }, [updateDealMilestone, triggerToast]);
 
-  // Derived focused deal
-  const selectedVault: EscrowVaultData | null = 
-    activeVaults.find(v => v.id === selectedDealId) || activeVaults[0] || null;
+  // Derived focused deal with stable memoization
+  const selectedVault: EscrowVaultData | null = useMemo(() => {
+    return activeVaults.find(v => v.id === selectedDealId) || activeVaults[0] || null;
+  }, [activeVaults, selectedDealId]);
 
   // Active Deals Count (Excluding Settled)
   const activeDealsCount = activeVaults.filter(v => v.status !== 'SETTLED').length;
