@@ -176,11 +176,21 @@ export const CROP_VARIETY_CATALOG: CropVarietyOption[] = [
 ];
 
 export function getCropBySearch(query: string): CropVarietyOption {
+  if (!query) return CROP_VARIETY_CATALOG[0];
   const normalized = query.toLowerCase().trim();
   const matched = CROP_VARIETY_CATALOG.find(
     c => c.name.toLowerCase().includes(normalized) || 
          c.variety.toLowerCase().includes(normalized) ||
-         c.id.includes(normalized)
+         c.id.includes(normalized) ||
+         normalized.includes(c.name.toLowerCase().split(' ')[0]) ||
+         (normalized.includes('tomato') && c.id.includes('tomato')) ||
+         (normalized.includes('onion') && c.id.includes('onion')) ||
+         (normalized.includes('wheat') && c.id.includes('wheat')) ||
+         (normalized.includes('rice') && c.id.includes('rice')) ||
+         (normalized.includes('potato') && c.id.includes('potato')) ||
+         (normalized.includes('soybean') && c.id.includes('soybean')) ||
+         (normalized.includes('chana') && c.id.includes('chana')) ||
+         (normalized.includes('tur') && c.id.includes('tur'))
   );
   return matched || CROP_VARIETY_CATALOG[0];
 }
