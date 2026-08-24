@@ -1,7 +1,7 @@
 export interface CropVarietyOption {
   id: string;
   name: string;
-  category: 'Grains & Cereals' | 'Vegetables' | 'Pulses' | 'Oilseeds';
+  category: 'Grains & Cereals' | 'Fruits' | 'Vegetables' | 'Pulses' | 'Oilseeds';
   variety: string;
   mspFloorPerKg: number;
   mandiBenchmarkPerKg: number;
@@ -21,12 +21,29 @@ export interface CropVarietyOption {
 
 export const CROP_CATEGORIES = [
   'Grains & Cereals',
+  'Fruits',
   'Vegetables',
   'Pulses',
   'Oilseeds'
 ] as const;
 
 export const CROP_VARIETY_CATALOG: CropVarietyOption[] = [
+  {
+    id: 'banana-robusta',
+    name: 'Grand Naine / Robusta Banana',
+    category: 'Fruits',
+    variety: 'Table & Processing Grade',
+    mspFloorPerKg: 16.00,
+    mandiBenchmarkPerKg: 22.50,
+    typicalGrade: 'Grade A',
+    typicalDefectPct: 2.1,
+    typicalMoisturePct: 74.0,
+    sampleImageUrl: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80',
+    defectBoxes: [
+      { top: '24%', left: '26%', width: '32%', height: '36%', label: 'Firm Yellow Peel', conf: '96.5%' },
+      { top: '56%', left: '52%', width: '28%', height: '30%', label: 'Sugar Spotting', conf: '94.2%' }
+    ]
+  },
   {
     id: 'wheat-lok1',
     name: 'Sharbati Wheat (Lok-1)',
@@ -183,6 +200,9 @@ export function getCropBySearch(query: string): CropVarietyOption {
          c.variety.toLowerCase().includes(normalized) ||
          c.id.includes(normalized) ||
          normalized.includes(c.name.toLowerCase().split(' ')[0]) ||
+         (normalized.includes('banana') && c.id.includes('banana')) ||
+         (normalized.includes('kela') && c.id.includes('banana')) ||
+         (normalized.includes('robusta') && c.id.includes('banana')) ||
          (normalized.includes('tomato') && c.id.includes('tomato')) ||
          (normalized.includes('onion') && c.id.includes('onion')) ||
          (normalized.includes('wheat') && c.id.includes('wheat')) ||
@@ -212,8 +232,10 @@ export function resolveCropImageUrl(cropName: string = '', customUrl?: string | 
     const isWheatStock = trimmed.includes('photo-1574323347407') || trimmed.includes('photo-1509440159596');
     const isRiceStock = trimmed.includes('photo-1586201375761');
     const isSoybeanStock = trimmed.includes('photo-1587393855524');
+    const isBananaStock = trimmed.includes('photo-1571771894821');
 
     const isMismatched = 
+      (isBananaStock && !norm.includes('banana') && !norm.includes('kela')) ||
       (isPotatoStock && !norm.includes('potato') && !norm.includes('aloo')) ||
       (isOnionStock && !norm.includes('onion') && !norm.includes('garva') && !norm.includes('pyaz')) ||
       (isTomatoStock && !norm.includes('tomato') && !norm.includes('tamatar')) ||
@@ -227,6 +249,9 @@ export function resolveCropImageUrl(cropName: string = '', customUrl?: string | 
   }
 
   // Fallback to calibrated specimen photo matching cropName
+  if (norm.includes('banana') || norm.includes('kela') || norm.includes('robusta')) {
+    return 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80';
+  }
   if (norm.includes('wheat') || norm.includes('grain') || norm.includes('lok')) {
     return 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
   }

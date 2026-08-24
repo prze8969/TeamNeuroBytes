@@ -71,7 +71,9 @@ class YOLOCropGradingModel:
                         if cls_name:
                             clean_name = cls_name.replace("_", " ").title()
                             # Normalize class names
-                            if "onion" in clean_name.lower():
+                            if "banana" in clean_name.lower():
+                                detected_commodity = "Banana"
+                            elif "onion" in clean_name.lower():
                                 detected_commodity = "Onion"
                             elif "tomato" in clean_name.lower():
                                 detected_commodity = "Tomato"
@@ -83,6 +85,10 @@ class YOLOCropGradingModel:
                                 detected_commodity = "Paddy / Rice"
                             elif "chilli" in clean_name.lower() or "capsicum" in clean_name.lower():
                                 detected_commodity = "Green Chilli / Capsicum"
+                            elif "apple" in clean_name.lower():
+                                detected_commodity = "Apple"
+                            elif "orange" in clean_name.lower():
+                                detected_commodity = "Orange"
                             else:
                                 detected_commodity = clean_name
                 except Exception:
@@ -171,8 +177,11 @@ class YOLOCropGradingModel:
                 elif (260 <= hue < 345) or ((hue >= 330 or hue <= 15) and mean_b > 70 and mean_r > 110 and mean_b > mean_g * 0.72):
                     # Red Onions have purplish/magenta undertones with high blue/violet spectrum
                     detected_commodity = "Onion"
-                elif (16 <= hue <= 58) and (mean_r > 130 and mean_g > 100 and mean_r >= mean_g) and (mean_b < mean_g):
-                    # Potatoes have warm golden-ochre/khaki tones (R > G > B) with low blue
+                elif (32 <= hue <= 62) and (mean_r > 165 and mean_g > 150 and (mean_r + mean_g) > 320 and (mean_g - mean_b) > 40 and sat > 0.30):
+                    # Bananas have vibrant bright yellow peel with high R and high G, low B
+                    detected_commodity = "Banana"
+                elif (16 <= hue <= 52) and (mean_r > 120 and mean_g > 95 and (mean_r - mean_g) >= 18) and (mean_b < mean_g):
+                    # Potatoes have warm earthy khaki/ochre tones (R noticeably greater than G)
                     detected_commodity = "Potato"
                 elif (mean_r > 180 and mean_g > 165 and abs(mean_r - mean_g) <= 30 and mean_b < 155):
                     detected_commodity = "Wheat"
@@ -181,7 +190,10 @@ class YOLOCropGradingModel:
                 elif (25 <= hue <= 65 and sat > 0.40 and mean_r > 160 and mean_g > 140):
                     detected_commodity = "Yellow Soybean"
                 elif mean_r > mean_g and mean_g > mean_b:
-                    detected_commodity = "Potato"
+                    if mean_r > 165 and mean_g > 150 and (mean_r + mean_g) > 320:
+                        detected_commodity = "Banana"
+                    else:
+                        detected_commodity = "Potato"
                 else:
                     return {
                         "commodity_detected": "Unrecognized Produce",

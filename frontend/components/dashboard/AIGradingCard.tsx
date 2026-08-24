@@ -101,7 +101,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
   };
 
   // Sample Presets for quick demonstration
-  const handlePresetSelect = (preset: 'onion' | 'tomato' | 'wheat' | 'potato') => {
+  const handlePresetSelect = (preset: 'banana' | 'onion' | 'tomato' | 'wheat' | 'potato') => {
     setActivePreset(preset);
     setErrorMsg(null);
     setAnalyzing(true);
@@ -145,6 +145,20 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
           ripenessIndex: 97.0,
           moisturePercent: 10.4,
           recommendation: 'Premium Export & Institutional Grade (Eligible for ₹26.50+ Agmarknet floor)',
+          modelVersion: 'YOLOv8-AgriVision-v2.1',
+          isPassed: true
+        }
+      },
+      banana: {
+        img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80',
+        res: {
+          commodity: 'Grand Naine / Robusta Banana',
+          grade: 'A',
+          score: 96.5,
+          defectPercent: 1.2,
+          ripenessIndex: 95.0,
+          moisturePercent: 74.0,
+          recommendation: 'Premium Fresh Table & Export Grade (Firm yellow peel, ideal ripeness)',
           modelVersion: 'YOLOv8-AgriVision-v2.1',
           isPassed: true
         }
@@ -228,7 +242,18 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             <span className="text-[10px] text-slate-400 font-medium">Or upload custom photo</span>
           </div>
 
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-5 gap-1.5">
+            <button
+              type="button"
+              onClick={() => handlePresetSelect('banana')}
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+                activePreset === 'banana'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                  : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+              }`}
+            >
+              🍌 Banana
+            </button>
             <button
               type="button"
               onClick={() => handlePresetSelect('onion')}
