@@ -255,11 +255,16 @@ Statutory Note: Issued in accordance with Section 31 of CGST Act, 2017.
           {/* Section 1: Header Brand, Platform GSTIN, & Metadata Block */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b-2 border-slate-900 pb-5">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🌾</span>
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                  KisanSetu <span className="text-emerald-700">Agri-Trade Platform</span>
-                </h1>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl overflow-hidden bg-white p-0.5 border border-slate-200 shadow-2xs shrink-0">
+                  <img src="/logo.png" alt="KisanSetu" className="w-full h-full object-contain" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-black text-slate-900 tracking-tight leading-none">
+                    kisaan<span className="text-emerald-800">setu</span> <span className="text-xs text-slate-500 font-sans font-bold">• Tax Settlement Voucher</span>
+                  </h1>
+                  <span className="text-[10px] text-emerald-800 font-medium">Smart Trading, समृद्ध किसान</span>
+                </div>
               </div>
               <p className="text-[11px] text-slate-600 font-medium">
                 National Agricultural Market Linkage &amp; Milestone Escrow Infrastructure

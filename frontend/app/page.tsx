@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 
 export default function Home() {
   return (
@@ -8,20 +9,9 @@ export default function Home() {
       {/* Top Navbar */}
       <header className="sticky top-0 z-50 w-full border-b border-emerald-800/60 bg-emerald-950/90 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <span className="text-3xl">🌾</span>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black tracking-tight text-white">KisanSetu</h1>
-                <span className="text-[10px] bg-emerald-700 text-emerald-100 border border-emerald-500/40 px-2 py-0.5 rounded-full font-black uppercase">
-                  SIH 2026 • PS 26132
-                </span>
-              </div>
-              <p className="text-[11px] text-emerald-300 font-medium">
-                National Agricultural Market Linkage & Price Discovery Platform
-              </p>
-            </div>
-          </div>
+          <Link href="/" className="flex items-center group">
+            <KisanSetuLogo size="md" variant="light" badge="SIH 2026 • PS 26132" showTagline={true} />
+          </Link>
           <div className="flex items-center space-x-3">
             <Link
               href="/login"

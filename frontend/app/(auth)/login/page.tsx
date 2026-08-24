@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { USER_ROLES } from '@/lib/constants'
 
+import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo'
+
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('farmer@kisansetu.in')
@@ -80,12 +82,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-950 text-slate-900 flex items-center justify-center p-4">
       <div className="relative w-full max-w-md space-y-6 rounded-3xl bg-white p-8 shadow-2xl border border-emerald-200">
-        <div className="text-center space-y-1.5">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-3xl shadow-inner border border-emerald-200">
-            🌾
-          </div>
-          <h2 className="text-2xl font-black tracking-tight text-slate-900">Sign In to KisanSetu</h2>
-          <p className="text-xs text-slate-500">National Agricultural Trade & Price Discovery Hub</p>
+        <div className="text-center space-y-2 flex flex-col items-center">
+          <Link href="/" className="inline-block hover:scale-105 transition-transform">
+            <KisanSetuLogo size="lg" variant="dark" showTagline={true} />
+          </Link>
+          <p className="text-xs text-slate-500">Sign in to National Agricultural Trade &amp; Price Discovery Hub</p>
         </div>
 
         {/* 1-Click Demo Logins */}

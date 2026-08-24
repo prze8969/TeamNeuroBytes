@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
+import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
+
 export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   const pathname = usePathname();
 
@@ -23,7 +25,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-extrabold uppercase tracking-wider text-emerald-300">Agmarknet Live Feed:</span>
         </div>
-        <div className="flex gap-6 shrink-0 font-medium">
+        <div className="flex gap-6 font-medium">
           <span>🌾 Nashik Wheat: <strong className="text-white font-bold font-mono">₹25.50/kg</strong> (+₹1.20)</span>
           <span>🧅 Lasalgaon Onion: <strong className="text-white font-bold font-mono">₹21.50/kg</strong> (+₹0.80)</span>
           <span>🍅 Pune Tomato: <strong className="text-white font-bold font-mono">₹19.00/kg</strong> (-₹0.50)</span>
@@ -37,16 +39,8 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-6">
-          <Link href="/" className="flex items-center space-x-2.5 group">
-            <span className="text-3xl group-hover:scale-110 transition-transform">🌾</span>
-            <div>
-              <span className="text-xl font-black tracking-tight text-white flex items-center gap-2">
-                KisanSetu
-                <span className="text-[10px] bg-emerald-700 text-emerald-100 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-emerald-600">
-                  Agri-Trade AI
-                </span>
-              </span>
-            </div>
+          <Link href="/" className="flex items-center group">
+            <KisanSetuLogo size="sm" variant="light" badge="Agri-Trade AI" showTagline={false} />
           </Link>
 
           {/* Role Navigation Pills */}
