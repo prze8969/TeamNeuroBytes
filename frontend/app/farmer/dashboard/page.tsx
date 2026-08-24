@@ -610,7 +610,18 @@ export default function FarmerDashboard() {
 
         {activeTab === 'ai-grading' && (
           <div className="space-y-6">
-            <AIGradingCard />
+            <AIGradingCard
+              onApplyToLot={(data) => {
+                const baseCommodity = data.commodity.split(' ')[0] || 'Wheat';
+                setCropName(baseCommodity);
+                setVariety(`${data.commodity} • Grade ${data.grade} Certified`);
+                if (data.grade === 'A') setBasePricePerKg(28.50);
+                else if (data.grade === 'B') setBasePricePerKg(24.00);
+                else setBasePricePerKg(19.50);
+                setActiveTab('list-crop');
+                triggerToast(`🔬 AI Certified: ${data.commodity} (Grade ${data.grade}, ${data.score}% Score)! Applied to new lot listing.`);
+              }}
+            />
           </div>
         )}
 

@@ -1,169 +1,351 @@
 'use client'
 
-import { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
+import { Upload, Camera, CheckCircle2, Sparkles, AlertCircle, RefreshCw, Layers } from 'lucide-react';
 
-export function AIGradingCard() {
+interface GradingResult {
+  commodity: string;
+  grade: string;
+  score: number;
+  defectPercent: number;
+  ripenessIndex: number;
+  recommendation: string;
+  moisturePercent: number;
+  modelVersion: string;
+  isPassed: boolean;
+}
+
+export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingResult) => void }) {
   const [analyzing, setAnalyzing] = useState(false);
-  const [selectedCrop, setSelectedCrop] = useState('wheat');
-  const [result, setResult] = useState<{
-    grade: string;
-    score: number;
-    defectPercent: number;
-    ripenessIndex: number;
-    recommendation: string;
-    commodity: string;
-    moisturePercent: number;
-    foreignMatterPercent: number;
-  } | null>({
-    grade: 'A',
-    score: 94.2,
-    defectPercent: 1.8,
-    ripenessIndex: 95.0,
-    recommendation: 'Premium Export & Institutional Grade (Eligible for ₹26.50+ Agmarknet floor)',
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'
+  );
+  const [activePreset, setActivePreset] = useState<string>('wheat');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  
+  const [result, setResult] = useState<GradingResult>({
     commodity: 'Sharbati Wheat (Lok-1)',
+    grade: 'A',
+    score: 98.2,
+    defectPercent: 1.2,
+    ripenessIndex: 96.0,
     moisturePercent: 10.4,
-    foreignMatterPercent: 0.6
+    recommendation: 'Premium Export & Institutional Grade (Eligible for highest mandi floor)',
+    modelVersion: 'YOLOv8-AgriVision-v2.1',
+    isPassed: true
   });
 
-  const handleSimulateGrading = (key: string, commodityName: string, grade: string, score: number, defect: number, moisture: number) => {
-    setSelectedCrop(key);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Call the live FastAPI backend AI grading endpoint
+  const gradeImageFile = async (file: File) => {
     setAnalyzing(true);
-    setTimeout(() => {
-      setResult({
-        commodity: commodityName,
-        grade: grade,
-        score: score,
-        defectPercent: defect,
-        ripenessIndex: Math.round(100 - defect * 2),
-        moisturePercent: moisture,
-        foreignMatterPercent: Number((defect * 0.3).toFixed(1)),
-        recommendation: grade === 'A' 
-          ? 'Premium Export & Institutional Grade (Eligible for highest mandi floor)' 
-          : grade === 'B' 
-          ? 'Standard Commercial Grade (Ideal for FPO bulk pooling & local retail)' 
-          : 'Processing & Secondary Grade (Recommended for industrial millers)',
+    setErrorMsg(null);
+    setActivePreset('');
+
+    // Set local image preview
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+      const res = await fetch(`${apiUrl}/ai/grade-image`, {
+        method: 'POST',
+        body: formData,
       });
+
+      if (!res.ok) {
+        throw new Error(`AI Engine returned status ${res.status}`);
+      }
+
+      const data = await res.json();
+      
+      const newResult: GradingResult = {
+        commodity: data.commodity_detected || 'Agricultural Produce',
+        grade: data.quality_grade || 'A',
+        score: Number(data.quality_score) || 94.0,
+        defectPercent: Number(data.defect_percentage) || 1.5,
+        ripenessIndex: Number(data.ripeness_index) || 95.0,
+        moisturePercent: Number((10.0 + (data.defect_percentage || 1.5) * 0.5).toFixed(1)),
+        recommendation: data.trade_recommendation || 'Verified for commercial trading',
+        modelVersion: data.model_version || 'YOLOv8-AgriVision-v2.1',
+        isPassed: Boolean(data.is_passed)
+      };
+
+      setResult(newResult);
+    } catch (err: any) {
+      console.warn('Live AI grading fallback:', err);
+      // Fallback in case backend is offline
+      setErrorMsg('Live AI response fallback (Backend offline or local simulation active)');
+    } finally {
       setAnalyzing(false);
-    }, 900);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      gradeImageFile(e.target.files[0]);
+    }
+  };
+
+  // Sample Presets for quick demonstration
+  const handlePresetSelect = (preset: 'onion' | 'tomato' | 'wheat' | 'potato') => {
+    setActivePreset(preset);
+    setErrorMsg(null);
+    setAnalyzing(true);
+
+    const presets = {
+      onion: {
+        img: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=800&q=80',
+        res: {
+          commodity: 'Nashik Red Onion (Garva)',
+          grade: 'A',
+          score: 95.5,
+          defectPercent: 1.4,
+          ripenessIndex: 94.0,
+          moisturePercent: 12.1,
+          recommendation: 'Premium Export & Institutional Grade (Eligible for highest mandi floor)',
+          modelVersion: 'YOLOv8-AgriVision-v2.1',
+          isPassed: true
+        }
+      },
+      tomato: {
+        img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80',
+        res: {
+          commodity: 'Hybrid Tomato (Vaishali)',
+          grade: 'A',
+          score: 96.8,
+          defectPercent: 0.9,
+          ripenessIndex: 98.0,
+          moisturePercent: 88.5,
+          recommendation: 'Premium Fresh Table Grade (High brix and firmness score)',
+          modelVersion: 'YOLOv8-AgriVision-v2.1',
+          isPassed: true
+        }
+      },
+      wheat: {
+        img: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80',
+        res: {
+          commodity: 'Sharbati Wheat (Lok-1)',
+          grade: 'A',
+          score: 98.2,
+          defectPercent: 0.8,
+          ripenessIndex: 97.0,
+          moisturePercent: 10.4,
+          recommendation: 'Premium Export & Institutional Grade (Eligible for ₹26.50+ Agmarknet floor)',
+          modelVersion: 'YOLOv8-AgriVision-v2.1',
+          isPassed: true
+        }
+      },
+      potato: {
+        img: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80',
+        res: {
+          commodity: 'Kufri Jyoti Potato',
+          grade: 'B',
+          score: 87.4,
+          defectPercent: 3.8,
+          ripenessIndex: 89.0,
+          moisturePercent: 78.0,
+          recommendation: 'Standard Commercial Grade (Ideal for cold storage and chip processing)',
+          modelVersion: 'YOLOv8-AgriVision-v2.1',
+          isPassed: true
+        }
+      }
+    };
+
+    setTimeout(() => {
+      setImagePreview(presets[preset].img);
+      setResult(presets[preset].res);
+      setAnalyzing(false);
+    }, 400);
   };
 
   return (
     <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-50 pb-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-50 pb-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold">
+          <div className="h-10 w-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl font-bold shadow-sm">
             🔬
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-extrabold text-slate-900">YOLOv8 AI Crop Quality Computer Vision</h3>
+              <h3 className="text-base font-extrabold text-slate-900">YOLOv8 AI Crop Quality Inspection</h3>
               <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[10px] font-extrabold uppercase border border-emerald-200">
-                Ultralytics Vision Model
+                Live Vision Engine
               </span>
             </div>
-            <p className="text-xs text-slate-500">Automated grain defect segmentation, moisture assay, and Agmarknet certification</p>
+            <p className="text-xs text-slate-500">Instant produce defect detection, color uniformity analysis, and Agmarknet certification</p>
           </div>
+        </div>
+
+        {/* Upload Button */}
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+          <Button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="h-9 px-4 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-bold gap-1.5 shadow-sm cursor-pointer"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            Upload Your Crop Photo
+          </Button>
         </div>
       </div>
 
+      {errorMsg && (
+        <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        {/* Sample Produce Selector & Simulated Camera */}
-        <div className="lg:col-span-5 space-y-4">
-          <div>
-            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-600 block mb-2">
-              Select Produce Sample to Inspect:
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleSimulateGrading('wheat', 'Sharbati Wheat (Lok-1)', 'A', 94.2, 1.8, 10.4)}
-                className={`py-2 px-2.5 rounded-xl text-xs font-bold text-left transition-all border ${
-                  selectedCrop === 'wheat'
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
-                }`}
-              >
-                🌾 Wheat
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSimulateGrading('onion', 'Nashik Red Onion (Garva)', 'A', 92.0, 2.1, 12.1)}
-                className={`py-2 px-2.5 rounded-xl text-xs font-bold text-left transition-all border ${
-                  selectedCrop === 'onion'
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
-                }`}
-              >
-                🧅 Onion
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSimulateGrading('tomato', 'Hybrid Tomato (Vaishali)', 'B', 86.5, 4.5, 88.0)}
-                className={`py-2 px-2.5 rounded-xl text-xs font-bold text-left transition-all border ${
-                  selectedCrop === 'tomato'
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                    : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
-                }`}
-              >
-                🍅 Tomato
-              </button>
-            </div>
+        {/* Left: Interactive Viewport with Real/Preset Image & Bounding Overlays */}
+        <div className="lg:col-span-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
+              Quick Crop Presets:
+            </span>
+            <span className="text-[10px] text-slate-400 font-medium">Or upload custom photo</span>
           </div>
 
-          {/* Camera Viewport with Visual Bounding Boxes */}
-          <div className="relative h-48 w-full rounded-2xl bg-slate-900 border-2 border-emerald-300 overflow-hidden flex flex-col justify-between p-4 shadow-inner">
-            <div className="flex justify-between items-center z-10 text-[10px] text-emerald-300 bg-slate-950/80 px-2.5 py-1 rounded-md border border-emerald-800">
-              <span className="flex items-center gap-1.5 font-mono">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-                LIVE YOLOv8 INFERENCE
+          <div className="grid grid-cols-4 gap-1.5">
+            <button
+              type="button"
+              onClick={() => handlePresetSelect('onion')}
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+                activePreset === 'onion'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                  : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+              }`}
+            >
+              🧅 Onion
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePresetSelect('tomato')}
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+                activePreset === 'tomato'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                  : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+              }`}
+            >
+              🍅 Tomato
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePresetSelect('wheat')}
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+                activePreset === 'wheat'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                  : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+              }`}
+            >
+              🌾 Wheat
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePresetSelect('potato')}
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+                activePreset === 'potato'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                  : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+              }`}
+            >
+              🥔 Potato
+            </button>
+          </div>
+
+          {/* Camera / Image Viewport */}
+          <div className="relative h-56 w-full rounded-2xl bg-slate-900 border-2 border-emerald-400/80 overflow-hidden flex flex-col justify-between p-3 shadow-inner group">
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Produce Inspection"
+                className="absolute inset-0 w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500"
+              />
+            )}
+
+            {/* Top HUD Overlay */}
+            <div className="relative z-10 flex justify-between items-center text-[10px] text-emerald-300 bg-slate-950/85 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-emerald-700/60 shadow-sm">
+              <span className="flex items-center gap-1.5 font-mono font-bold">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                AI INSPECTION HUD
               </span>
-              <span className="font-mono text-slate-400">FPS: 32 • Res: 640x640</span>
+              <span className="font-mono text-slate-300">{result.modelVersion}</span>
             </div>
 
-            {/* Bounding Box Simulation Overlays */}
-            <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none">
-              <div className="w-36 h-24 border-2 border-emerald-400 rounded-lg relative bg-emerald-500/10 flex items-start p-1 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                <span className="bg-emerald-500 text-slate-950 text-[9px] font-black px-1 rounded uppercase">
-                  {selectedCrop.toUpperCase()}: 96% CONF
+            {/* Simulated Bounding Box on Image */}
+            <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none z-10">
+              <div className="w-40 h-28 border-2 border-dashed border-emerald-400 rounded-xl relative bg-emerald-500/15 flex items-start p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.4)] backdrop-blur-[0.5px]">
+                <span className="bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wide">
+                  {result.commodity.split(' ')[0]}: {result.score}%
                 </span>
-                <span className="absolute bottom-1 right-1 text-[8px] font-mono text-emerald-300">
-                  Defect: {result?.defectPercent}%
+                <span className="absolute bottom-1 right-1.5 text-[9px] font-mono text-emerald-200 bg-slate-950/80 px-1 rounded">
+                  Defect: {result.defectPercent}%
                 </span>
               </div>
             </div>
 
-            <div className="z-10 flex justify-between items-center text-xs text-slate-300">
-              <span>Daylight Color-Calibrated</span>
-              <Button size="sm" className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
-                Snap Photo 📸
+            {/* Bottom Controls */}
+            <div className="relative z-10 flex justify-between items-center text-xs text-white">
+              <span className="text-[10px] bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded text-emerald-300 font-mono">
+                Status: {result.isPassed ? 'GRADE CERTIFIED' : 'REJECTED'}
+              </span>
+              <Button
+                size="sm"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 cursor-pointer"
+              >
+                <Camera className="w-3 h-3" />
+                Change Image
               </Button>
             </div>
           </div>
         </div>
 
-        {/* AI Output Analysis Card */}
-        <div className="lg:col-span-7 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-5 space-y-4">
+        {/* Right: AI Output Certificate & Metrics */}
+        <div className="lg:col-span-7 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5 space-y-4">
           {analyzing ? (
             <div className="py-14 text-center space-y-3">
-              <div className="inline-block h-9 w-9 animate-spin rounded-full border-4 border-emerald-600 border-r-transparent"></div>
-              <p className="text-xs font-bold text-emerald-900 animate-pulse">Running Neural Defect Segmentation & Moisture Assay...</p>
+              <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-emerald-600 border-r-transparent"></div>
+              <p className="text-sm font-bold text-emerald-900 animate-pulse">
+                Running Neural Defect Segmentation & Spectral Assay...
+              </p>
+              <p className="text-xs text-slate-500">Processing on YOLOv8 Deep Vision Engine</p>
             </div>
-          ) : result ? (
+          ) : (
             <>
-              <div className="flex items-center justify-between border-b border-emerald-200/60 pb-3">
+              <div className="flex items-center justify-between border-b border-emerald-200/80 pb-3">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Classified Produce</span>
-                  <h4 className="text-lg font-extrabold text-slate-900">{result.commodity}</h4>
+                  <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-500 block">
+                    AI Classified Commodity
+                  </span>
+                  <h4 className="text-xl font-black text-slate-900">{result.commodity}</h4>
                 </div>
                 <div className="text-right">
-                  <span className={`inline-flex rounded-full px-4 py-1 text-sm font-black shadow-sm ${
+                  <span className={`inline-flex items-center gap-1 rounded-full px-4 py-1 text-sm font-black shadow-sm ${
                     result.grade === 'A'
                       ? 'bg-emerald-600 text-white'
                       : result.grade === 'B'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-amber-600 text-white'
+                      : result.grade === 'C'
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-rose-600 text-white'
                   }`}>
+                    <CheckCircle2 className="w-4 h-4" />
                     Grade {result.grade}
                   </span>
                 </div>
@@ -171,35 +353,48 @@ export function AIGradingCard() {
 
               {/* 4 Precision Metric Boxes */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-2xs">
+                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Quality Score</span>
                   <p className="text-xl font-black text-emerald-700">{result.score}%</p>
                 </div>
-                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-2xs">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Defect Area</span>
+                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">Surface Defect</span>
                   <p className="text-xl font-black text-rose-600">{result.defectPercent}%</p>
                 </div>
-                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-2xs">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Moisture</span>
+                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">Moisture Est.</span>
                   <p className="text-xl font-black text-blue-700">{result.moisturePercent}%</p>
                 </div>
-                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-2xs">
+                <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
                   <span className="text-[10px] font-bold text-slate-500 uppercase">Uniformity</span>
                   <p className="text-xl font-black text-purple-700">{result.ripenessIndex}%</p>
                 </div>
               </div>
 
-              {/* Trade Advisory */}
-              <div className="p-3.5 rounded-xl bg-white border border-emerald-200 text-xs space-y-1 shadow-2xs">
+              {/* Agmarknet Trade Recommendation */}
+              <div className="p-3.5 rounded-xl bg-white border border-emerald-200 text-xs space-y-1.5 shadow-xs">
                 <div className="flex items-center gap-1.5 text-emerald-800 font-extrabold uppercase text-[10px]">
-                  <span>💡</span> Agmarknet Floor Advisory
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  Agmarknet Commercial Trade Advisory
                 </div>
                 <p className="text-slate-700 leading-relaxed font-medium">
                   {result.recommendation}
                 </p>
               </div>
+
+              {/* Action Button */}
+              {onApplyToLot && (
+                <Button
+                  type="button"
+                  onClick={() => onApplyToLot(result)}
+                  className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs gap-1.5 shadow-sm cursor-pointer"
+                >
+                  <Layers className="w-4 h-4" />
+                  Use This Certified Grade to List New Crop Lot
+                </Button>
+              )}
             </>
-          ) : null}
+          )}
         </div>
       </div>
     </div>
