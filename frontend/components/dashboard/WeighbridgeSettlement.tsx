@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { API_BASE_URL } from '@/lib/api';
 
 export interface WeighbridgeSettlementProps {
   isOpen: boolean;
@@ -93,7 +94,7 @@ export function WeighbridgeSettlement({
   const handleApproveSettlement = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/escrow/${vaultId}/settle`, {
+      const res = await fetch(`${API_BASE_URL}/api/escrow/${vaultId}/settle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,7 +127,7 @@ export function WeighbridgeSettlement({
   const handleRaiseDispute = async () => {
     setIsSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/escrow/${vaultId}/dispute`, {
+      const res = await fetch(`${API_BASE_URL}/api/escrow/${vaultId}/dispute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

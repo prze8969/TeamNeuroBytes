@@ -1,10 +1,15 @@
+import os
 from pydantic_settings import BaseSettings
-from typing import Optional, List
+from pydantic import field_validator, model_validator
+from typing import Optional, List, Union
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AgMarknet & KisanSetu Core Engine"
     API_V1_STR: str = "/api"
-    SECRET_KEY: str = "kisan-setu-sih26132-super-secret-key-change-in-prod-2026"
+    ENV: str = "development"
+    
+    # Secret Key for JWT Signing (Must be set via environment variable in production)
+    SECRET_KEY: str = "INSECURE-DEV-KEY-DO-NOT-USE-IN-PROD-2026"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     
@@ -22,23 +27,40 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
     SUPABASE_BUCKET_NAME: str = "crop-images"
     
-    # Third-Party External APIs (Sandbox.co.in GST & Geospatial)
+    # Third-Party External APIs (Set via environment variables)
     GST_API_KEY: Optional[str] = None
     GST_API_SECRET: Optional[str] = None
-    OPENROUTESERVICE_API_KEY: Optional[str] = "5b3ce3597851110001cf6248e89f82df362e49c7bf5689196b0b0bb1"
+    OPENROUTESERVICE_API_KEY: Optional[str] = None
     AGMARKNET_API_KEY: Optional[str] = None
     
     # AI Vision Settings
     YOLO_MODEL_PATH: str = "app/core/ml_models/yolov8_agriculture_weights.pt"
     CONFIDENCE_THRESHOLD: float = 0.50
     
-    # CORS Configuration
-    BACKEND_CORS_ORIGINS: List[str] = [
+    # CORS Configuration (Configurable via comma-separated string or list)
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
-        "http://127.0.0.1:8000"
+        "http://127.0.0.1:8000",
+        "https://prze8969.github.io"
     ]
+
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",") if i.strip()]
+        elif isinstance(v, (list, str)):
+            return v
+        raise ValueError(v)
+
+    @model_validator(mode="after")
+    def validate_production_security(self) -> "Settings":
+        if self.ENV.lower() == "production":
+            if self.SECRET_KEY == "INSECURE-DEV-KEY-DO-NOT-USE-IN-PROD-2026" or len(self.SECRET_KEY) < 32:
+                raise ValueError("CRITICAL SECURITY ERROR: A secure SECRET_KEY (min 32 chars) must be provided in production.")
+        return self
 
     class Config:
         case_sensitive = True

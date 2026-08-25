@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { useAuth, UserRole } from '@/lib/AuthContext';
+import { API_BASE_URL } from '@/lib/api';
 
 function RegisterContent() {
   const router = useRouter();
@@ -97,7 +98,7 @@ function RegisterContent() {
     setLoading(true);
 
     try {
-      await fetch('http://localhost:8000/api/auth/register', {
+      await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

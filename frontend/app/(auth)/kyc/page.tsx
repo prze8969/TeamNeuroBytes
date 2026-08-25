@@ -26,6 +26,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { API_BASE_URL } from '@/lib/api';
 import { BuyerBadge } from '@/components/ui/BuyerBadge';
 
 // Official Indian GSTIN Regex: 2-digit State Code + 10-char PAN + 1-char Entity Code + 'Z' + 1-char Checksum (Case Insensitive)
@@ -197,7 +198,7 @@ function BuyerKycWizardContent() {
       setIsVerifyingGstin(true);
       const timer = setTimeout(async () => {
         try {
-          const res = await fetch('http://localhost:8000/api/buyer/verify-gstin', {
+          const res = await fetch(`${API_BASE_URL}/api/buyer/verify-gstin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -297,7 +298,7 @@ function BuyerKycWizardContent() {
       const formData = new FormData();
       formData.append('file', file);
       
-      const res = await fetch('http://localhost:8000/api/buyer/upload-document', {
+      const res = await fetch(`${API_BASE_URL}/api/buyer/upload-document`, {
         method: 'POST',
         body: formData
       }).catch(() => null);
@@ -343,7 +344,7 @@ function BuyerKycWizardContent() {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/buyer/kyc-register', {
+      const response = await fetch(`${API_BASE_URL}/api/buyer/kyc-register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

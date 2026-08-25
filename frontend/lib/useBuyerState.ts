@@ -6,6 +6,7 @@ import { EscrowVaultData } from '@/components/dashboard/EscrowRails';
 import { InvoiceOrderData } from '@/components/dashboard/TaxInvoiceModal';
 import { BuyerAnalyticsData } from '@/components/dashboard/BuyerAnalyticsCards';
 import { MOCK_CROP_LOTS } from '@/components/dashboard/VerifiedLotsGrid';
+import { API_BASE_URL } from '@/lib/api';
 import { toast } from 'sonner';
 
 export type BuyerTabType = 'marketplace' | 'active_deals' | 'ledger';
@@ -347,7 +348,7 @@ export function useBuyerState() {
   // =========================================================================
   const fetchLiveMarketplaceData = useCallback(async () => {
     try {
-      const resLots = await fetch('http://localhost:8000/api/marketplace/lots');
+      const resLots = await fetch(`${API_BASE_URL}/api/marketplace/lots`);
       if (resLots.ok) {
         const data = await resLots.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -471,7 +472,7 @@ export function useBuyerState() {
         setLots(finalLots);
       }
 
-      const resBids = await fetch('http://localhost:8000/api/escrow/bids');
+      const resBids = await fetch(`${API_BASE_URL}/api/escrow/bids`);
       if (resBids.ok) {
         const data = await resBids.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -591,7 +592,7 @@ export function useBuyerState() {
 
     // 3. Post to backend if available
     try {
-      await fetch('http://localhost:8000/api/marketplace/bids', {
+      await fetch(`${API_BASE_URL}/api/marketplace/bids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

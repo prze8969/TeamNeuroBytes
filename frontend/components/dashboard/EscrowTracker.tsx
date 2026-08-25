@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslations } from '@/lib/LocaleContext';
+import { API_BASE_URL } from '@/lib/api';
 
 export interface EscrowMilestoneState {
   escrowId: number;
@@ -64,7 +65,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
 
   const fetchLiveEscrowState = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/escrow/transactions');
+      const res = await fetch(`${API_BASE_URL}/api/escrow/transactions`);
       if (res.ok) {
         const txs = await res.json();
         if (Array.isArray(txs) && txs.length > 0) {
@@ -104,8 +105,8 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
     setLoading(true);
     try {
       // Trigger backend advance freight release & pickup verification
-      await fetch(`http://localhost:8000/api/escrow/advance-freight/${escrow.escrowId}`, { method: 'POST' });
-      await fetch(`http://localhost:8000/api/escrow/verify-pickup/${escrow.escrowId}`, {
+      await fetch(`${API_BASE_URL}/api/escrow/advance-freight/${escrow.escrowId}`, { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/escrow/verify-pickup/${escrow.escrowId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp: entered || escrow.pickupOtp })
@@ -130,7 +131,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
     }
     setLoading(true);
     try {
-      await fetch(`http://localhost:8000/api/escrow/settle/${escrow.escrowId}`, {
+      await fetch(`${API_BASE_URL}/api/escrow/settle/${escrow.escrowId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ delivery_otp: escrow.deliveryOtp, quality_inspection_pass: true })

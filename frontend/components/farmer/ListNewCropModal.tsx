@@ -25,11 +25,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '@/lib/api';
 import { 
   CROP_CATEGORIES, 
   CROP_VARIETY_CATALOG, 
-  CropVarietyOption, 
-  getCropBySearch 
+  CropVarietyOption,
+  getCropBySearch
 } from '@/lib/assayData';
 import { CropLot } from '@/lib/types';
 import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
@@ -309,7 +310,7 @@ export function ListNewCropModal({
         try {
           const formData = new FormData();
           formData.append('file', file);
-          const res = await fetch('http://localhost:8000/api/ai/grade-image', {
+          const res = await fetch(`${API_BASE_URL}/api/ai/grade-image`, {
             method: 'POST',
             body: formData
           });
@@ -432,7 +433,7 @@ export function ListNewCropModal({
     // 1. Submit to FastAPI backend to obtain official centralized lot ID (standardized LOT-XXX format)
     let finalLotId = `LOT-${Math.floor(100 + Math.random() * 900)}`;
     try {
-      const res = await fetch('http://localhost:8000/api/marketplace/lots', {
+      const res = await fetch(`${API_BASE_URL}/api/marketplace/lots`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

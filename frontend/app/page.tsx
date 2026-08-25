@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { useAuth } from '@/lib/AuthContext';
+import { API_BASE_URL } from '@/lib/api';
 import { toast } from 'sonner';
 
 export default function Home() {
@@ -225,7 +226,7 @@ export default function Home() {
         <div className="flex gap-6 text-emerald-300 font-bold">
           <Link href="/login" className="hover:text-white">Sign In</Link>
           <Link href="/register" className="hover:text-white">Register</Link>
-          <a href="http://localhost:8000/docs" target="_blank" className="hover:text-white">Swagger API Docs ↗</a>
+          <a href={`${API_BASE_URL}/docs`} target="_blank" rel="noopener noreferrer" className="hover:text-white">Swagger API Docs ↗</a>
         </div>
       </footer>
     </div>

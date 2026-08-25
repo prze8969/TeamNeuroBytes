@@ -23,6 +23,7 @@ import { ListNewCropModal } from '@/components/farmer/ListNewCropModal';
 import { FPOCollectiveView } from '@/components/farmer/FPOCollectiveView';
 import { PriceChart } from '@/components/dashboard/PriceChart';
 import { BidTable } from '@/components/dashboard/BidTable';
+import { API_BASE_URL } from '@/lib/api';
 import { EscrowTracker } from '@/components/dashboard/EscrowTracker';
 import { AIGradingCard } from '@/components/dashboard/AIGradingCard';
 import { SellVsWaitCard } from '@/components/dashboard/SellVsWaitCard';
@@ -168,7 +169,7 @@ export function FarmerDashboardLayout() {
     try {
       const numericId = parseInt(lotId.replace(/\D/g, ''), 10);
       if (numericId && !lotId.startsWith('LOT-2026-')) {
-        await fetch(`http://localhost:8000/api/marketplace/lots/${numericId}`, {
+        await fetch(`${API_BASE_URL}/api/marketplace/lots/${numericId}`, {
           method: 'DELETE'
         });
       }
@@ -234,8 +235,8 @@ export function FarmerDashboardLayout() {
     // 2. Fetch from backend API
     try {
       const [bidsRes, lotsRes] = await Promise.all([
-        fetch('http://localhost:8000/api/marketplace/bids'),
-        fetch('http://localhost:8000/api/marketplace/lots')
+        fetch(`${API_BASE_URL}/api/marketplace/bids`),
+        fetch(`${API_BASE_URL}/api/marketplace/lots`)
       ]);
 
       if (bidsRes.ok) {
@@ -372,7 +373,7 @@ export function FarmerDashboardLayout() {
     const numericBidId = parseInt(bidIdStr.replace(/\D/g, ''), 10) || 1;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/escrow/accept-bid/${numericBidId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/escrow/accept-bid/${numericBidId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transporter_id: 4 })

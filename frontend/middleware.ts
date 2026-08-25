@@ -1,3 +1,10 @@
+// frontend/middleware.ts
+// NOTE ON STATIC EXPORT / GITHUB PAGES:
+// Next.js middleware DOES NOT execute when output: 'export' is configured (such as for GitHub Pages).
+// The client-side <ProtectedRoute> layout wrappers in frontend/app/*/layout.tsx serve as the authoritative
+// source of truth for route protection and access control during static deployments.
+// This middleware file is preserved for Node.js / Vercel / server deployments.
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -29,7 +36,6 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/admin');
 
   const tokenCookie = request.cookies.get('token')?.value;
-  const roleCookie = request.cookies.get('user_role')?.value;
 
   // If visiting a protected dashboard without a valid token session
   if (isProtectedPath) {

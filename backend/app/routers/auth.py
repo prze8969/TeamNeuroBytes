@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session, select
 from datetime import timedelta
 from pydantic import BaseModel
@@ -6,9 +7,16 @@ from typing import Any, Optional, List
 
 from app.db.engine import get_session
 from app.models.database import User
-from app.services.auth_service import verify_password, get_password_hash, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.services.auth_service import (
+    verify_password, 
+    get_password_hash, 
+    create_access_token, 
+    decode_access_token,
+    ACCESS_TOKEN_EXPIRE_MINUTES
+)
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 class UserCreate(BaseModel):
     email: str
@@ -23,9 +31,51 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class UserPublic(BaseModel):
+    id: int
+    email: str
+    phone_number: Optional[str] = None
+    full_name: str
+    role: str
+    district: Optional[str] = None
+    state: Optional[str] = None
+    kyc_verified: bool = False
+    cibil_score: Optional[int] = 750
+    aadhaar_masked: Optional[str] = None
+
 class KYCRequest(BaseModel):
     aadhaar_number: str
     consent_agreed: bool = True
+
+def get_current_user(
+    token: Optional[str] = Depends(oauth2_scheme),
+    session: Session = Depends(get_session)
+) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials. Please provide a valid Bearer token.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    if not token:
+        raise credentials_exception
+    payload = decode_access_token(token)
+    if not payload:
+        raise credentials_exception
+    user_id = payload.get("id")
+    if user_id is None:
+        raise credentials_exception
+    user = session.get(User, user_id)
+    if user is None:
+        raise credentials_exception
+    return user
+
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role.upper() != "ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Admin privileges required."
+        )
+    return current_user
 
 @router.post("/register", response_model=Any)
 def register_user(user: UserCreate, session: Session = Depends(get_session)):
@@ -74,16 +124,28 @@ def login_user(user: UserLogin, session: Session = Depends(get_session)):
         "kyc_verified": db_user.kyc_verified
     }
 
+@router.get("/me", response_model=UserPublic)
+def get_current_user_profile(current_user: User = Depends(get_current_user)):
+    """Fetches public profile for the authenticated stakeholder."""
+    return current_user
+
 @router.post("/kyc/{user_id}", response_model=Any)
 def verify_digilocker_kyc(
     user_id: int,
     req: KYCRequest = KYCRequest(aadhaar_number="XXXX-XXXX-8921"),
+    current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
     """
     DigiLocker & UIDAI KYC Verification simulation.
-    Verifies biometric/Aadhaar identity and computes Agri-Credit CIBIL creditworthiness.
+    Authorization: Only the account owner or ADMIN can verify/update KYC.
     """
+    if current_user.id != user_id and current_user.role.upper() != "ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permission denied: You cannot verify or update another stakeholder's KYC record."
+        )
+
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -102,7 +164,14 @@ def verify_digilocker_kyc(
         "kyc_verified": True
     }
 
-@router.get("/users", response_model=List[User])
-def get_all_users(session: Session = Depends(get_session)):
+@router.get("/users", response_model=List[UserPublic])
+def get_all_users(
+    current_user: User = Depends(require_admin),
+    session: Session = Depends(get_session)
+):
+    """
+    Admin-only endpoint to inspect registered stakeholders.
+    Excludes hashed_password and security credentials.
+    """
     users = session.exec(select(User)).all()
     return users

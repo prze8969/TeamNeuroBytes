@@ -28,7 +28,7 @@ interface AuthContextValue {
   role: UserRole;
   isAuthenticated: boolean;
   loading: boolean;
-  login: (email: string, role?: UserRole) => void;
+  login: (email: string, role?: UserRole, token?: string, customProfile?: Partial<UserProfile>) => void;
   logout: () => void;
   switchRole: (newRole: UserRole) => void;
 }
@@ -110,18 +110,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      // Check cookies and localStorage for existing authentication
+      // Check cookies and localStorage for existing authenticated session
       const cookieRoleMatch = document.cookie.match(/user_role=([A-Z_]+)/);
       const cookieTokenMatch = document.cookie.match(/token=([^;]+)/);
       
-      const storedRole = (cookieRoleMatch ? cookieRoleMatch[1] : localStorage.getItem('kisansetu_role')) as UserRole;
-      const storedToken = cookieTokenMatch ? cookieTokenMatch[1] : localStorage.getItem('kisansetu_token');
+      const storedRole = (cookieRoleMatch ? cookieRoleMatch[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('kisansetu_role') : null)) as UserRole;
+      const storedToken = cookieTokenMatch ? cookieTokenMatch[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('kisansetu_token') : null);
 
       if (storedToken && storedToken.trim() !== '') {
+        let profile: UserProfile | null = null;
+        if (typeof localStorage !== 'undefined') {
+          const storedUser = localStorage.getItem('kisansetu_user');
+          if (storedUser) {
+            try { profile = JSON.parse(storedUser); } catch {}
+          }
+        }
         const resolvedRole: UserRole = storedRole && defaultUserProfiles[storedRole] ? storedRole : 'FARMER';
         setRole(resolvedRole);
         setSession(storedToken);
-        setUser(defaultUserProfiles[resolvedRole]);
+        setUser(profile || defaultUserProfiles[resolvedRole]);
       } else {
         setSession(null);
         setUser(null);
@@ -134,20 +141,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const login = (email: string, targetRole: UserRole = 'FARMER') => {
+  const login = (
+    email: string, 
+    targetRole: UserRole = 'FARMER', 
+    token: string = 'authenticated-session-token',
+    customProfile?: Partial<UserProfile>
+  ) => {
     setLoading(true);
     const resolvedRole = targetRole || 'FARMER';
-    const profile = defaultUserProfiles[resolvedRole];
+    const baseProfile = defaultUserProfiles[resolvedRole] || defaultUserProfiles.FARMER;
+    const profile: UserProfile = {
+      ...baseProfile,
+      email: email || baseProfile.email,
+      role: resolvedRole,
+      ...customProfile,
+    };
     
-    setSession('mock-jwt-token');
+    setSession(token);
     setRole(resolvedRole);
     setUser(profile);
 
     try {
-      localStorage.setItem('kisansetu_role', resolvedRole);
-      localStorage.setItem('kisansetu_token', 'mock-jwt-token');
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('kisansetu_role', resolvedRole);
+        localStorage.setItem('kisansetu_token', token);
+        localStorage.setItem('kisansetu_user', JSON.stringify(profile));
+      }
       document.cookie = `user_role=${resolvedRole}; path=/; max-age=31536000; SameSite=Lax`;
-      document.cookie = `token=mock-jwt-token; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `token=${token}; path=/; max-age=31536000; SameSite=Lax`;
     } catch {}
 
     setLoading(false);
@@ -157,8 +178,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(null);
     setUser(null);
     try {
-      localStorage.removeItem('kisansetu_token');
-      localStorage.removeItem('kisansetu_role');
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('kisansetu_token');
+        localStorage.removeItem('kisansetu_role');
+        localStorage.removeItem('kisansetu_user');
+      }
       document.cookie = 'token=; path=/; max-age=0;';
       document.cookie = 'user_role=; path=/; max-age=0;';
     } catch {}
@@ -170,7 +194,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRole(newRole);
     setUser(defaultUserProfiles[newRole]);
     try {
-      localStorage.setItem('kisansetu_role', newRole);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('kisansetu_role', newRole);
+      }
       document.cookie = `user_role=${newRole}; path=/; max-age=31536000; SameSite=Lax`;
     } catch {}
   };

@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, Camera, CheckCircle2, Sparkles, AlertCircle, RefreshCw, Layers } from 'lucide-react';
 import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { API_BASE_URL } from '@/lib/api';
 
 export interface GradingResult {
   commodity: string;
@@ -64,8 +65,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
       const formData = new FormData();
       formData.append('file', file);
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const res = await fetch(`${apiUrl}/ai/grade-image`, {
+      const res = await fetch(`${API_BASE_URL}/api/ai/grade-image`, {
         method: 'POST',
         body: formData,
       });

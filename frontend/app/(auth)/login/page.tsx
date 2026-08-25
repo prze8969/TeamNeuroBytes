@@ -13,12 +13,15 @@ import {
   Lock, 
   Mail, 
   Check,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { useAuth, UserRole } from '@/lib/AuthContext';
+import { API_BASE_URL } from '@/lib/api';
+import { toast } from 'sonner';
 
 function LoginContent() {
   const router = useRouter();
@@ -33,6 +36,7 @@ function LoginContent() {
   const [role, setRole] = useState<UserRole>('FARMER');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const quickRoles: { role: UserRole; email: string; label: string; icon: string; desc: string }[] = [
     { 
@@ -104,6 +108,7 @@ function LoginContent() {
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoading(true);
+    setErrorMessage(null);
 
     const routeMap: Record<string, string> = {
       FARMER: '/farmer/dashboard',
@@ -116,16 +121,24 @@ function LoginContent() {
     };
 
     try {
-      const res = await fetch('http://localhost:8000/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: identifier, password })
+        body: JSON.stringify({ email: identifier.trim(), password })
       });
 
       if (res.ok) {
         const data = await res.json();
-        const resolvedRole: UserRole = data.role || role;
-        login(identifier, resolvedRole);
+        const resolvedRole: UserRole = (data.role ? data.role.toUpperCase() : role) as UserRole;
+        const token = data.access_token || 'authenticated-session-token';
+
+        login(identifier, resolvedRole, token, {
+          id: String(data.user_id || 'USR-01'),
+          name: data.full_name || identifier,
+          email: identifier,
+          role: resolvedRole,
+          isKycVerified: Boolean(data.kyc_verified)
+        });
 
         if (resolvedRole === 'BUYER') {
           try {
@@ -133,33 +146,38 @@ function LoginContent() {
           } catch {}
         }
         
+        toast.success(`Welcome back, ${data.full_name || 'Stakeholder'}!`, {
+          description: `Logged in as ${resolvedRole} • Session secured via JWT`,
+        });
+
         // Redirect to originally requested private route or role dashboard
         const destination = redirectTo || routeMap[resolvedRole] || '/farmer/dashboard';
         router.push(destination);
         return;
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        const detailMsg = errorData.detail || 'Invalid email or password. Please check your credentials.';
+        setErrorMessage(detailMsg);
+        toast.error('Authentication Failed', {
+          description: detailMsg,
+        });
       }
-    } catch {
-      // Fallback in case backend is offline
+    } catch (err: any) {
+      const offlineMsg = 'Unable to reach the authentication server. Please ensure the backend API is running.';
+      setErrorMessage(offlineMsg);
+      toast.error('Connection Error', {
+        description: offlineMsg,
+      });
+    } finally {
+      setLoading(false);
     }
-
-    // Client-side authentication fallback
-    login(identifier, role);
-    if (role === 'BUYER') {
-      try {
-        localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
-      } catch {}
-    }
-
-    // Redirect to originally requested private route or role dashboard
-    const destination = redirectTo || routeMap[role] || '/farmer/dashboard';
-    router.push(destination);
-    setLoading(false);
   };
 
   const selectDemoRole = (r: typeof quickRoles[0]) => {
     setRole(r.role);
     setIdentifier(r.email);
     setPassword(`${r.role.toLowerCase()}123`);
+    setErrorMessage(null);
   };
 
   return (
@@ -178,75 +196,78 @@ function LoginContent() {
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-teal-400/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row on Left */}
-        <div className="relative z-10 space-y-6">
-          
-          <div className="flex items-center justify-between">
-            <Link href="/" className="inline-flex items-center group transition-transform duration-200 hover:scale-[1.02]">
-              <KisanSetuLogo size="md" variant="light" showTagline={false} />
-            </Link>
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-400/30 text-emerald-300 font-mono text-[11px] font-bold">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              National Trade Hub
-            </span>
-          </div>
-
-          {/* Glowing Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/15 border border-emerald-400/40 text-emerald-200 text-xs font-black tracking-wide shadow-[0_0_20px_rgba(16,185,129,0.25)] backdrop-blur-md">
-            <Sparkles size={14} className="text-emerald-300 animate-pulse" />
-            <span>Empowering 100,000+ Indian Farmers &amp; Buyers</span>
-          </div>
-
-          {/* High-Impact Hero Headline */}
-          <div className="space-y-3 max-w-xl">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.12] text-white">
-              Smart Trading. <br />
-              <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-emerald-400 bg-clip-text text-transparent">
-                Prosperous Farmers.
-              </span>
-            </h1>
-            <p className="text-sm sm:text-base text-emerald-100/80 leading-relaxed font-normal">
-              Direct institutional price discovery, RBI-regulated milestone escrow vaults, and instant YOLOv8 AI computer vision produce grading for modern Indian agriculture.
-            </p>
-          </div>
+        <div className="relative z-10 flex items-center justify-between">
+          <Link href="/" className="inline-block hover:opacity-90 transition-opacity">
+            <KisanSetuLogo size="lg" variant="light" showTagline={false} />
+          </Link>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 backdrop-blur-md">
+            <Sparkles size={13} className="text-emerald-300 animate-pulse" />
+            National Trade Hub
+          </span>
         </div>
 
-        {/* 3D Minimalist Illustration Showcase */}
-        <div className="relative z-10 my-6 lg:my-8 flex items-center justify-center">
-          <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden border border-emerald-400/30 bg-emerald-950/40 backdrop-blur-xl p-3 shadow-2xl shadow-emerald-950/80 group">
+        {/* Center Main Headline & Glowing Badge */}
+        <div className="relative z-10 my-auto py-8 space-y-6 max-w-xl">
+          
+          {/* Glowing Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-200 text-xs font-bold shadow-[0_0_20px_rgba(16,185,129,0.25)]">
+            <ShieldCheck size={14} className="text-emerald-400" />
+            Empowering 100,000+ Indian Farmers &amp; Buyers
+          </div>
+
+          {/* High Impact Typography Headline */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
+            Smart Trading. <br />
+            <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-200 bg-clip-text text-transparent">
+              Prosperous Farmers.
+            </span>
+          </h1>
+
+          <p className="text-sm sm:text-base text-emerald-100/80 font-medium leading-relaxed">
+            India&apos;s omnichannel electronic agricultural marketplace connecting farm-gate aggregation with institutional buyers via real-time price discovery and milestone escrow rails.
+          </p>
+
+          {/* Visual Showcase Graphic */}
+          <div className="relative w-full max-w-md h-48 rounded-2xl overflow-hidden border border-emerald-500/30 shadow-2xl group my-4 bg-emerald-950/50">
             <img 
               src="/images/smart_agri_hero.jpg" 
-              alt="Kisan Setu Smart Agriculture Platform" 
-              className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
+              alt="Smart Agriculture Ecosystem" 
+              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-90"
             />
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-emerald-950/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/30 to-transparent" />
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-bold text-emerald-200">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                Live PostGIS Freight Pooling &amp; e-NWR
+              </span>
+              <span className="bg-emerald-900/80 px-2 py-0.5 rounded border border-emerald-500/40">SIH 26132</span>
+            </div>
           </div>
+
         </div>
 
-        {/* 3 Floating Value Metric Badges */}
-        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+        {/* 3 Key Floating Metric Badges */}
+        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-emerald-800/60">
           
-          {/* Badge 1: ₹0 Middleman Fees */}
-          <div className="p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-400/25 backdrop-blur-md space-y-1 hover:border-emerald-400/50 transition-colors">
-            <div className="flex items-center gap-1.5 text-emerald-300 font-mono text-xs font-black">
-              <Zap size={14} className="text-emerald-400" />
+          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/20 backdrop-blur-md flex flex-col justify-center space-y-1 hover:border-emerald-500/40 transition-colors">
+            <div className="flex items-center gap-1.5 text-emerald-300 font-extrabold text-xs">
+              <Zap size={14} className="text-amber-400" />
               <span>₹0 Middleman Fees</span>
             </div>
-            <p className="text-[11px] text-emerald-200/70 font-medium">100% Direct Realisation</p>
+            <p className="text-[11px] text-emerald-200/70 font-medium">Direct Mandi Discovery</p>
           </div>
 
-          {/* Badge 2: Instant DBT Settlement */}
-          <div className="p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-400/25 backdrop-blur-md space-y-1 hover:border-emerald-400/50 transition-colors">
-            <div className="flex items-center gap-1.5 text-emerald-300 font-mono text-xs font-black">
+          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/20 backdrop-blur-md flex flex-col justify-center space-y-1 hover:border-emerald-500/40 transition-colors">
+            <div className="flex items-center gap-1.5 text-emerald-300 font-extrabold text-xs">
               <ShieldCheck size={14} className="text-emerald-400" />
               <span>Instant DBT Settlement</span>
             </div>
-            <p className="text-[11px] text-emerald-200/70 font-medium">RBI-Compliant Escrow Vaults</p>
+            <p className="text-[11px] text-emerald-200/70 font-medium">Milestone Escrow Vaults</p>
           </div>
 
-          {/* Badge 3: YOLOv8 AI Quality Grading */}
-          <div className="p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-400/25 backdrop-blur-md space-y-1 hover:border-emerald-400/50 transition-colors">
-            <div className="flex items-center gap-1.5 text-emerald-300 font-mono text-xs font-black">
-              <Sparkles size={14} className="text-emerald-400" />
+          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/20 backdrop-blur-md flex flex-col justify-center space-y-1 hover:border-emerald-500/40 transition-colors">
+            <div className="flex items-center gap-1.5 text-emerald-300 font-extrabold text-xs">
+              <Sparkles size={14} className="text-teal-300" />
               <span>YOLOv8 AI Grading</span>
             </div>
             <p className="text-[11px] text-emerald-200/70 font-medium">Computer Vision Assay</p>
@@ -257,7 +278,7 @@ function LoginContent() {
         {/* Footer info on left */}
         <div className="relative z-10 pt-6 border-t border-emerald-800/60 flex items-center justify-between text-xs text-emerald-300/70">
           <span>Supported by Digital India &amp; Ministry of Agriculture</span>
-          <span className="font-mono text-[11px]">ISO 27001 Certified</span>
+          <span className="font-mono text-[11px]">ISO 27001 Certified Standards</span>
         </div>
 
       </section>
@@ -302,7 +323,7 @@ function LoginContent() {
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                 Quick 1-Click Role Selector:
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">Demo mode</span>
+              <span className="text-[10px] text-slate-400 font-mono">Demo Quick-Fill</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -330,6 +351,17 @@ function LoginContent() {
             </div>
           </div>
 
+          {/* Error Banner */}
+          {errorMessage && (
+            <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold rounded-2xl flex items-start gap-2.5 animate-in fade-in">
+              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <p className="font-bold">Authentication Failed</p>
+                <p className="text-[11px] text-rose-700/90 leading-relaxed">{errorMessage}</p>
+              </div>
+            </div>
+          )}
+
           {/* Main Authentication Form */}
           <form onSubmit={handleLogin} className="space-y-4">
             
@@ -346,7 +378,10 @@ function LoginContent() {
                   type="text"
                   required
                   value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   placeholder="name@example.com or +91-9876543210"
                   className="pl-10 h-11 text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 shadow-inner"
                 />
@@ -374,7 +409,10 @@ function LoginContent() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
                   placeholder="Enter your security password"
                   className="pl-10 pr-10 h-11 text-xs bg-slate-50/50 border-slate-200 text-slate-900 font-medium rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 shadow-inner"
                 />
@@ -395,8 +433,9 @@ function LoginContent() {
               disabled={loading}
               className="w-full h-12 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-black text-sm tracking-wide shadow-lg shadow-emerald-600/25 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 group mt-2"
             >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               <span>{loading ? 'Authenticating...' : 'Sign In to Portal'}</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              {!loading && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             </Button>
 
           </form>
@@ -416,7 +455,7 @@ function LoginContent() {
           <div className="pt-2 text-center">
             <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 font-medium">
               <Lock size={12} className="text-emerald-600" />
-              256-Bit SSL Encryption • DigiLocker e-KYC Verified
+              256-Bit TLS Encryption • DigiLocker Sandbox Verified
             </p>
           </div>
 

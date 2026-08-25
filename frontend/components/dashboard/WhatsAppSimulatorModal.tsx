@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslations } from '@/lib/LocaleContext';
+import { API_BASE_URL } from '@/lib/api';
 
 interface ChatMessage {
   sender: 'bot' | 'farmer';
@@ -39,7 +40,7 @@ export function WhatsAppSimulatorModal() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/whatsapp/simulate', {
+      const response = await fetch(`${API_BASE_URL}/api/whatsapp/simulate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
+import { API_BASE_URL } from '@/lib/api';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { Button } from '@/components/ui/button';
 import { 
@@ -165,7 +166,7 @@ export default function FpoDashboardPage() {
   const handleRunSpatialPooling = async () => {
     setPoolingLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/marketplace/clusters/pool-now', {
+      const res = await fetch(`${API_BASE_URL}/api/marketplace/clusters/pool-now`, {
         method: 'POST'
       });
       if (res.ok) {

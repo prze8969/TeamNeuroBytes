@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { API_BASE_URL } from '@/lib/api';
 
 export interface EscrowVaultData {
   id: number;
@@ -267,7 +268,7 @@ export function EscrowRails({
   const handleAdvanceFreight = async () => {
     setLoadingAction('advance');
     try {
-      const res = await fetch(`http://localhost:8000/api/escrow/${vault.id}/advance-freight`, { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/api/escrow/${vault.id}/advance-freight`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         updateVaultState(prev => ({
@@ -303,7 +304,7 @@ export function EscrowRails({
   const handleVerifyOtp = async () => {
     setLoadingAction('otp');
     try {
-      const res = await fetch(`http://localhost:8000/api/escrow/${vault.id}/verify-pickup-otp`, {
+      const res = await fetch(`${API_BASE_URL}/api/escrow/${vault.id}/verify-pickup-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp: vault.farm_gate_otp || '4821' })
@@ -348,7 +349,7 @@ export function EscrowRails({
     setLoadingAction('settle');
     const invNum = `INV-KS-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random() * 9000)}`;
     try {
-      const res = await fetch(`http://localhost:8000/api/escrow/${vault.id}/complete-settlement`, {
+      const res = await fetch(`${API_BASE_URL}/api/escrow/${vault.id}/complete-settlement`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -399,7 +400,7 @@ export function EscrowRails({
   const handleDispute = async () => {
     setLoadingAction('dispute');
     try {
-      await fetch(`http://localhost:8000/api/escrow/${vault.id}/raise-dispute`, {
+      await fetch(`${API_BASE_URL}/api/escrow/${vault.id}/raise-dispute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -458,7 +459,7 @@ export function EscrowRails({
     setIsArrivedAtMandi(false);
     setIsDeclined(false);
     try {
-      await fetch(`http://localhost:8000/api/escrow/${vault.id}/reset-demo`, { method: 'POST' });
+      await fetch(`${API_BASE_URL}/api/escrow/${vault.id}/reset-demo`, { method: 'POST' });
       updateVaultState(prev => ({
         ...prev,
         current_milestone: 'LOCKED',
