@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
-import { ShieldAlert, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -39,6 +38,63 @@ export default function Home() {
       });
     }
   };
+
+  const stakeholderPortals = [
+    {
+      title: 'Farmer Command Center',
+      icon: '🚜',
+      route: '/farmer/dashboard',
+      role: 'FARMER',
+      roleKey: 'farmer',
+      badge: 'Farmgate AI & Bids',
+      description: 'Ultralytics YOLOv8 crop grading, Agmarknet Sell vs. Wait profit calculator & zero-friction WhatsApp Bot simulator.'
+    },
+    {
+      title: 'Buyer Marketplace',
+      icon: '🏢',
+      route: '/buyer/dashboard',
+      role: 'BUYER',
+      roleKey: 'buyer',
+      badge: 'Institutional Procurement',
+      description: 'Direct procurement of AI-certified crop lots with automated 100% Escrow deposit locking & real-time counter-bidding.'
+    },
+    {
+      title: 'FPO Aggregation Hub',
+      icon: '👥',
+      route: '/fpo/dashboard',
+      role: 'ORGANIZATION',
+      roleKey: 'fpo',
+      badge: 'PostGIS Clustering',
+      description: 'Consolidated member harvest lots with 10-km milk-run spatial routing, saving ~35% in freight costs & bulk tenders.'
+    },
+    {
+      title: 'Transporter Fleet Hub',
+      icon: '🚚',
+      route: '/transportation/dashboard',
+      role: 'TRANSPORTATION',
+      roleKey: 'transporter',
+      badge: 'Corridor Logistics',
+      description: 'AIS-140 GPS fleet tracking, instant 30% fuel advance credits, e-Way bill management & farmgate OTP handshakes.'
+    },
+    {
+      title: 'Warehouse & Cold Storage',
+      icon: '🏭',
+      route: '/warehouse/dashboard',
+      role: 'WAREHOUSE',
+      roleKey: 'warehouse',
+      badge: 'WDRA e-NWR Silos',
+      description: 'IoT temperature & humidity telemetry, certified cold bays, gate outward dispatch & instant e-NWR pledge minting.'
+    },
+    {
+      title: 'Escrow Governance',
+      icon: '⚖️',
+      route: '/admin/dashboard',
+      role: 'ADMIN',
+      roleKey: 'admin',
+      badge: 'RBI Escrow Oversight',
+      description: '₹1.42 Cr escrow vault surveillance, dispute grievance arbitration, AI model telemetry & platform transaction audits.'
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-950 text-white font-sans flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
@@ -105,92 +161,46 @@ export default function Home() {
           An omnichannel agricultural ecosystem combining zero-friction WhatsApp bot crop listing, Ultralytics YOLOv8 AI vision grading, PostGIS shared freight milk-runs, and milestone-backed bank escrow settlement.
         </p>
 
-        {/* 4 Interactive Stakeholder Launchpads with Authentication Interception */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-6xl pt-4 text-left">
-          
-          {/* Card 1: Farmer Command Center */}
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => handleCardClick('/farmer/dashboard', 'FARMER', 'farmer')}
-            onKeyDown={(e) => e.key === 'Enter' && handleCardClick('/farmer/dashboard', 'FARMER', 'farmer')}
-            className="group p-6 rounded-2xl bg-emerald-900/60 border border-emerald-700/60 hover:border-emerald-400 hover:bg-emerald-900/90 transition-all hover:scale-[1.02] space-y-3.5 shadow-xl backdrop-blur-md cursor-pointer select-none"
-          >
-            <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl">
-              🚜
-            </div>
-            <h3 className="font-black text-lg text-white group-hover:text-emerald-300 flex items-center justify-between">
-              <span>Farmer Command Center</span>
-              <span className="text-xs text-emerald-300 font-mono group-hover:translate-x-1 transition-transform">→</span>
-            </h3>
-            <p className="text-xs text-emerald-200/80 leading-relaxed">
-              YOLOv8 AI crop grading, Agmarknet Sell vs. Wait profit calculator &amp; WhatsApp Bot simulator.
-            </p>
-          </div>
+        {/* All 6 Stakeholder Portals Grid with Authentication Interception */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full max-w-6xl pt-4 text-left">
+          {stakeholderPortals.map((portal) => (
+            <div
+              key={portal.title}
+              role="button"
+              tabIndex={0}
+              onClick={() => handleCardClick(portal.route, portal.role, portal.roleKey)}
+              onKeyDown={(e) => e.key === 'Enter' && handleCardClick(portal.route, portal.role, portal.roleKey)}
+              className="group p-6 rounded-3xl bg-emerald-900/60 border border-emerald-700/60 hover:border-emerald-400 hover:bg-emerald-900/90 transition-all hover:scale-[1.02] space-y-4 shadow-xl backdrop-blur-md cursor-pointer select-none flex flex-col justify-between"
+            >
+              <div className="space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl shadow-inner">
+                    {portal.icon}
+                  </div>
+                  <span className="text-[10px] font-mono font-black px-2.5 py-1 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-700/80">
+                    {portal.badge}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-black text-lg text-white group-hover:text-emerald-300 transition-colors">
+                    {portal.title}
+                  </h3>
+                  <p className="text-xs text-emerald-200/80 leading-relaxed mt-1.5 font-normal">
+                    {portal.description}
+                  </p>
+                </div>
+              </div>
 
-          {/* Card 2: Buyer Marketplace */}
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => handleCardClick('/buyer/dashboard', 'BUYER', 'buyer')}
-            onKeyDown={(e) => e.key === 'Enter' && handleCardClick('/buyer/dashboard', 'BUYER', 'buyer')}
-            className="group p-6 rounded-2xl bg-emerald-900/60 border border-emerald-700/60 hover:border-emerald-400 hover:bg-emerald-900/90 transition-all hover:scale-[1.02] space-y-3.5 shadow-xl backdrop-blur-md cursor-pointer select-none"
-          >
-            <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl">
-              🏢
+              <div className="pt-2 border-t border-emerald-800/60 flex items-center justify-between text-xs font-bold text-emerald-300 font-mono">
+                <span>Launch Portal</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </div>
             </div>
-            <h3 className="font-black text-lg text-white group-hover:text-emerald-300 flex items-center justify-between">
-              <span>Buyer Marketplace</span>
-              <span className="text-xs text-emerald-300 font-mono group-hover:translate-x-1 transition-transform">→</span>
-            </h3>
-            <p className="text-xs text-emerald-200/80 leading-relaxed">
-              Direct procurement of AI-certified crop lots with automated 100% Escrow deposit locking.
-            </p>
-          </div>
-
-          {/* Card 3: FPO Aggregation */}
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => handleCardClick('/fpo/dashboard', 'ORGANIZATION', 'fpo')}
-            onKeyDown={(e) => e.key === 'Enter' && handleCardClick('/fpo/dashboard', 'ORGANIZATION', 'fpo')}
-            className="group p-6 rounded-2xl bg-emerald-900/60 border border-emerald-700/60 hover:border-emerald-400 hover:bg-emerald-900/90 transition-all hover:scale-[1.02] space-y-3.5 shadow-xl backdrop-blur-md cursor-pointer select-none"
-          >
-            <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl">
-              👥
-            </div>
-            <h3 className="font-black text-lg text-white group-hover:text-emerald-300 flex items-center justify-between">
-              <span>FPO Aggregation</span>
-              <span className="text-xs text-emerald-300 font-mono group-hover:translate-x-1 transition-transform">→</span>
-            </h3>
-            <p className="text-xs text-emerald-200/80 leading-relaxed">
-              PostGIS 10-km milk-run spatial clustering saving ~30% in freight charges and bulk tenders.
-            </p>
-          </div>
-
-          {/* Card 4: Escrow Governance */}
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => handleCardClick('/admin/dashboard', 'ADMIN', 'admin')}
-            onKeyDown={(e) => e.key === 'Enter' && handleCardClick('/admin/dashboard', 'ADMIN', 'admin')}
-            className="group p-6 rounded-2xl bg-emerald-900/60 border border-emerald-700/60 hover:border-emerald-400 hover:bg-emerald-900/90 transition-all hover:scale-[1.02] space-y-3.5 shadow-xl backdrop-blur-md cursor-pointer select-none"
-          >
-            <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl">
-              ⚖️
-            </div>
-            <h3 className="font-black text-lg text-white group-hover:text-emerald-300 flex items-center justify-between">
-              <span>Escrow Governance</span>
-              <span className="text-xs text-emerald-300 font-mono group-hover:translate-x-1 transition-transform">→</span>
-            </h3>
-            <p className="text-xs text-emerald-200/80 leading-relaxed">
-              ₹1.42 Cr escrow vault oversight, dispute grievance mediation &amp; ML model telemetry.
-            </p>
-          </div>
+          ))}
         </div>
 
         {/* Live Architecture Feature Banner */}
-        <div className="w-full max-w-5xl rounded-3xl border border-emerald-700/60 bg-emerald-950/80 p-8 shadow-2xl backdrop-blur-xl text-left grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="w-full max-w-5xl rounded-3xl border border-emerald-700/60 bg-emerald-950/80 p-8 shadow-2xl backdrop-blur-xl text-left grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
           <div className="space-y-1.5">
             <span className="text-emerald-300 text-xs font-black uppercase tracking-wider block">01 / Zero-Friction Farmer Bot</span>
             <h4 className="text-white font-bold text-sm">WhatsApp Business API Webhook</h4>
