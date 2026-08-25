@@ -51,11 +51,19 @@ export function KisanSetuLogo({
                 ? 'text-white' 
                 : variant === 'dark' 
                 ? 'text-slate-900' 
-                : 'text-current'
+                : 'text-slate-900'
             } ${currentSize.textClass}`}
           >
-            <span className={variant === 'light' ? 'text-white' : 'text-slate-900'}>Kisan</span>
-            <span className="text-emerald-800 ml-1">Setu</span>
+            <span>Kisan</span>
+            <span className={`ml-1 font-black ${
+              variant === 'light' 
+                ? 'text-emerald-300' 
+                : variant === 'dark' 
+                ? 'text-emerald-700' 
+                : 'text-emerald-600'
+            }`}>
+              Setu
+            </span>
           </span>
 
           {badge && (

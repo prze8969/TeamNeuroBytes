@@ -9,9 +9,12 @@ import {
   Microscope, 
   TrendingUp, 
   Truck, 
-  ArrowRight,
-  Boxes,
-  Sparkles
+  ArrowRight, 
+  Boxes, 
+  Sparkles,
+  MessageSquare,
+  Trash2,
+  UserCheck
 } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
@@ -35,6 +38,7 @@ export function FarmerDashboardLayout() {
   const [myLots, setMyLots] = useState<CropLot[]>([]);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isListModalOpen, setIsListModalOpen] = useState<boolean>(false);
+  const [lotToDelete, setLotToDelete] = useState<{ id: string; cropName: string } | null>(null);
 
   const triggerToast = (msg: string) => {
     setToastMsg(msg);
@@ -125,7 +129,11 @@ export function FarmerDashboardLayout() {
     }
   ];
 
-  const handleDeleteLot = async (lotId: string, cropName: string) => {
+  const handleDeleteLot = (lotId: string, cropName: string) => {
+    setLotToDelete({ id: lotId, cropName });
+  };
+
+  const confirmDeleteLot = async (lotId: string, cropName: string) => {
     // Optimistic UI update
     setMyLots(prev => prev.filter(l => l.id !== lotId));
 
@@ -409,7 +417,7 @@ export function FarmerDashboardLayout() {
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-emerald-600/20">
-                👨‍🌾
+                <UserCheck size={22} className="text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2.5">
@@ -424,8 +432,6 @@ export function FarmerDashboardLayout() {
                 <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
                   <MapPin size={12} className="text-slate-400" />
                   <span>Nashik, Maharashtra</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="font-mono text-slate-600">Aadhaar: *******8821</span>
                 </p>
               </div>
             </div>
@@ -459,10 +465,10 @@ export function FarmerDashboardLayout() {
           <div className="flex items-center gap-3 shrink-0">
             <Button
               onClick={() => setIsListModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-12 px-6 rounded-2xl shadow-lg shadow-emerald-600/25 ring-2 ring-emerald-400/40 hover:ring-emerald-400 transition-all flex items-center gap-2 cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 px-5 rounded-2xl shadow-lg shadow-emerald-600/25 ring-2 ring-emerald-400/40 hover:ring-emerald-400 transition-all flex items-center gap-2 cursor-pointer"
             >
-              <Plus size={16} className="stroke-[3]" />
-              <span>+ List New Crop Produce</span>
+              <Plus size={16} className="stroke-[2.5]" />
+              <span>List New Crop Produce</span>
             </Button>
           </div>
         </div>
@@ -474,13 +480,14 @@ export function FarmerDashboardLayout() {
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer ${
+            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'overview'
                 ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
             }`}
           >
-            📊 Overview
+            <Boxes size={14} className={activeTab === 'overview' ? 'text-emerald-700' : 'text-slate-500'} />
+            <span>Overview</span>
           </button>
           
           <button
@@ -511,7 +518,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Microscope size={14} className={activeTab === 'ai-grading' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>YOLOv8 AI Grading</span>
+            <span>AI Quality Inspection</span>
           </button>
 
           <button
@@ -519,11 +526,11 @@ export function FarmerDashboardLayout() {
             onClick={() => setActiveTab('decision-engine')}
             className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'decision-engine'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
+                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
             }`}
           >
-            <TrendingUp size={14} className={activeTab === 'decision-engine' ? 'text-emerald-700' : 'text-slate-500'} />
+            <TrendingUp size={14} className={activeTab === 'decision-engine' ? 'text-blue-700' : 'text-slate-500'} />
             <span>Market Intelligence</span>
           </button>
 
@@ -549,7 +556,8 @@ export function FarmerDashboardLayout() {
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
             }`}
           >
-            <span>📱 WhatsApp Bot</span>
+            <MessageSquare size={14} className={activeTab === 'whatsapp-bot' ? 'text-emerald-700' : 'text-slate-500'} />
+            <span>WhatsApp Bot</span>
           </button>
         </div>
 
@@ -585,7 +593,7 @@ export function FarmerDashboardLayout() {
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
                 <span className="text-emerald-700 font-bold font-mono">95.8% Quality Score</span>
-                <span className="text-[10px] font-bold text-slate-400">YOLOv8 Certified</span>
+                <span className="text-[10px] font-bold text-slate-400">AI Verified</span>
               </div>
             </div>
           </div>
@@ -617,7 +625,7 @@ export function FarmerDashboardLayout() {
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                 Escrow Security
               </span>
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-indigo-700 shadow-2xs">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
                 <ShieldCheck size={18} />
               </div>
             </div>
@@ -626,8 +634,8 @@ export function FarmerDashboardLayout() {
                 100% Locked
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-indigo-700 font-bold font-mono">₹1,32,500 Guarantee</span>
-                <span className="text-[10px] font-bold text-slate-400">RBI Escrow Vault</span>
+                <span className="text-emerald-700 font-bold font-mono">₹1,32,500 Guarantee</span>
+                <span className="text-[10px] font-bold text-slate-400">RBI-Compliant Escrow</span>
               </div>
             </div>
           </div>
@@ -650,7 +658,7 @@ export function FarmerDashboardLayout() {
                 <span className="text-purple-700 font-bold font-mono">
                   {pooledCount > 0 ? 'Nashik East Pool' : '₹1.85/kg Solo'}
                 </span>
-                <span className="text-[10px] font-bold text-slate-400">Shared Milk-Run</span>
+                <span className="text-[10px] font-bold text-slate-400">Shared Delivery Route</span>
               </div>
             </div>
           </div>
@@ -663,12 +671,12 @@ export function FarmerDashboardLayout() {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             
-            {/* 4. FPO COLLECTIVE NOTIFICATION BANNER (MODERNIZED EXECUTIVE CARD) */}
+            {/* 4. FPO COLLECTIVE NOTIFICATION BANNER */}
             <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-emerald-950 text-white rounded-2xl p-5 sm:p-6 shadow-lg border border-purple-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-black uppercase tracking-wider text-purple-300 font-mono">
-                    PostGIS Spatial Logistics:
+                    Smart Route Pooling:
                   </span>
                   <span className="rounded-full bg-purple-400/20 text-purple-200 border border-purple-400/30 px-2.5 py-0.5 text-xs font-black font-mono">
                     {pooledCount > 0 ? `CONNECTED TO NASHIK EAST COLLECTIVE (${pooledCount} LOTS)` : 'INDIVIDUAL TRANSPORT ACTIVE'}
@@ -677,7 +685,7 @@ export function FarmerDashboardLayout() {
                 <p className="text-xs text-purple-100/90 max-w-3xl leading-relaxed">
                   {pooledCount > 0
                     ? `Your produce is grouped with 14 neighboring farmers into a 45-Ton multi-axle carrier, saving ~₹${(pooledCount * 3250).toLocaleString('en-IN')} in freight charges to Vashi APMC.`
-                    : 'Join the Nashik East Farmers Producer Company milk-run pool (4.2 km from your farm) to reduce transport costs by ~35.1%.'}
+                    : 'Join the Nashik East Farmers Producer Company shared delivery route (4.2 km from your farm) to reduce transport costs by ~35.1%.'}
                 </p>
               </div>
 
@@ -690,7 +698,7 @@ export function FarmerDashboardLayout() {
                     : 'bg-emerald-400 hover:bg-emerald-300 text-slate-950'
                 }`}
               >
-                <span>{pooledCount > 0 ? 'Manage FPO Pool Lots' : '⚡ Join Nashik East Pool (-35.1% Freight)'}</span>
+                <span>{pooledCount > 0 ? 'Manage FPO Pool Lots' : 'Join Nashik East Pool (-35.1% Freight)'}</span>
                 <ArrowRight size={14} />
               </Button>
             </div>
@@ -699,7 +707,7 @@ export function FarmerDashboardLayout() {
             <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
               <div className="border-b border-slate-100 pb-4">
                 <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>🌾</span>
+                  <Boxes size={18} className="text-emerald-700" />
                   <span>My Active Produce Listings ({myLots.length})</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -713,15 +721,16 @@ export function FarmerDashboardLayout() {
                   <div className="space-y-1">
                     <h4 className="text-sm font-bold text-slate-800">No active harvest lots listed yet</h4>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                      List your freshly harvested crops to start receiving institutional buyer bids with automated Agmarknet quality certification.
+                      List your freshly harvested crops to start receiving institutional buyer bids with automated quality certification.
                     </p>
                   </div>
                   <Button
                     size="sm"
                     onClick={() => setIsListModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-10 px-5 shadow-xs cursor-pointer"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-10 px-5 shadow-xs cursor-pointer flex items-center gap-1.5 mx-auto"
                   >
-                    ➕ List First Harvest Lot
+                    <Plus size={14} className="stroke-[2.5]" />
+                    <span>List First Harvest Lot</span>
                   </Button>
                 </div>
               ) : (
@@ -828,6 +837,50 @@ export function FarmerDashboardLayout() {
           setActiveTab('overview');
         }}
       />
+
+      {/* ========================================================================= */}
+      {/* DELETE CONFIRMATION MODAL */}
+      {/* ========================================================================= */}
+      {lotToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full border border-slate-200 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                <Trash2 size={18} />
+              </div>
+              <div>
+                <h3 className="text-base font-black text-slate-900">Remove Produce Listing?</h3>
+                <p className="text-xs text-slate-500 font-mono">{lotToDelete.id} • {lotToDelete.cropName}</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Are you sure you want to remove this listing? Active buyers will no longer be able to place bids on this harvest lot.
+            </p>
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setLotToDelete(null)}
+                className="text-xs font-bold rounded-xl h-9 cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  confirmDeleteLot(lotToDelete.id, lotToDelete.cropName);
+                  setLotToDelete(null);
+                }}
+                className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl h-9 px-4 cursor-pointer shadow-xs"
+              >
+                Delete Listing
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

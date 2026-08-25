@@ -36,14 +36,14 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
           }}
         />
 
-        {/* 1. Single Top-Left Overlay Delist Icon */}
+        {/* 1. Single Top-Left Overlay Delist Icon (Hover Only) */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onDelete(lot.id, lot.cropName);
           }}
-          className="absolute top-3 left-3 bg-black/40 hover:bg-red-600 text-white rounded-full p-2 backdrop-blur-md transition-all shadow-md cursor-pointer border border-white/20 hover:scale-110"
+          className="absolute top-3 left-3 bg-black/50 hover:bg-rose-600 text-white rounded-full p-2 backdrop-blur-md transition-all shadow-md cursor-pointer border border-white/20 hover:scale-110 opacity-0 group-hover:opacity-100 duration-200"
           title="Delist & Remove Produce Lot"
         >
           <Trash2 size={13} />

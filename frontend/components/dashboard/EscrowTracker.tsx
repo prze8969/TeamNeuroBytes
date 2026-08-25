@@ -205,7 +205,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
             Buyer Funds Escrowed
           </h4>
           <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-            ₹{escrow.totalDeposit.toLocaleString('en-IN')} in RBI escrow vault
+            ₹{escrow.totalDeposit.toLocaleString('en-IN')} in RBI-compliant escrow
           </p>
         </div>
 

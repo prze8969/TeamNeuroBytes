@@ -858,7 +858,7 @@ export function ListNewCropModal({
                       {inferredGrade}
                     </strong>
                     <span className={`text-[9.5px] font-sans ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-600 font-bold' : 'text-emerald-700'}`}>
-                      {inferredGrade === 'REJECTED' || !isPassed ? '❌ Failed Standards' : isLiveGraded ? 'Live YOLOv8 Certified' : 'Agmarknet Standard'}
+                      {inferredGrade === 'REJECTED' || !isPassed ? '❌ Failed Standards' : isLiveGraded ? 'AI Verified' : 'Agmarknet Standard'}
                     </span>
                   </div>
 

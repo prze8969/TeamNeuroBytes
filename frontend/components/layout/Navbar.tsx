@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
+import { Clock, TrendingUp } from 'lucide-react';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 
 export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
@@ -24,7 +25,10 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
       <div className="bg-emerald-950 px-4 py-1.5 text-[11px] text-emerald-200 overflow-x-auto flex items-center justify-between gap-4 font-sans border-b border-emerald-800/60">
         <div className="flex items-center gap-2 shrink-0">
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span className="font-extrabold uppercase tracking-wider text-emerald-300">Agmarknet Live Feed:</span>
+          <span className="font-extrabold uppercase tracking-wider text-emerald-300 flex items-center gap-1">
+            <TrendingUp size={12} className="text-emerald-400" />
+            Agmarknet Live Feed:
+          </span>
         </div>
         <div className="flex gap-6 font-medium">
           <span>🌾 Nashik Wheat: <strong className="text-white font-bold font-mono">₹25.50/kg</strong> (+₹1.20)</span>
@@ -32,8 +36,9 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
           <span>🍅 Pune Tomato: <strong className="text-white font-bold font-mono">₹19.00/kg</strong> (-₹0.50)</span>
           <span>🌾 Vashi Sharbati: <strong className="text-white font-bold font-mono">₹28.50/kg</strong> (+₹2.10)</span>
         </div>
-        <div className="hidden lg:flex items-center gap-2 shrink-0 text-emerald-300 font-bold text-[10px]">
-          <span className="bg-emerald-800/80 px-2 py-0.5 rounded border border-emerald-700">SIH 2026 • PS 26132</span>
+        <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-emerald-300/90 font-mono text-[10px]">
+          <Clock size={11} className="text-emerald-400" />
+          <span>Last updated: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       </div>
 

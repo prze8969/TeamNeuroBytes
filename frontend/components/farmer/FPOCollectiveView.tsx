@@ -728,7 +728,7 @@ export function FPOCollectiveView({
                 Leave FPO Collective Pool?
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Detaching all lots from <strong className="text-slate-900">{FPO_NAME}</strong> will cancel your shared milk-run reservation. Freight costs for your produce will revert to standard solo direct haul rates (<strong>₹1.85/kg</strong> instead of <strong>₹1.20/kg</strong>).
+                Detaching all lots from <strong className="text-slate-900">{FPO_NAME}</strong> will cancel your shared delivery route reservation. Freight costs for your produce will revert to standard solo direct haul rates (<strong>₹1.85/kg</strong> instead of <strong>₹1.20/kg</strong>).
               </p>
             </div>
 
