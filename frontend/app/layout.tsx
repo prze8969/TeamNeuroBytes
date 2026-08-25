@@ -11,6 +11,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { LocaleProvider } from "@/lib/LocaleContext";
+import { AuthProvider } from "@/lib/AuthContext";
 import { Toaster } from "sonner";
 
 const publicSans = Public_Sans({
@@ -87,9 +88,11 @@ export default function RootLayout({
       className={`${publicSans.variable} ${merriweather.variable} ${notoDevanagari.variable} ${notoTamil.variable} ${notoTelugu.variable} ${notoGujarati.variable} ${notoKannada.variable} ${notoGurmukhi.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white font-sans">
-        <LocaleProvider>
-          {children}
-        </LocaleProvider>
+        <AuthProvider>
+          <LocaleProvider>
+            {children}
+          </LocaleProvider>
+        </AuthProvider>
         <Toaster position="top-right" richColors closeButton expand={false} />
       </body>
     </html>
