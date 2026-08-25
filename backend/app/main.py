@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.db.engine import create_db_and_tables
 
 # Import all API Routers
-from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter
+from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,6 +45,7 @@ app.include_router(ai_grading.router, prefix="/api/ai", tags=["YOLOv8 AI Quality
 app.include_router(decision.router, prefix="/api/decision", tags=["APMC Decision & Price Intelligence"])
 app.include_router(escrow.router, prefix="/api/escrow", tags=["Milestone Escrow & Settlements"])
 app.include_router(transporter.router, prefix="/api/transporter", tags=["Transporter & Fleet Portal"])
+app.include_router(fpo.router, prefix="/api/fpo", tags=["FPO & Aggregator Collective Portal"])
 
 @app.get("/", tags=["System Health"])
 def root():

@@ -223,7 +223,112 @@ def seed_initial_demo_data():
                     harvest_date="2026-08-23",
                     status=LotStatus.LISTED,
                     cluster_id=cluster.id
+                ),
+                CropLot(
+                    farmer_id=farmer.id,
+                    farmer_phone="+919876543210",
+                    farmer_name="Vishnu Kadam",
+                    commodity="Soybean",
+                    variety="JS-335 Yellow",
+                    quantity_kg=12000,
+                    base_price_per_kg=46.50,
+                    quality_grade=QualityGrade.GRADE_A,
+                    quality_score=95.0,
+                    defect_percentage=1.2,
+                    ripeness_index=96.0,
+                    is_ai_verified=True,
+                    latitude=20.0150,
+                    longitude=73.7990,
+                    district="Nashik",
+                    state="Maharashtra",
+                    destination_mandi="Latur APMC",
+                    harvest_date="2026-08-24",
+                    status=LotStatus.POOLED,
+                    cluster_id=cluster.id
+                ),
+                CropLot(
+                    farmer_id=farmer.id,
+                    farmer_phone="+919876543210",
+                    farmer_name="Balasaheb Pawar",
+                    commodity="Grapes",
+                    variety="Export Thompson Seedless",
+                    quantity_kg=9500,
+                    base_price_per_kg=62.00,
+                    quality_grade=QualityGrade.GRADE_A,
+                    quality_score=97.8,
+                    defect_percentage=0.9,
+                    ripeness_index=98.0,
+                    is_ai_verified=True,
+                    latitude=20.0310,
+                    longitude=73.8120,
+                    district="Nashik",
+                    state="Maharashtra",
+                    destination_mandi="Mumbai Port Terminal APMC",
+                    harvest_date="2026-08-25",
+                    status=LotStatus.BID_ACCEPTED,
+                    cluster_id=cluster.id
                 )
             ]
             session.add_all(lots)
             session.commit()
+
+            # Seed Demo Bids & Escrow Rails for Lot #1 and Lot #5
+            from app.models.database import Bid, BidStatus, EscrowVault, EscrowStatus, Invoice
+            demo_bid = Bid(
+                lot_id=lots[0].id,
+                buyer_id=buyer.id,
+                buyer_name="AgroProcure Private Ltd",
+                amount_per_kg=25.50,
+                bid_price_per_kg=25.50,
+                total_crop_value=127500.0,
+                estimated_freight=4200.0,
+                apmc_cess_fee=1912.5,
+                total_escrow_amount=133612.5,
+                total_amount=133612.5,
+                status=BidStatus.ACCEPTED,
+                delivery_deadline_days=3,
+                payment_method="VIRTUAL_ESCROW",
+                note="Bulk Procurement for Nashik Processing Unit"
+            )
+            session.add(demo_bid)
+            session.commit()
+
+            demo_escrow = EscrowVault(
+                bid_id=demo_bid.id,
+                lot_id=lots[0].id,
+                buyer_id=buyer.id,
+                farmer_id=farmer.id,
+                transporter_id=transporter.id,
+                crop_total_amount=127500.0,
+                total_freight_cost=4200.0,
+                total_locked_amount=133612.5,
+                advance_freight_amount=1260.0,
+                balance_freight_amount=2940.0,
+                farmer_payout_amount=127500.0,
+                platform_fee_inr=1912.5,
+                current_milestone="LOCKED",
+                status=EscrowStatus.FUNDS_LOCKED,
+                farm_gate_otp="4821",
+                destination_delivery_otp="7394",
+                carrier_name="Kisan Express Logistics",
+                vehicle_number="MH-15-EG-8942"
+            )
+            session.add(demo_escrow)
+            session.commit()
+
+            demo_invoice = Invoice(
+                transaction_id=demo_escrow.id,
+                invoice_number="INV-2026-FPO-1001",
+                buyer_id=buyer.id,
+                seller_id=farmer.id,
+                transporter_id=transporter.id,
+                crop_amount=127500.0,
+                freight_amount=4200.0,
+                platform_commission=1912.5,
+                tax_amount_gst=344.25,
+                total_payable=133956.75,
+                payment_status="PAID"
+            )
+            session.add(demo_invoice)
+            session.commit()
+
