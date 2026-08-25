@@ -1,9 +1,5 @@
-import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { routing } from './i18n/routing';
-
-const intlMiddleware = createMiddleware(routing);
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -23,7 +19,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/fpo/dashboard', request.url));
   }
 
-  const response = intlMiddleware(request);
+  const response = NextResponse.next();
 
   // Auto-set the active role cookie based on the portal being viewed for seamless demo presentation
   if (pathname.includes('/farmer')) {
