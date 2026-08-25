@@ -30,8 +30,15 @@ import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulator
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { resolveCropImageUrl } from '@/lib/assayData';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
+import { useTranslations } from '@/lib/LocaleContext';
 
 export function FarmerDashboardLayout() {
+  const tDash = useTranslations('dashboard');
+  const tKpi = useTranslations('kpi');
+  const tFpo = useTranslations('fpo');
+  const tList = useTranslations('listings');
+  const tEscrow = useTranslations('escrow');
+
   const [activeTab, setActiveTab] = useState<'overview' | 'fpo-pooling' | 'ai-grading' | 'decision-engine' | 'whatsapp-bot' | 'escrow'>('overview');
   const [isPooled, setIsPooled] = useState<boolean>(true);
   const [bids, setBids] = useState<Bid[]>([]);
@@ -422,16 +429,16 @@ export function FarmerDashboardLayout() {
               <div>
                 <div className="flex items-center gap-2.5">
                   <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-                    Ramesh Patil
+                    {tDash('farmerName')}
                   </h2>
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shadow-2xs font-mono">
                     <ShieldCheck size={12} className="text-emerald-700" />
-                    DigiLocker Verified
+                    {tDash('digilockerVerified')}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
                   <MapPin size={12} className="text-slate-400" />
-                  <span>Nashik, Maharashtra</span>
+                  <span>{tDash('location')}</span>
                 </p>
               </div>
             </div>
@@ -439,7 +446,7 @@ export function FarmerDashboardLayout() {
             {/* Badges Strip */}
             <div className="flex items-center gap-2 pt-0.5">
               <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/90 px-3 py-1 rounded-xl text-xs font-black font-mono">
-                {myLots.length} {myLots.length === 1 ? 'Lot' : 'Lots'} Active
+                {myLots.length} {myLots.length === 1 ? tDash('lotActive') : tDash('lotsActive')}
               </span>
               <span className={`px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-1.5 font-mono ${
                 pooledCount > 0
@@ -449,12 +456,12 @@ export function FarmerDashboardLayout() {
                 {pooledCount > 0 ? (
                   <>
                     <Users size={13} className="text-purple-600" />
-                    <span>FPO Enrolled: Nashik East ({pooledCount} Lots)</span>
+                    <span>{tDash('fpoEnrolled')} ({pooledCount} Lots)</span>
                   </>
                 ) : (
                   <>
                     <Truck size={13} className="text-slate-500" />
-                    <span>Solo Direct Haulage</span>
+                    <span>{tDash('soloHaulage')}</span>
                   </>
                 )}
               </span>
@@ -468,7 +475,7 @@ export function FarmerDashboardLayout() {
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 px-5 rounded-2xl shadow-lg shadow-emerald-600/25 ring-2 ring-emerald-400/40 hover:ring-emerald-400 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Plus size={16} className="stroke-[2.5]" />
-              <span>List New Crop Produce</span>
+              <span>{tDash('listNewCropProduce')}</span>
             </Button>
           </div>
         </div>
@@ -487,7 +494,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Boxes size={14} className={activeTab === 'overview' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>Overview</span>
+            <span>{tDash('overview')}</span>
           </button>
           
           <button
@@ -500,7 +507,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Users size={14} className={activeTab === 'fpo-pooling' ? 'text-purple-700' : 'text-slate-500'} />
-            <span>Join FPO Pool</span>
+            <span>{tDash('joinFpoPool')}</span>
             {pooledCount > 0 && (
               <span className="text-[10px] bg-purple-100 text-purple-900 font-mono font-black px-1.5 py-0.2 rounded-full">
                 {pooledCount}
@@ -518,7 +525,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Microscope size={14} className={activeTab === 'ai-grading' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>AI Quality Inspection</span>
+            <span>{tDash('aiQualityInspection')}</span>
           </button>
 
           <button
@@ -531,7 +538,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <TrendingUp size={14} className={activeTab === 'decision-engine' ? 'text-blue-700' : 'text-slate-500'} />
-            <span>Market Intelligence</span>
+            <span>{tDash('marketIntelligence')}</span>
           </button>
 
           <button
@@ -544,7 +551,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <ShieldCheck size={14} className={activeTab === 'escrow' ? 'text-blue-700' : 'text-slate-500'} />
-            <span>Escrow Rails</span>
+            <span>{tDash('escrowRails')}</span>
           </button>
 
           <button
@@ -557,7 +564,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <MessageSquare size={14} className={activeTab === 'whatsapp-bot' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>WhatsApp Bot</span>
+            <span>{tDash('whatsappBot')}</span>
           </button>
         </div>
 
@@ -581,19 +588,20 @@ export function FarmerDashboardLayout() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                AI Quality Grade
+                {tKpi('aiQualityGrade')}
               </span>
               <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
                 <Microscope size={18} />
               </div>
             </div>
             <div>
+              {/* TODO: dynamic content translation via Bhashini API */}
               <p className="text-2xl font-black tracking-tight text-slate-900">
                 Grade A
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
                 <span className="text-emerald-700 font-bold font-mono">95.8% Quality Score</span>
-                <span className="text-[10px] font-bold text-slate-400">AI Verified</span>
+                <span className="text-[10px] font-bold text-slate-400">{tKpi('aiVerified')}</span>
               </div>
             </div>
           </div>
@@ -602,18 +610,19 @@ export function FarmerDashboardLayout() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Highest Active Bid
+                {tKpi('highestActiveBid')}
               </span>
               <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs">
                 <TrendingUp size={18} />
               </div>
             </div>
             <div>
+              {/* TODO: dynamic content translation via Bhashini API */}
               <p className="text-2xl font-black tracking-tight text-slate-900 font-mono">
                 ₹{highestBid.toFixed(2)}/kg
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-blue-700 font-bold font-mono">+₹1.00/kg Floor</span>
+                <span className="text-blue-700 font-bold font-mono">+₹1.00/kg {tKpi('aboveFloor')}</span>
                 <span className="text-[10px] font-bold text-slate-400">Sahyadri FPC</span>
               </div>
             </div>
@@ -623,7 +632,7 @@ export function FarmerDashboardLayout() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Escrow Security
+                {tKpi('escrowSecurity')}
               </span>
               <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
                 <ShieldCheck size={18} />
@@ -631,11 +640,11 @@ export function FarmerDashboardLayout() {
             </div>
             <div>
               <p className="text-2xl font-black tracking-tight text-slate-900">
-                100% Locked
+                {tKpi('locked100')}
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-emerald-700 font-bold font-mono">₹1,32,500 Guarantee</span>
-                <span className="text-[10px] font-bold text-slate-400">RBI-Compliant Escrow</span>
+                <span className="text-emerald-700 font-bold font-mono">₹1,32,500 {tKpi('guarantee')}</span>
+                <span className="text-[10px] font-bold text-slate-400">{tKpi('rbiCompliantEscrow')}</span>
               </div>
             </div>
           </div>
@@ -644,7 +653,7 @@ export function FarmerDashboardLayout() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                Freight Pooling
+                {tKpi('freightPooling')}
               </span>
               <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-2xs">
                 <Truck size={18} />
@@ -652,13 +661,13 @@ export function FarmerDashboardLayout() {
             </div>
             <div>
               <p className="text-2xl font-black tracking-tight text-slate-900">
-                {pooledCount > 0 ? '-35.1% Cost' : 'Individual'}
+                {pooledCount > 0 ? `-35.1% ${tKpi('costSavings')}` : tKpi('individual')}
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
                 <span className="text-purple-700 font-bold font-mono">
                   {pooledCount > 0 ? 'Nashik East Pool' : '₹1.85/kg Solo'}
                 </span>
-                <span className="text-[10px] font-bold text-slate-400">Shared Delivery Route</span>
+                <span className="text-[10px] font-bold text-slate-400">{tKpi('sharedDeliveryRoute')}</span>
               </div>
             </div>
           </div>
@@ -676,16 +685,16 @@ export function FarmerDashboardLayout() {
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-black uppercase tracking-wider text-purple-300 font-mono">
-                    Smart Route Pooling:
+                    {tFpo('smartRoutePooling')}
                   </span>
                   <span className="rounded-full bg-purple-400/20 text-purple-200 border border-purple-400/30 px-2.5 py-0.5 text-xs font-black font-mono">
-                    {pooledCount > 0 ? `CONNECTED TO NASHIK EAST COLLECTIVE (${pooledCount} LOTS)` : 'INDIVIDUAL TRANSPORT ACTIVE'}
+                    {pooledCount > 0 ? `${tFpo('connectedToFpo')} (${pooledCount} LOTS)` : tFpo('individualTransportActive')}
                   </span>
                 </div>
                 <p className="text-xs text-purple-100/90 max-w-3xl leading-relaxed">
                   {pooledCount > 0
-                    ? `Your produce is grouped with 14 neighboring farmers into a 45-Ton multi-axle carrier, saving ~₹${(pooledCount * 3250).toLocaleString('en-IN')} in freight charges to Vashi APMC.`
-                    : 'Join the Nashik East Farmers Producer Company shared delivery route (4.2 km from your farm) to reduce transport costs by ~35.1%.'}
+                    ? tFpo('fpoSavingsDesc')
+                    : tFpo('fpoJoinDesc')}
                 </p>
               </div>
 
@@ -698,7 +707,7 @@ export function FarmerDashboardLayout() {
                     : 'bg-emerald-400 hover:bg-emerald-300 text-slate-950'
                 }`}
               >
-                <span>{pooledCount > 0 ? 'Manage FPO Pool Lots' : 'Join Nashik East Pool (-35.1% Freight)'}</span>
+                <span>{pooledCount > 0 ? tFpo('manageFpoPoolLots') : tFpo('joinPoolCta')}</span>
                 <ArrowRight size={14} />
               </Button>
             </div>
@@ -708,10 +717,10 @@ export function FarmerDashboardLayout() {
               <div className="border-b border-slate-100 pb-4">
                 <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
                   <Boxes size={18} className="text-emerald-700" />
-                  <span>My Active Produce Listings ({myLots.length})</span>
+                  <span>{tList('myActiveListings')} ({myLots.length})</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Live harvest lots published to KisanSetu institutional buyer network
+                  {tList('listingsSubtitle')}
                 </p>
               </div>
 
@@ -719,9 +728,9 @@ export function FarmerDashboardLayout() {
                 <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-3">
                   <Boxes className="w-12 h-12 text-slate-400 mx-auto" />
                   <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-slate-800">No active harvest lots listed yet</h4>
+                    <h4 className="text-sm font-bold text-slate-800">{tList('noListingsTitle')}</h4>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                      List your freshly harvested crops to start receiving institutional buyer bids with automated quality certification.
+                      {tList('noListingsDesc')}
                     </p>
                   </div>
                   <Button
@@ -730,7 +739,7 @@ export function FarmerDashboardLayout() {
                     className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-10 px-5 shadow-xs cursor-pointer flex items-center gap-1.5 mx-auto"
                   >
                     <Plus size={14} className="stroke-[2.5]" />
-                    <span>List First Harvest Lot</span>
+                    <span>{tList('listFirstLot')}</span>
                   </Button>
                 </div>
               ) : (
@@ -849,12 +858,12 @@ export function FarmerDashboardLayout() {
                 <Trash2 size={18} />
               </div>
               <div>
-                <h3 className="text-base font-black text-slate-900">Remove Produce Listing?</h3>
+                <h3 className="text-base font-black text-slate-900">{tList('confirmDeleteTitle')}</h3>
                 <p className="text-xs text-slate-500 font-mono">{lotToDelete.id} • {lotToDelete.cropName}</p>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to remove this listing? Active buyers will no longer be able to place bids on this harvest lot.
+              {tList('confirmDeleteDesc')}
             </p>
             <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
               <Button
@@ -864,7 +873,7 @@ export function FarmerDashboardLayout() {
                 onClick={() => setLotToDelete(null)}
                 className="text-xs font-bold rounded-xl h-9 cursor-pointer"
               >
-                Cancel
+                {tList('cancel')}
               </Button>
               <Button
                 type="button"
@@ -875,7 +884,7 @@ export function FarmerDashboardLayout() {
                 }}
                 className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl h-9 px-4 cursor-pointer shadow-xs"
               >
-                Delete Listing
+                {tList('deleteListing')}
               </Button>
             </div>
           </div>

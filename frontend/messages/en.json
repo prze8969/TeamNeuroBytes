@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "farmerPortal": "🚜 Farmer Portal",
+    "buyerMarket": "🏢 Buyer Market",
+    "fpoCollective": "👥 FPO Collective",
+    "transporterHub": "🚚 Transporter Hub",
+    "warehouseHub": "🏭 Warehouse Hub",
+    "governance": "⚖️ Governance",
+    "digilockerKyc": "DigiLocker KYC:",
+    "verified": "VERIFIED",
+    "signOut": "Sign Out",
+    "liveMandiFeed": "Agmarknet Live Feed:",
+    "lastUpdated": "Last updated:"
+  },
+  "dashboard": {
+    "farmerName": "Ramesh Patil",
+    "location": "Nashik, Maharashtra",
+    "digilockerVerified": "DigiLocker Verified",
+    "lotsActive": "Lots Active",
+    "lotActive": "Lot Active",
+    "fpoEnrolled": "FPO Enrolled: Nashik East",
+    "soloHaulage": "Solo Direct Haulage",
+    "listNewCropProduce": "List New Crop Produce",
+    "overview": "Overview",
+    "joinFpoPool": "Join FPO Pool",
+    "aiQualityInspection": "AI Quality Inspection",
+    "marketIntelligence": "Market Intelligence",
+    "escrowRails": "Escrow Rails",
+    "whatsappBot": "WhatsApp Bot"
+  },
+  "kpi": {
+    "aiQualityGrade": "AI Quality Grade",
+    "aiVerified": "AI Verified",
+    "highestActiveBid": "Highest Active Bid",
+    "aboveFloor": "Floor",
+    "escrowSecurity": "Escrow Security",
+    "locked100": "100% Locked",
+    "guarantee": "Guarantee",
+    "rbiCompliantEscrow": "RBI-Compliant Escrow",
+    "freightPooling": "Freight Pooling",
+    "costSavings": "Cost",
+    "individual": "Individual",
+    "sharedDeliveryRoute": "Shared Delivery Route"
+  },
+  "fpo": {
+    "smartRoutePooling": "Smart Route Pooling:",
+    "connectedToFpo": "CONNECTED TO NASHIK EAST COLLECTIVE",
+    "individualTransportActive": "INDIVIDUAL TRANSPORT ACTIVE",
+    "fpoSavingsDesc": "Your produce is grouped with neighboring farmers into a 45-Ton carrier, saving logistics costs to Vashi APMC.",
+    "fpoJoinDesc": "Join the Nashik East Farmers Producer Company shared delivery route to reduce transport costs by ~35.1%.",
+    "manageFpoPoolLots": "Manage FPO Pool Lots",
+    "joinPoolCta": "Join Nashik East Pool (-35.1% Freight)",
+    "leaveModalTitle": "Leave FPO Collective Pool?",
+    "leaveModalDesc": "Detaching all lots will cancel your shared delivery route reservation. Freight costs will revert to standard solo rates.",
+    "financialImpact": "Estimated Financial Impact:",
+    "forfeitWarning": "You will forfeit logistics savings on your active harvest lots."
+  },
+  "listings": {
+    "myActiveListings": "My Active Produce Listings",
+    "listingsSubtitle": "Live harvest lots published to KisanSetu institutional buyer network",
+    "noListingsTitle": "No active harvest lots listed yet",
+    "noListingsDesc": "List your freshly harvested crops to start receiving institutional buyer bids with automated quality certification.",
+    "listFirstLot": "List First Harvest Lot",
+    "delistTooltip": "Delist & Remove Produce Lot",
+    "confirmDeleteTitle": "Remove Produce Listing?",
+    "confirmDeleteDesc": "Are you sure you want to remove this listing? Active buyers will no longer be able to place bids on this harvest lot.",
+    "cancel": "Cancel",
+    "deleteListing": "Delete Listing",
+    "payload": "Payload",
+    "askingPrice": "Asking Price",
+    "pooled": "POOLED",
+    "solo": "SOLO",
+    "farmgate": "Farmgate",
+    "coldStorage": "Niphad Cold Storage (e-NWR)"
+  },
+  "escrow": {
+    "buyerFundsEscrowed": "Buyer Funds Escrowed",
+    "inRbiEscrow": "in RBI-compliant escrow",
+    "advanceDisbursed": "Fuel Advance Released (30%)",
+    "inTransit": "Produce In Transit",
+    "settled": "Settled via Aadhaar DBT (100%)"
+  }
+}

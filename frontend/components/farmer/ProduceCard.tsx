@@ -4,6 +4,7 @@ import React from 'react';
 import { Trash2, Users, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { CropLot } from '@/lib/types';
 import { resolveCropImageUrl } from '@/lib/assayData';
+import { useTranslations } from '@/lib/LocaleContext';
 
 export interface ProduceCardProps {
   lot: CropLot;
@@ -12,6 +13,7 @@ export interface ProduceCardProps {
 }
 
 export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
+  const tList = useTranslations('listings');
   const isPooled = Boolean(lot.is_fpo_pooled || (lot as any).isPooled || lot.status === 'POOLED');
   const isRejected = lot.grade === 'REJECTED' || lot.qualityGrade === 'REJECTED' || (lot.qualityScore && lot.qualityScore < 50);
   const tonnage = (lot.quantityTons || (lot.quantityKg / 1000)).toFixed(1);
@@ -44,7 +46,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
             onDelete(lot.id, lot.cropName);
           }}
           className="absolute top-3 left-3 bg-black/50 hover:bg-rose-600 text-white rounded-full p-2 backdrop-blur-md transition-all shadow-md cursor-pointer border border-white/20 hover:scale-110 opacity-0 group-hover:opacity-100 duration-200"
-          title="Delist & Remove Produce Lot"
+          title={tList('delistTooltip')}
         >
           <Trash2 size={13} />
         </button>
@@ -55,6 +57,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
             ? 'bg-rose-950/85 text-rose-200 border-rose-500/50'
             : 'bg-slate-950/80 text-emerald-300 border-emerald-400/40'
         }`}>
+          {/* TODO: dynamic content translation via Bhashini API */}
           <span>{lot.qualityGrade || (isRejected ? 'REJECTED' : 'Grade A')} ({lot.qualityScore || 95}%)</span>
         </div>
       </div>
@@ -77,6 +80,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
 
           {/* Crop Title & Certified Variety */}
           <div>
+            {/* TODO: dynamic content translation via Bhashini API */}
             <h4 className="text-base font-black text-slate-900 tracking-tight truncate group-hover:text-emerald-800 transition-colors">
               {lot.cropName}
             </h4>
@@ -102,23 +106,23 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
             {isPooled ? (
               <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
                 <Users size={11} className="text-purple-600" />
-                👥 POOLED
+                <span>👥 {tList('pooled')}</span>
               </span>
             ) : (
               <span className="text-[10px] font-mono font-medium px-2.5 py-0.5 rounded-md bg-gray-50 text-gray-500 border border-gray-200 flex items-center gap-1">
                 <Truck size={11} className="text-gray-400" />
-                🚛 SOLO
+                <span>🚛 {tList('solo')}</span>
               </span>
             )}
 
             {/* Badge 3: Storage Facility Type */}
             {lot.storageFacility === 'WAREHOUSE' ? (
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
-                🏭 Niphad Cold Storage (e-NWR)
+                🏭 {tList('coldStorage')}
               </span>
             ) : (
               <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
-                🏡 Farmgate
+                🏡 {tList('farmgate')}
               </span>
             )}
           </div>
@@ -129,7 +133,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
         <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
           <div>
             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider font-sans">
-              Payload
+              {tList('payload')}
             </span>
             <span className="text-sm font-black text-slate-800 font-mono">
               {tonnage} MT
@@ -138,7 +142,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
 
           <div className="text-right">
             <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider font-sans">
-              Asking Price
+              {tList('askingPrice')}
             </span>
             <span className="text-sm font-black text-emerald-900 font-mono">
               ₹{Number(lot.basePricePerKg || lot.askingFloorPerKg || 25.5).toFixed(2)}/kg

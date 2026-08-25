@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "farmerPortal": "🚜 ખેડૂત પોર્ટલ",
+    "buyerMarket": "🏢 ખરીદદાર બજાર",
+    "fpoCollective": "👥 એફપીઓ જૂથ",
+    "transporterHub": "🚚 પરિવહન કેન્દ્ર",
+    "warehouseHub": "🏭 વેરહાઉસ કેન્દ્ર",
+    "governance": "⚖️ શાસન અને નિયમન",
+    "digilockerKyc": "ડીજીલોકર ઈ-કેવાયસી:",
+    "verified": "પ્રમાણિત",
+    "signOut": "લૉગ આઉટ",
+    "liveMandiFeed": "એગમાર્કનેટ લાઈવ ભાવ:",
+    "lastUpdated": "છેલ્લું અપડેટ:"
+  },
+  "dashboard": {
+    "farmerName": "રમેશ પાટીલ",
+    "location": "નાસિક, મહારાષ્ટ્ર",
+    "digilockerVerified": "ડીજીલોકર પ્રમાણિત ખેડૂત",
+    "lotsActive": "સક્રિય લૉટ્સ",
+    "lotActive": "સક્રિય લૉટ",
+    "fpoEnrolled": "એફપીઓ નોંધણી: નાસિક પૂર્વ",
+    "soloHaulage": "સ્વતંત્ર સીધું પરિવહન",
+    "listNewCropProduce": "નવા પાકની નોંધણી કરો",
+    "overview": "ઝાંખી",
+    "joinFpoPool": "એફપીઓ પૂલમાં જોડાઓ",
+    "aiQualityInspection": "એઆઈ ગુણવત્તા ચકાસણી",
+    "marketIntelligence": "બજાર માહિતી",
+    "escrowRails": "એસ્ક્રો સુરક્ષિત ચુકવણી",
+    "whatsappBot": "વ્હોટ્સએપ બોટ"
+  },
+  "kpi": {
+    "aiQualityGrade": "એઆઈ ગુણવત્તા ગ્રેડ",
+    "aiVerified": "એઆઈ પ્રમાણિત",
+    "highestActiveBid": "સૌથી ઊંચી બોલી",
+    "aboveFloor": "તળિયાના ભાવથી વધુ",
+    "escrowSecurity": "એસ્ક્રો સુરક્ષા",
+    "locked100": "100% સુરક્ષિત લૉક",
+    "guarantee": "ગેરંટી રકમ",
+    "rbiCompliantEscrow": "આરબીઆઈ-સુસંગત એસ્ક્રો",
+    "freightPooling": "ભાડા બચત પૂલિંગ",
+    "costSavings": "ખર્ચ બચત",
+    "individual": "વ્યક્તિગત",
+    "sharedDeliveryRoute": "સહિયારો પરિવહન માર્ગ"
+  },
+  "fpo": {
+    "smartRoutePooling": "સ્માર્ટ રૂટ પૂલિંગ:",
+    "connectedToFpo": "નાસિક પૂર્વ ખેડૂત જૂથ સાથે જોડાયેલ",
+    "individualTransportActive": "વ્યક્તિગત પરિવહન સક્રિય",
+    "fpoSavingsDesc": "તમારો પાક 14 પડોશી ખેડૂતો સાથે 45-ટન ટ્રકમાં મોકલવામાં આવે છે, જેથી વાશી માર્કેટ સુધી ભાડામાં મોટી બચત થાય છે.",
+    "fpoJoinDesc": "પરિવહન ખર્ચમાં ~35.1% બચત કરવા માટે નાસિક પૂર્વ ખેડૂત ઉત્પાદક કંપનીના સહિયારા માર્ગ સાથે જોડાઓ.",
+    "manageFpoPoolLots": "એફપીઓ લૉટ્સ સંચાલિત કરો",
+    "joinPoolCta": "નાસિક પૂર્વ પૂલમાં જોડાઓ (-35.1% ભાડું)",
+    "leaveModalTitle": "શું તમે એફપીઓ જૂથ છોડવા માંગો છો?",
+    "leaveModalDesc": "બધા લૉટ્સ હટાવવાથી તમારું સહિયારું પરિવહન રદ થશે અને સામાન્ય દર લાગુ થશે.",
+    "financialImpact": "અંદાજિત નાણાકીય અસર:",
+    "forfeitWarning": "તમે તમારા સક્રિય પાક પર મળતી પરિવહન બચત ગુમાવશો."
+  },
+  "listings": {
+    "myActiveListings": "મારી સક્રિય પાક લિસ્ટિંગ",
+    "listingsSubtitle": "કિસાનસેતુ ખરીદદાર નેટવર્ક પર લાઈવ પ્રકાશિત પાક લૉટ્સ",
+    "noListingsTitle": "હજુ સુધી કોઈ પાક નોંધાયેલ નથી",
+    "noListingsDesc": "ખરીદદારો પાસેથી સીધી બોલીઓ મેળવવા માટે તમારા લણેલા પાકની નોંધણી કરો.",
+    "listFirstLot": "પ્રથમ પાક લૉટ ઉમેરો",
+    "delistTooltip": "લૉટ હટાવો",
+    "confirmDeleteTitle": "શું તમે પાક લિસ્ટિંગ હટાવવા માંગો છો?",
+    "confirmDeleteDesc": "શું તમે ખરેખર આ લિસ્ટિંગ કાઢી નાખવા માંગો છો? ખરીદદારો આ લૉટ પર બોલી લગાવી શકશે નહીં.",
+    "cancel": "રદ કરો",
+    "deleteListing": "લિસ્ટિંગ હટાવો",
+    "payload": "વજન / જથ્થો",
+    "askingPrice": "ન્યૂનતમ માંગ ભાવ",
+    "pooled": "સહિયારો પૂલ",
+    "solo": "એકલા",
+    "farmgate": "ખેતરના દરવાજે (Farmgate)",
+    "coldStorage": "નિફાડ કોલ્ડ સ્ટોરેજ (e-NWR)"
+  },
+  "escrow": {
+    "buyerFundsEscrowed": "ખરીદદારના નાણાં એસ્ક્રોમાં સુરક્ષિત",
+    "inRbiEscrow": "આરબીઆઈ-સુસંગત એસ્ક્રોમાં",
+    "advanceDisbursed": "ઈંધણ એડવાન્સ ચૂકવાયું (30%)",
+    "inTransit": "પાક પરિવહનમાં છે",
+    "settled": "આધાર ડીબીટી દ્વારા 100% ચુકવણી ખાતામાં જમા"
+  }
+}

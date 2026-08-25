@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "farmerPortal": "🚜 किसान पोर्टल",
+    "buyerMarket": "🏢 खरीदार बाज़ार",
+    "fpoCollective": "👥 एफपीओ समूह",
+    "transporterHub": "🚚 परिवहन केंद्र",
+    "warehouseHub": "🏭 गोदाम केंद्र",
+    "governance": "⚖️ शासन व निगरानी",
+    "digilockerKyc": "डिजीलॉकर ई-केवाईसी:",
+    "verified": "सत्यापित",
+    "signOut": "लॉग आउट",
+    "liveMandiFeed": "एगमार्कनेट लाइव भाव:",
+    "lastUpdated": "अंतिम अपडेट:"
+  },
+  "dashboard": {
+    "farmerName": "रमेश पाटिल",
+    "location": "नासिक, महाराष्ट्र",
+    "digilockerVerified": "डिजीलॉकर प्रमाणित",
+    "lotsActive": "सक्रिय लॉट",
+    "lotActive": "सक्रिय लॉट",
+    "fpoEnrolled": "एफपीओ नामांकित: नासिक ईस्ट",
+    "soloHaulage": "एकल सीधा परिवहन",
+    "listNewCropProduce": "नई फसल उपज जोड़ें",
+    "overview": "अवलोकन",
+    "joinFpoPool": "एफपीओ समूह में जुड़ें",
+    "aiQualityInspection": "एआई गुणवत्ता परीक्षण",
+    "marketIntelligence": "बाज़ार बुद्धिमत्ता",
+    "escrowRails": "एस्क्रो भुगतान",
+    "whatsappBot": "व्हाट्सएप बॉट"
+  },
+  "kpi": {
+    "aiQualityGrade": "एआई गुणवत्ता ग्रेड",
+    "aiVerified": "एआई प्रमाणित",
+    "highestActiveBid": "उच्चतम सक्रिय बोली",
+    "aboveFloor": "न्यूनतम से अधिक",
+    "escrowSecurity": "एस्क्रो सुरक्षा",
+    "locked100": "100% सुरक्षित लॉक्ड",
+    "guarantee": "गारंटीड भुगतान",
+    "rbiCompliantEscrow": "आरबीआई-अनुपालित एस्क्रो",
+    "freightPooling": "साझा परिवहन बचत",
+    "costSavings": "लागत बचत",
+    "individual": "व्यक्तिगत",
+    "sharedDeliveryRoute": "साझा डिलीवरी रूट"
+  },
+  "fpo": {
+    "smartRoutePooling": "स्मार्ट रूट पूलिंग:",
+    "connectedToFpo": "नासिक ईस्ट समूह से जुड़े हैं",
+    "individualTransportActive": "व्यक्तिगत परिवहन सक्रिय",
+    "fpoSavingsDesc": "आपकी उपज 14 पड़ोसी किसानों के साथ 45-टन ट्रक में भेजी जा रही है, जिससे वाशी एपीएमसी तक भाड़े में बचत हो रही है।",
+    "fpoJoinDesc": "परिवहन लागत में ~35.1% की कमी लाने के लिए नासिक ईस्ट किसान उत्पादक कंपनी के साझा मार्ग से जुड़ें।",
+    "manageFpoPoolLots": "एफपीओ लॉट प्रबंधित करें",
+    "joinPoolCta": "नासिक ईस्ट पूल से जुड़ें (-35.1% भाड़ा)",
+    "leaveModalTitle": "क्या आप एफपीओ समूह छोड़ना चाहते हैं?",
+    "leaveModalDesc": "सभी लॉट हटाने से आपका साझा रूट आरक्षण रद्द हो जाएगा और मानक दरें लागू होंगी।",
+    "financialImpact": "अनुमानित वित्तीय प्रभाव:",
+    "forfeitWarning": "आप अपने सक्रिय लॉट पर मिलने वाली परिवहन बचत गंवा देंगे।"
+  },
+  "listings": {
+    "myActiveListings": "मेरी सक्रिय फसल लिस्टिंग",
+    "listingsSubtitle": "किसानसेतु संस्थागत खरीदार नेटवर्क पर लाइव प्रकाशित उपज लॉट",
+    "noListingsTitle": "अभी कोई फसल सूचीबद्ध नहीं है",
+    "noListingsDesc": "स्वचालित गुणवत्ता प्रमाणन के साथ खरीदारों से बोलियां प्राप्त करने के लिए अपनी फसल सूचीबद्ध करें।",
+    "listFirstLot": "पहला फसल लॉट सूचीबद्ध करें",
+    "delistTooltip": "लिस्टिंग हटाएं",
+    "confirmDeleteTitle": "क्या आप फसल लिस्टिंग हटाना चाहते हैं?",
+    "confirmDeleteDesc": "क्या आप वाकई इस लिस्टिंग को हटाना चाहते हैं? खरीदार इस लॉट पर बोली नहीं लगा पाएंगे।",
+    "cancel": "रद्द करें",
+    "deleteListing": "लिस्टिंग हटाएं",
+    "payload": "वज़न / मात्रा",
+    "askingPrice": "न्यूनतम मांग दर",
+    "pooled": "साझा पूल",
+    "solo": "एकल",
+    "farmgate": "फार्मगेट (खेत पर)",
+    "coldStorage": "निफाड कोल्ड स्टोरेज (e-NWR)"
+  },
+  "escrow": {
+    "buyerFundsEscrowed": "खरीदार राशि एस्क्रो में सुरक्षित",
+    "inRbiEscrow": "आरबीआई-अनुपालित एस्क्रो वॉल्ट में",
+    "advanceDisbursed": "डीजल अग्रिम जारी (30%)",
+    "inTransit": "उपज रास्ते में (In Transit)",
+    "settled": "आधार डीबीटी से 100% भुगतान संपन्न"
+  }
+}

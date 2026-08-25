@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "farmerPortal": "🚜 ਕਿਸਾਨ ਪੋਰਟਲ",
+    "buyerMarket": "🏢 ਖਰੀਦਦਾਰ ਮੰਡੀ",
+    "fpoCollective": "👥 ਐਫਪੀਓ ਸਮੂਹ",
+    "transporterHub": "🚚 ਢੋਆ-ਢੁਆਈ ਕੇਂਦਰ",
+    "warehouseHub": "🏭 ਗੋਦਾਮ ਕੇਂਦਰ",
+    "governance": "⚖️ ਨਿਗਰਾਨੀ",
+    "digilockerKyc": "ਡਿਜੀਲੌਕਰ ਈ-ਕੇਵਾਈਸੀ:",
+    "verified": "ਤਸਦੀਕਸ਼ੁਦਾ",
+    "signOut": "ਲਾਗ ਆਉਟ",
+    "liveMandiFeed": "ਐਗਮਾਰਕਨੈੱਟ ਲਾਈਵ ਭਾਅ:",
+    "lastUpdated": "ਆਖਰੀ ਅੱਪਡੇਟ:"
+  },
+  "dashboard": {
+    "farmerName": "ਰਮੇਸ਼ ਪਾਟਿਲ",
+    "location": "ਨਾਸਿਕ, ਮਹਾਰਾਸ਼ਟਰ",
+    "digilockerVerified": "ਡਿਜੀਲੌਕਰ ਤਸਦੀਕਸ਼ੁਦਾ",
+    "lotsActive": "ਸਰਗਰਮ ਲਾਟ",
+    "lotActive": "ਸਰਗਰਮ ਲਾਟ",
+    "fpoEnrolled": "ਐਫਪੀਓ ਰਜਿਸਟਰਡ: ਨਾਸਿਕ ਈਸਟ",
+    "soloHaulage": "ਸੁਤੰਤਰ ਸਿੱਧੀ ਢੋਆ-ਢੁਆਈ",
+    "listNewCropProduce": "ਨਵੀਂ ਫਸਲ ਦੀ ਸੂਚੀ ਬਣਾਓ",
+    "overview": "ਸੰਖੇਪ",
+    "joinFpoPool": "ਐਫਪੀਓ ਪੂਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ",
+    "aiQualityInspection": "ਏਆਈ ਗੁਣਵੱਤਾ ਜਾਂਚ",
+    "marketIntelligence": "ਮੰਡੀ ਜਾਣਕਾਰੀ",
+    "escrowRails": "ਐਸਕਰੋ ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ",
+    "whatsappBot": "ਵਟਸਐਪ ਬੋਟ"
+  },
+  "kpi": {
+    "aiQualityGrade": "ਏਆਈ ਕੁਆਲਿਟੀ ਗ੍ਰੇਡ",
+    "aiVerified": "ਏਆਈ ਪ੍ਰਮਾਣਿਤ",
+    "highestActiveBid": "ਸਭ ਤੋਂ ਉੱਚੀ ਬੋਲੀ",
+    "aboveFloor": "ਘੱਟੋ-ਘੱਟ ਤੋਂ ਵੱਧ",
+    "escrowSecurity": "ਐਸਕਰੋ ਸੁਰੱਖਿਆ",
+    "locked100": "100% ਸੁਰੱਖਿਅਤ ਲਾਕ",
+    "guarantee": "ਗਾਰੰਟੀਸ਼ੁਦਾ ਰਕਮ",
+    "rbiCompliantEscrow": "ਆਰਬੀਆਈ-ਅਨੁਕੂਲ ਐਸਕਰੋ",
+    "freightPooling": "ਕਿਰਾਇਆ ਬੱਚਤ",
+    "costSavings": "ਲਾਗਤ ਬੱਚਤ",
+    "individual": "ਵਿਅਕਤੀਗਤ",
+    "sharedDeliveryRoute": "ਸਾਂਝਾ ਢੋਆ-ਢੁਆਈ ਰਸਤਾ"
+  },
+  "fpo": {
+    "smartRoutePooling": "ਸਮਾਰਟ ਰੂਟ ਪੂਲਿੰਗ:",
+    "connectedToFpo": "ਨਾਸਿਕ ਈਸਟ ਸਮੂਹ ਨਾਲ ਜੁੜਿਆ ਹੋਇਆ",
+    "individualTransportActive": "ਨਿੱਜੀ ਢੋਆ-ਢੁਆਈ ਸਰਗਰਮ",
+    "fpoSavingsDesc": "ਤੁਹਾਡੀ ਫਸਲ 14 ਗੁਆਂਢੀ ਕਿਸਾਨਾਂ ਨਾਲ 45-ਟਨ ਟਰੱਕ ਵਿੱਚ ਭੇਜੀ ਜਾ ਰਹੀ ਹੈ, ਜਿਸ ਨਾਲ ਮੰਡੀ ਤੱਕ ਭਾੜੇ ਦੀ ਬੱਚਤ ਹੋ ਰਹੀ ਹੈ।",
+    "fpoJoinDesc": "ਢੋਆ-ਢੁਆਈ ਲਾਗਤ ਵਿੱਚ ~35.1% ਦੀ ਬੱਚਤ ਲਈ ਨਾਸਿਕ ਈਸਟ ਕਿਸਾਨ ਕੰਪਨੀ ਦੇ ਸਾਂਝੇ ਰੂਟ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ।",
+    "manageFpoPoolLots": "ਐਫਪੀਓ ਲਾਟ ਪ੍ਰਬੰਧਿਤ ਕਰੋ",
+    "joinPoolCta": "ਨਾਸਿਕ ਈਸਟ ਪੂਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ (-35.1% ਕਿਰਾਇਆ)",
+    "leaveModalTitle": "ਕੀ ਤੁਸੀਂ ਐਫਪੀਓ ਸਮੂਹ ਛੱਡਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "leaveModalDesc": "ਸਾਰੀਆਂ ਲਾਟਾਂ ਹਟਾਉਣ ਨਾਲ ਤੁਹਾਡਾ ਸਾਂਝਾ ਰੂਟ ਰੱਦ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਆਮ ਕਿਰਾਇਆ ਲਾਗੂ ਹੋਵੇਗਾ।",
+    "financialImpact": "ਅੰਦਾਜ਼ਨ ਵਿੱਤੀ ਪ੍ਰਭਾਵ:",
+    "forfeitWarning": "ਤੁਸੀਂ ਆਪਣੀ ਸਰਗਰਮ ਫਸਲ 'ਤੇ ਮਿਲਣ ਵਾਲੀ ਕਿਰਾਇਆ ਬੱਚਤ ਗੁਆ ਬੈਠੋਗੇ।"
+  },
+  "listings": {
+    "myActiveListings": "ਮੇਰੀਆਂ ਸਰਗਰਮ ਫਸਲ ਲਿਸਟਿੰਗਾਂ",
+    "listingsSubtitle": "ਕਿਸਾਨਸੇਤੂ ਖਰੀਦਦਾਰ ਨੈੱਟਵਰਕ 'ਤੇ ਸਿੱਧੇ ਪ੍ਰਕਾਸ਼ਿਤ ਫਸਲ ਲਾਟ",
+    "noListingsTitle": "ਅਜੇ ਕੋਈ ਫਸਲ ਸੂਚੀਬੱਧ ਨਹੀਂ ਹੈ",
+    "noListingsDesc": "ਖਰੀਦਦਾਰਾਂ ਤੋਂ ਵਧੀਆ ਬੋਲੀਆਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੀ ਨਵੀਂ ਫਸਲ ਸੂਚੀਬੱਧ ਕਰੋ।",
+    "listFirstLot": "ਪਹਿਲੀ ਫਸਲ ਲਾਟ ਸ਼ਾਮਲ ਕਰੋ",
+    "delistTooltip": "ਲਾਟ ਹਟਾਓ",
+    "confirmDeleteTitle": "ਕੀ ਤੁਸੀਂ ਫਸਲ ਲਿਸਟਿੰਗ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "confirmDeleteDesc": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਇਸ ਲਿਸਟਿੰਗ ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ? ਖਰੀਦਦਾਰ ਇਸ ਲਾਟ 'ਤੇ ਬੋਲੀ ਨਹੀਂ ਲਗਾ ਸਕਣਗੇ।",
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "deleteListing": "ਲਿਸਟਿੰਗ ਹਟਾਓ",
+    "payload": "ਭਾਰ / ਮਾਤਰਾ",
+    "askingPrice": "ਘੱਟੋ-ਘੱਟ ਮੰਗ ਭਾਅ",
+    "pooled": "ਸਾਂਝਾ ਪੂਲ",
+    "solo": "ਇਕੱਲਾ",
+    "farmgate": "ਫਾਰਮਗੇਟ (ਖੇਤ 'ਤੇ)",
+    "coldStorage": "ਨਿਫਾੜ ਕੋਲਡ ਸਟੋਰੇਜ (e-NWR)"
+  },
+  "escrow": {
+    "buyerFundsEscrowed": "ਖਰੀਦਦਾਰ ਰਕਮ ਐਸਕਰੋ ਵਿੱਚ ਸੁਰੱਖਿਅਤ",
+    "inRbiEscrow": "ਆਰਬੀਆਈ-ਅਨੁਕੂਲ ਐਸਕਰੋ ਵਿੱਚ",
+    "advanceDisbursed": "ਤੇਲ ਅਗਾਊਂ ਜਾਰੀ (30%)",
+    "inTransit": "ਫਸਲ ਰਸਤੇ ਵਿੱਚ ਹੈ",
+    "settled": "ਆਧਾਰ ਡੀਬੀਟੀ ਰਾਹੀਂ 100% ਭੁਗਤਾਨ ਖਾਤੇ ਵਿੱਚ ਜਮ੍ਹਾਂ"
+  }
+}

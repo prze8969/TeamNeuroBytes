@@ -1,0 +1,83 @@
+{
+  "nav": {
+    "farmerPortal": "🚜 शेतकरी पोर्टल",
+    "buyerMarket": "🏢 खरेदीदार बाजार",
+    "fpoCollective": "👥 एफपीओ गट",
+    "transporterHub": "🚚 वाहतूक केंद्र",
+    "warehouseHub": "🏭 गोदाम केंद्र",
+    "governance": "⚖️ नियमन व नियंत्रण",
+    "digilockerKyc": "डिजीलॉकर ई-केवायसी:",
+    "verified": "प्रमाणित",
+    "signOut": "बाहेर पडा",
+    "liveMandiFeed": "एगमार्कनेट थेट भाव:",
+    "lastUpdated": "शेवटचे अपडेट:"
+  },
+  "dashboard": {
+    "farmerName": "रमेश पाटील",
+    "location": "नाशिक, महाराष्ट्र",
+    "digilockerVerified": "डिजीलॉकर प्रमाणित शेतकरी",
+    "lotsActive": "सक्रिय लॉट्स",
+    "lotActive": "सक्रिय लॉट",
+    "fpoEnrolled": "एफपीओ नोंदणी: नाशिक पूर्व",
+    "soloHaulage": "स्वतंत्र थेट वाहतूक",
+    "listNewCropProduce": "नवीन पीक उत्पादन जोडा",
+    "overview": "आढावा",
+    "joinFpoPool": "एफपीओ गटात सामील व्हा",
+    "aiQualityInspection": "एआय गुणवत्ता तपासणी",
+    "marketIntelligence": "बाजार माहिती",
+    "escrowRails": "एस्क्रो सुरक्षित पेमेंट",
+    "whatsappBot": "व्हॉट्सॲप बॉट"
+  },
+  "kpi": {
+    "aiQualityGrade": "एआय गुणवत्ता प्रत",
+    "aiVerified": "एआय प्रमाणित",
+    "highestActiveBid": "सर्वोच्च सक्रिय बोली",
+    "aboveFloor": "किमान भावापेक्षा जास्त",
+    "escrowSecurity": "एस्क्रो सुरक्षा",
+    "locked100": "100% सुरक्षित लॉक",
+    "guarantee": "हमी रक्कम",
+    "rbiCompliantEscrow": "आरबीआय-सुसंगत एस्क्रो",
+    "freightPooling": "वाहतूक भाडे बचत",
+    "costSavings": "खर्च बचत",
+    "individual": "स्वतंत्र",
+    "sharedDeliveryRoute": "सामायिक वाहतूक मार्ग"
+  },
+  "fpo": {
+    "smartRoutePooling": "स्मार्ट रूट पूलिंग:",
+    "connectedToFpo": "नाशिक पूर्व शेतकरी गटाशी जोडलेले",
+    "individualTransportActive": "स्वतंत्र वाहतूक सक्रिय",
+    "fpoSavingsDesc": "आपला शेतमाल 14 शेजारील शेतकऱ्यांसोबत 45-टन ट्रकमध्ये पाठवला जात असून वाशी मार्केटपर्यंत भाड्यात मोठी बचत होत आहे.",
+    "fpoJoinDesc": "वाहतूक खर्चात ~35.1% बचत करण्यासाठी नाशिक पूर्व शेतकरी उत्पादक कंपनीच्या सामायिक वाहतूक मार्गात सामील व्हा.",
+    "manageFpoPoolLots": "एफपीओ लॉट्स व्यवस्थापित करा",
+    "joinPoolCta": "नाशिक पूर्व गटात सामील व्हा (-35.1% भाडे)",
+    "leaveModalTitle": "एफपीओ गट सोडायचा आहे का?",
+    "leaveModalDesc": "सर्व लॉट्स काढून टाकल्यास आपले सामायिक वाहतूक आरक्षण रद्द होईल आणि नियमित स्वतंत्र दर लागू होतील.",
+    "financialImpact": "अंदाजे आर्थिक परिणाम:",
+    "forfeitWarning": "आपल्या शेतमालावर मिळणारी वाहतूक भाडे बचत रद्द होईल."
+  },
+  "listings": {
+    "myActiveListings": "माझे सक्रिय शेतमाल लॉट्स",
+    "listingsSubtitle": "किसानसेतू खरेदीदार नेटवर्कवर थेट प्रकाशित शेतमाल",
+    "noListingsTitle": "सध्या कोणताही शेतमाल नोंदवलेला नाही",
+    "noListingsDesc": "थेट खरेदीदारांकडून सर्वोत्तम बोली मिळवण्यासाठी आपल्या शेतमालाची नोंदणी करा.",
+    "listFirstLot": "पहिला शेतमाल लॉट जोडा",
+    "delistTooltip": "लॉट काढून टाका",
+    "confirmDeleteTitle": "शेतमाल नोंदणी काढून टाकायची आहे का?",
+    "confirmDeleteDesc": "आपण नक्की ही नोंदणी काढू इच्छिता? खरेदीदारांना या लॉटवर बोली लावता येणार नाही.",
+    "cancel": "रद्द करा",
+    "deleteListing": "नोंदणी काढा",
+    "payload": "वजन / प्रमाण",
+    "askingPrice": "अपेक्षित किमान भाव",
+    "pooled": "सामायिक गट",
+    "solo": "स्वतंत्र",
+    "farmgate": "खेतवार (शेत बांधावर)",
+    "coldStorage": "निफाड कोल्ड स्टोरेज (e-NWR)"
+  },
+  "escrow": {
+    "buyerFundsEscrowed": "खरेदीदाराची रक्कम एस्क्रोमध्ये सुरक्षित",
+    "inRbiEscrow": "आरबीआय-सुसंगत एस्क्रोमध्ये",
+    "advanceDisbursed": "इंधन ॲडव्हान्स वितरीत (30%)",
+    "inTransit": "शेतमाल वाहतुकीत आहे",
+    "settled": "आधार डीबीटीद्वारे 100% रक्कम खात्यात जमा"
+  }
+}

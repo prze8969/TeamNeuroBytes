@@ -6,17 +6,20 @@ import { Button } from '@/components/ui/button';
 
 import { Clock, TrendingUp } from 'lucide-react';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
+import { useTranslations } from '@/lib/LocaleContext';
 
 export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   const pathname = usePathname();
+  const t = useTranslations('nav');
 
   const links = [
-    { label: '🚜 Farmer Portal', href: '/farmer/dashboard' },
-    { label: '🏢 Buyer Market', href: '/buyer/dashboard' },
-    { label: '👥 FPO Collective', href: '/fpo/dashboard' },
-    { label: '🚚 Transporter Hub', href: '/transportation/dashboard' },
-    { label: '🏭 Warehouse Hub', href: '/warehouse/dashboard' },
-    { label: '⚖️ Governance', href: '/admin/dashboard' },
+    { label: t('farmerPortal'), href: '/farmer/dashboard' },
+    { label: t('buyerMarket'), href: '/buyer/dashboard' },
+    { label: t('fpoCollective'), href: '/fpo/dashboard' },
+    { label: t('transporterHub'), href: '/transportation/dashboard' },
+    { label: t('warehouseHub'), href: '/warehouse/dashboard' },
+    { label: t('governance'), href: '/admin/dashboard' },
   ];
 
   return (
@@ -27,9 +30,10 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
           <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span className="font-extrabold uppercase tracking-wider text-emerald-300 flex items-center gap-1">
             <TrendingUp size={12} className="text-emerald-400" />
-            Agmarknet Live Feed:
+            {t('liveMandiFeed')}
           </span>
         </div>
+        {/* TODO: dynamic content translation via Bhashini API */}
         <div className="flex gap-6 font-medium">
           <span>🌾 Nashik Wheat: <strong className="text-white font-bold font-mono">₹25.50/kg</strong> (+₹1.20)</span>
           <span>🧅 Lasalgaon Onion: <strong className="text-white font-bold font-mono">₹21.50/kg</strong> (+₹0.80)</span>
@@ -38,7 +42,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
         </div>
         <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-emerald-300/90 font-mono text-[10px]">
           <Clock size={11} className="text-emerald-400" />
-          <span>Last updated: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          <span>{t('lastUpdated')} {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
       </div>
 
@@ -77,18 +81,21 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
           </nav>
         </div>
 
-        {/* User Status & Sign Out */}
+        {/* User Status, Language Switcher & Sign Out */}
         <div className="flex items-center space-x-3">
           <div className="hidden sm:flex items-center gap-2 bg-emerald-950/80 border border-emerald-700/60 px-3 py-1.5 rounded-xl text-xs">
             <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-            <span className="text-emerald-200 font-medium">DigiLocker KYC:</span>
-            <span className="bg-emerald-500 text-slate-950 font-black px-1.5 py-0.2 rounded text-[10px]">VERIFIED</span>
+            <span className="text-emerald-200 font-medium">{t('digilockerKyc')}</span>
+            <span className="bg-emerald-500 text-slate-950 font-black px-1.5 py-0.2 rounded text-[10px]">{t('verified')}</span>
           </div>
+
+          {/* Multilingual 8-Language Switcher */}
+          <LanguageSwitcher />
 
           <Button
             variant="outline"
             size="sm"
-            className="text-xs h-9 bg-emerald-800/80 border-emerald-700 text-white hover:bg-emerald-700 hover:text-white font-bold"
+            className="text-xs h-9 bg-emerald-800/80 border-emerald-700 text-white hover:bg-emerald-700 hover:text-white font-bold cursor-pointer"
             onClick={() => {
               document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
               document.cookie = "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
@@ -98,7 +105,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
               window.location.href = '/login';
             }}
           >
-            Sign Out
+            {t('signOut')}
           </Button>
         </div>
       </div>
