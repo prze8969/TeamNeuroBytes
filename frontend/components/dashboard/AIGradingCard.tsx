@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, Camera, CheckCircle2, Sparkles, AlertCircle, RefreshCw, Layers } from 'lucide-react';
+import { useTranslations } from '@/lib/LocaleContext';
 
 export interface GradingResult {
   commodity: string;
@@ -18,6 +19,8 @@ export interface GradingResult {
 }
 
 export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingResult) => void }) {
+  const t = useTranslations('aiGrading');
+
   const [analyzing, setAnalyzing] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(
     'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'
@@ -196,12 +199,12 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-extrabold text-slate-900">YOLOv8 AI Crop Quality Inspection</h3>
+              <h3 className="text-base font-extrabold text-slate-900">{t('title')}</h3>
               <span className="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[10px] font-extrabold uppercase border border-emerald-200">
-                Live Vision Engine
+                {t('badge')}
               </span>
             </div>
-            <p className="text-xs text-slate-500">Instant produce defect detection, color uniformity analysis, and Agmarknet certification</p>
+            <p className="text-xs text-slate-500">{t('subtitle')}</p>
           </div>
         </div>
 
@@ -220,7 +223,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             className="h-9 px-4 text-xs bg-emerald-700 hover:bg-emerald-800 text-white font-bold gap-1.5 shadow-sm cursor-pointer"
           >
             <Upload className="w-3.5 h-3.5" />
-            Upload Your Crop Photo
+            {t('uploadPhoto')}
           </Button>
         </div>
       </div>
@@ -237,16 +240,16 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
         <div className="lg:col-span-5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-              Quick Crop Presets:
+              {t('quickPresets')}
             </span>
-            <span className="text-[10px] text-slate-400 font-medium">Or upload custom photo</span>
+            <span className="text-[10px] text-slate-400 font-medium">{t('orUpload')}</span>
           </div>
 
           <div className="grid grid-cols-5 gap-1.5">
             <button
               type="button"
               onClick={() => handlePresetSelect('banana')}
-              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer ${
                 activePreset === 'banana'
                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
@@ -257,7 +260,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             <button
               type="button"
               onClick={() => handlePresetSelect('onion')}
-              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer ${
                 activePreset === 'onion'
                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
@@ -268,7 +271,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             <button
               type="button"
               onClick={() => handlePresetSelect('tomato')}
-              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer ${
                 activePreset === 'tomato'
                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
@@ -279,7 +282,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             <button
               type="button"
               onClick={() => handlePresetSelect('wheat')}
-              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer ${
                 activePreset === 'wheat'
                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
@@ -290,7 +293,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             <button
               type="button"
               onClick={() => handlePresetSelect('potato')}
-              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border ${
+              className={`py-1.5 px-2 rounded-xl text-xs font-bold text-center transition-all border cursor-pointer ${
                 activePreset === 'potato'
                   ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
@@ -343,7 +346,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                 className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 cursor-pointer"
               >
                 <Camera className="w-3 h-3" />
-                Change Image
+                {t('changeImage')}
               </Button>
             </div>
           </div>
@@ -364,7 +367,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
               <div className="flex items-center justify-between border-b border-emerald-200/80 pb-3">
                 <div>
                   <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-500 block">
-                    AI Classified Commodity
+                    {t('classifiedCommodity')}
                   </span>
                   <h4 className="text-xl font-black text-slate-900">{result.commodity}</h4>
                 </div>
@@ -387,21 +390,21 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
               {/* 4 Precision Metric Boxes */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Quality Score</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{t('qualityScore')}</span>
                   <p className={`text-xl font-black ${result.isPassed ? 'text-emerald-700' : 'text-rose-600'}`}>
                     {result.score}%
                   </p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Surface Defect</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{t('surfaceDefect')}</span>
                   <p className="text-xl font-black text-rose-600">{result.defectPercent}%</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Moisture Est.</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{t('moistureEst')}</span>
                   <p className="text-xl font-black text-blue-700">{result.moisturePercent}%</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-emerald-100 text-center space-y-0.5 shadow-xs">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Uniformity</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{t('uniformity')}</span>
                   <p className="text-xl font-black text-purple-700">{result.ripenessIndex}%</p>
                 </div>
               </div>
@@ -416,7 +419,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   {result.isPassed ? (
                     <>
                       <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                      <span className="text-emerald-800">Agmarknet Commercial Trade Advisory</span>
+                      <span className="text-emerald-800">{t('advisoryTitle')}</span>
                     </>
                   ) : (
                     <>
@@ -444,8 +447,8 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                 >
                   <Layers className="w-4 h-4" />
                   {result.isPassed
-                    ? 'Use This Certified Grade to List New Crop Lot'
-                    : '❌ Cannot List: Non-Agricultural Produce'}
+                    ? t('useGradeCTA')
+                    : t('cannotListCTA')}
                 </Button>
               )}
             </>

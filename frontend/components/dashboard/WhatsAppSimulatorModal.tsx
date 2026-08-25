@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/lib/LocaleContext';
 
 interface ChatMessage {
   sender: 'bot' | 'farmer';
@@ -11,6 +12,8 @@ interface ChatMessage {
 }
 
 export function WhatsAppSimulatorModal() {
+  const t = useTranslations('whatsappSimulator');
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       sender: 'bot',
@@ -91,12 +94,12 @@ export function WhatsAppSimulatorModal() {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <h3 className="text-sm font-black tracking-tight text-white">KisanSetu Official Bot</h3>
-              <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-1.5 rounded font-extrabold">✓ VERIFIED</span>
+              <h3 className="text-sm font-black tracking-tight text-white">{t('botTitle')}</h3>
+              <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-1.5 rounded font-extrabold">{t('verified')}</span>
             </div>
             <p className="text-[11px] text-emerald-200/90 flex items-center gap-1">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-              Online • Cloud API Webhook
+              {t('status')}
             </p>
           </div>
         </div>
@@ -125,47 +128,47 @@ export function WhatsAppSimulatorModal() {
         {loading && (
           <div className="mr-auto bg-[#202c33] text-slate-300 p-2.5 rounded-xl text-[11px] italic border border-slate-700/60 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-            KisanSetu Bot is typing...
+            {t('typing')}
           </div>
         )}
       </div>
 
       {/* Quick Action Chips */}
       <div className="flex flex-wrap gap-1.5 pt-1">
-        <span className="text-[10px] uppercase font-bold text-slate-400 self-center">Quick Prompts:</span>
+        <span className="text-[10px] uppercase font-bold text-slate-400 self-center">{t('quickPrompts')}</span>
         <button
           onClick={() => sendMessage('1')}
-          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all"
+          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all cursor-pointer"
         >
-          1️⃣ List New Crop
+          {t('listNewCrop')}
         </button>
         <button
           onClick={() => sendMessage('2')}
-          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all"
+          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all cursor-pointer"
         >
-          2️⃣ APMC Rates
+          {t('apmcRates')}
         </button>
         <button
           onClick={() => sendMessage('3')}
-          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all"
+          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all cursor-pointer"
         >
-          3️⃣ Escrow Payouts
+          {t('escrowPayouts')}
         </button>
         <button
           onClick={() => sendMessage('Sharbati Wheat')}
-          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all"
+          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all cursor-pointer"
         >
           🌾 Sharbati Wheat
         </button>
         <button
           onClick={() => sendMessage('50 Quintal, ₹26/kg')}
-          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all"
+          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all cursor-pointer"
         >
           📦 50 Qtl, ₹26/kg
         </button>
         <button
           onClick={() => sendMessage('MENU')}
-          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all"
+          className="text-xs bg-slate-950 hover:bg-emerald-950 hover:text-emerald-300 text-slate-300 px-3 py-1 rounded-full border border-slate-800 transition-all cursor-pointer"
         >
           🔄 MENU
         </button>
@@ -174,7 +177,7 @@ export function WhatsAppSimulatorModal() {
       {/* Input row */}
       <div className="flex gap-2">
         <Input
-          placeholder="Type message as farmer (e.g. 1, 2, 'Sharbati Wheat')..."
+          placeholder={t('placeholder')}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
@@ -182,9 +185,9 @@ export function WhatsAppSimulatorModal() {
         />
         <Button
           onClick={() => sendMessage()}
-          className="bg-[#00a884] hover:bg-[#02735e] text-slate-950 font-black text-xs px-6 h-10 shadow-lg shadow-emerald-500/20"
+          className="bg-[#00a884] hover:bg-[#02735e] text-slate-950 font-black text-xs px-6 h-10 shadow-lg shadow-emerald-500/20 cursor-pointer"
         >
-          Send
+          {t('send')}
         </Button>
       </div>
     </div>

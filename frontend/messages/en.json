@@ -73,11 +73,87 @@
     "farmgate": "Farmgate",
     "coldStorage": "Niphad Cold Storage (e-NWR)"
   },
+  "bidTable": {
+    "title": "Active Buyer Bids & Escrow Status",
+    "subtitle": "Institutional tenders backed by 100% RBI-regulated bank escrow locking",
+    "liveBid": "Live Bid",
+    "liveBids": "Live Bids",
+    "buyer": "Institutional Buyer",
+    "offerRate": "Offer Rate",
+    "totalValuation": "Total Valuation",
+    "escrowStatus": "Escrow Status",
+    "timestamp": "Timestamp",
+    "action": "Action",
+    "acceptedVaultLocked": "Accepted & Vault Locked",
+    "acceptAndLock": "Accept Bid & Lock Escrow",
+    "noBids": "No active bids placed yet."
+  },
+  "priceChart": {
+    "title": "Agmarknet Price Discovery & 7-Day AI Forecast",
+    "subtitle": "Modal price trends, market arrival volumes, and predictive price floors",
+    "todayModal": "Today's Modal",
+    "forecast7D": "7-Day Forecast",
+    "currentModal": "Current Modal:",
+    "forecast": "7D AI Forecast:",
+    "range": "Range:"
+  },
+  "sellVsWait": {
+    "title": "APMC Net Realisation & Sell vs. Wait Engine",
+    "badge": "Predictive AI",
+    "subtitle": "Post-harvest decay modeling, cold storage cost balancing, and 7-day Agmarknet forecast analysis",
+    "commodity": "Commodity",
+    "lotWeight": "Lot Weight (kg)",
+    "todayModal": "Today's Modal (₹/kg)",
+    "holdPeriod": "Hold Period (Days)",
+    "sellToday": "Option A: Sell Today",
+    "immediateRealisation": "Immediate realization at",
+    "holdingCost": "Holding Costs + Decay Loss",
+    "storageCost": "Storage:",
+    "decay": "Decay:",
+    "projectedFuture": "Option B: Projected Net Future",
+    "netGain": "Net Gain",
+    "netLoss": "Net Loss",
+    "strategyRecommendation": "AI Strategy Recommendation:",
+    "applyToLot": "Apply to Lot #LOT-99"
+  },
+  "aiGrading": {
+    "title": "YOLOv8 AI Crop Quality Inspection",
+    "badge": "Live Vision Engine",
+    "subtitle": "Instant produce defect detection, color uniformity analysis, and Agmarknet certification",
+    "uploadPhoto": "Upload Your Crop Photo",
+    "quickPresets": "Quick Crop Presets:",
+    "orUpload": "Or upload custom photo",
+    "changeImage": "Change Image",
+    "classifiedCommodity": "AI Classified Commodity",
+    "qualityScore": "Quality Score",
+    "surfaceDefect": "Surface Defect",
+    "moistureEst": "Moisture Est.",
+    "uniformity": "Uniformity",
+    "advisoryTitle": "Agmarknet Commercial Trade Advisory",
+    "useGradeCTA": "Use This Certified Grade to List New Crop Lot",
+    "cannotListCTA": "❌ Cannot List: Non-Agricultural Produce"
+  },
+  "whatsappSimulator": {
+    "botTitle": "KisanSetu Official Bot",
+    "verified": "VERIFIED",
+    "status": "Online • Cloud API Webhook",
+    "typing": "KisanSetu Bot is typing...",
+    "quickPrompts": "Quick Prompts:",
+    "listNewCrop": "1️⃣ List New Crop",
+    "apmcRates": "2️⃣ APMC Rates",
+    "escrowPayouts": "3️⃣ Escrow Payouts",
+    "placeholder": "Type message as farmer (e.g. 1, 2, 'Sharbati Wheat')...",
+    "send": "Send"
+  },
   "escrow": {
     "buyerFundsEscrowed": "Buyer Funds Escrowed",
     "inRbiEscrow": "in RBI-compliant escrow",
     "advanceDisbursed": "Fuel Advance Released (30%)",
     "inTransit": "Produce In Transit",
-    "settled": "Settled via Aadhaar DBT (100%)"
+    "settled": "Settled via Aadhaar DBT (100%)",
+    "releaseAdvance": "Release 30% Fuel Advance",
+    "verifyDelivery": "Verify Delivery with 4-Digit Handshake OTP",
+    "disburseSettlement": "Trigger 100% Aadhaar DBT Payout",
+    "escrowProgress": "Milestone Escrow Completion"
   }
 }

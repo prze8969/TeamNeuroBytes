@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/lib/LocaleContext';
 
 export interface EscrowMilestoneState {
   escrowId: number;
@@ -33,6 +34,8 @@ export interface EscrowMilestoneState {
 }
 
 export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMilestoneState> }) {
+  const t = useTranslations('escrow');
+
   const [escrow, setEscrow] = useState<EscrowMilestoneState>({
     escrowId: 101,
     lotId: 1,
@@ -202,10 +205,10 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
             </span>
           </div>
           <h4 className="font-extrabold text-xs text-slate-900 mt-2.5">
-            Buyer Funds Escrowed
+            {t('buyerFundsEscrowed')}
           </h4>
           <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-            ₹{escrow.totalDeposit.toLocaleString('en-IN')} in RBI-compliant escrow
+            ₹{escrow.totalDeposit.toLocaleString('en-IN')} {t('inRbiEscrow')}
           </p>
         </div>
 

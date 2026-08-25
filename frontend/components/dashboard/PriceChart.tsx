@@ -1,6 +1,7 @@
 'use client'
 
 import { MandiPrice } from '@/lib/types';
+import { useTranslations } from '@/lib/LocaleContext';
 
 interface PriceChartProps {
   commodity: string;
@@ -8,22 +9,24 @@ interface PriceChartProps {
 }
 
 export function PriceChart({ commodity, mandiPrices }: PriceChartProps) {
+  const t = useTranslations('priceChart');
+
   return (
     <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-50 pb-3">
         <div className="flex items-center gap-2.5">
           <span className="text-xl">📊</span>
           <div>
-            <h3 className="text-base font-extrabold text-slate-900">Agmarknet Price Discovery & 7-Day AI Forecast</h3>
-            <p className="text-xs text-slate-500">Modal price trends, market arrival volumes, and predictive price floors for {commodity}</p>
+            <h3 className="text-base font-extrabold text-slate-900">{t('title')}</h3>
+            <p className="text-xs text-slate-500">{t('subtitle')} ({commodity})</p>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <span className="flex items-center gap-1 text-emerald-700 font-bold">
-            <span className="h-2 w-2 rounded-full bg-emerald-600"></span> Today's Modal
+            <span className="h-2 w-2 rounded-full bg-emerald-600"></span> {t('todayModal')}
           </span>
           <span className="flex items-center gap-1 text-purple-700 font-bold">
-            <span className="h-2 w-2 rounded-full bg-purple-600"></span> 7-Day Forecast
+            <span className="h-2 w-2 rounded-full bg-purple-600"></span> {t('forecast7D')}
           </span>
         </div>
       </div>
@@ -54,19 +57,19 @@ export function PriceChart({ commodity, mandiPrices }: PriceChartProps) {
 
               <div className="pt-1 border-t border-emerald-100 space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">Current Modal:</span>
+                  <span className="text-slate-500">{t('currentModal')}</span>
                   <strong className="text-emerald-700 font-mono font-bold">
                     ₹{(p.modalPrice / (p.modalPrice > 100 ? 100 : 1)).toFixed(2)}/kg
                   </strong>
                 </div>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-500">7D AI Forecast:</span>
+                  <span className="text-slate-500">{t('forecast')}</span>
                   <strong className="text-purple-700 font-mono font-bold">
                     ₹{((p.forecastNextWeek || p.modalPrice) / ((p.forecastNextWeek || p.modalPrice) > 100 ? 100 : 1)).toFixed(2)}/kg
                   </strong>
                 </div>
                 <div className="flex justify-between text-[10px] text-slate-400 pt-0.5">
-                  <span>Range: ₹{(p.minPrice / (p.minPrice > 100 ? 100 : 1)).toFixed(0)} - ₹{(p.maxPrice / (p.maxPrice > 100 ? 100 : 1)).toFixed(0)}</span>
+                  <span>{t('range')} ₹{(p.minPrice / (p.minPrice > 100 ? 100 : 1)).toFixed(0)} - ₹{(p.maxPrice / (p.maxPrice > 100 ? 100 : 1)).toFixed(0)}</span>
                   <span>{p.date}</span>
                 </div>
               </div>

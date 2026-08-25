@@ -4,6 +4,7 @@ import React from 'react';
 import { Bid } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ShieldCheck, Lock, Clock } from 'lucide-react';
+import { useTranslations } from '@/lib/LocaleContext';
 
 interface BidTableProps {
   bids: Bid[];
@@ -12,6 +13,8 @@ interface BidTableProps {
 }
 
 export function BidTable({ bids, onAcceptBid, isFarmerView = false }: BidTableProps) {
+  const t = useTranslations('bidTable');
+
   return (
     <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs space-y-5">
       
@@ -21,15 +24,15 @@ export function BidTable({ bids, onAcceptBid, isFarmerView = false }: BidTablePr
           <div className="flex items-center gap-2">
             <span className="text-xl">💼</span>
             <h3 className="text-lg font-black text-slate-900 tracking-tight">
-              Active Buyer Bids &amp; Escrow Status
+              {t('title')}
             </h3>
           </div>
           <p className="text-xs text-slate-500">
-            Institutional tenders backed by 100% RBI-regulated bank escrow locking
+            {t('subtitle')}
           </p>
         </div>
         <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 text-xs font-black font-mono self-start sm:self-auto">
-          {bids.length} {bids.length === 1 ? 'Live Bid' : 'Live Bids'}
+          {bids.length} {bids.length === 1 ? t('liveBid') : t('liveBids')}
         </span>
       </div>
 
@@ -38,12 +41,12 @@ export function BidTable({ bids, onAcceptBid, isFarmerView = false }: BidTablePr
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="border-b border-slate-100 text-[10px] uppercase font-bold text-slate-400 bg-slate-50/70">
-              <th className="py-3.5 px-4 rounded-l-xl">Institutional Buyer</th>
-              <th className="py-3.5 px-4">Offer Rate</th>
-              <th className="py-3.5 px-4">Total Valuation</th>
-              <th className="py-3.5 px-4">Escrow Status</th>
-              <th className="py-3.5 px-4">Timestamp</th>
-              {isFarmerView && <th className="py-3.5 px-4 text-right rounded-r-xl">Action</th>}
+              <th className="py-3.5 px-4 rounded-l-xl">{t('buyer')}</th>
+              <th className="py-3.5 px-4">{t('offerRate')}</th>
+              <th className="py-3.5 px-4">{t('totalValuation')}</th>
+              <th className="py-3.5 px-4">{t('escrowStatus')}</th>
+              <th className="py-3.5 px-4">{t('timestamp')}</th>
+              {isFarmerView && <th className="py-3.5 px-4 text-right rounded-r-xl">{t('action')}</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -107,7 +110,7 @@ export function BidTable({ bids, onAcceptBid, isFarmerView = false }: BidTablePr
                       {isLocked ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-black shadow-2xs font-mono">
                           <CheckCircle2 size={13} className="text-emerald-700" />
-                          Accepted &amp; Vault Locked
+                          {t('acceptedVaultLocked')}
                         </span>
                       ) : (
                         <Button
@@ -115,7 +118,7 @@ export function BidTable({ bids, onAcceptBid, isFarmerView = false }: BidTablePr
                           className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs h-9 px-4 rounded-xl shadow-xs transition-all cursor-pointer"
                           onClick={() => onAcceptBid && onAcceptBid(bid.id)}
                         >
-                          Accept Bid &amp; Lock Escrow
+                          {t('acceptAndLock')}
                         </Button>
                       )}
                     </td>
@@ -127,7 +130,7 @@ export function BidTable({ bids, onAcceptBid, isFarmerView = false }: BidTablePr
             {bids.length === 0 && (
               <tr>
                 <td colSpan={isFarmerView ? 6 : 5} className="text-center py-10 text-slate-400">
-                  No active bids placed yet.
+                  {t('noBids')}
                 </td>
               </tr>
             )}
