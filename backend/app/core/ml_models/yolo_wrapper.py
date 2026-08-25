@@ -174,32 +174,32 @@ class YOLOCropGradingModel:
                 if (65 <= hue <= 170) or (mean_g > mean_r * 1.15 and mean_g > 80):
                     detected_commodity = "Green Chilli / Capsicum"
                 # 2. Red crops: Tomato (bright red, high R/G ratio)
-                elif ((hue >= 345 or hue <= 20) and mean_r > 135 and mean_r > mean_g * 1.30 and sat > 0.30):
+                elif ((hue >= 340 or hue <= 22) and mean_r > 130 and mean_r > mean_g * 1.25 and sat > 0.28):
                     detected_commodity = "Tomato"
                 # 3. Purplish/Red Bulb crops: Onion (magenta/red-violet tones)
-                elif (260 <= hue < 345) or ((hue >= 325 or hue <= 15) and mean_b > 65 and mean_r > 105 and mean_b > mean_g * 0.70):
+                elif (260 <= hue < 345) or ((hue >= 320 or hue <= 18) and mean_b > 60 and mean_r > 105 and mean_b > mean_g * 0.65):
                     detected_commodity = "Onion"
-                # 4. Earthy Tuber crops: Potato (warm khaki / tan / earthy ochre skin, R is noticeably > G, sat between 0.15 and 0.42, hue 18° to 54°)
-                elif (16 <= hue <= 54) and (mean_r > 115 and mean_g > 85 and (mean_r - mean_g) >= 15 and (mean_r - mean_b) >= 30 and (sat <= 0.44 or (mean_r - mean_g) >= 22)):
-                    detected_commodity = "Potato"
-                # 5. Bright yellow fruit: Banana (pure vivid yellow peel, high R and high G close to each other, high saturation sat > 0.45, hue 45° to 65°)
-                elif (42 <= hue <= 68) and (mean_r > 175 and mean_g > 165 and (mean_g / (mean_r + 0.001)) >= 0.88 and sat >= 0.42 and (mean_g - mean_b) >= 50):
+                # 4. Yellow Fruit: Banana (distinct yellow peel with R & G high, B low, hue 28° to 72°, G/R >= 0.72, R > B + 30, G > B + 18)
+                elif (28 <= hue <= 72) and (mean_r > 140 and mean_g > 120 and (mean_g / (mean_r + 0.001)) >= 0.72 and (mean_r - mean_b) >= 30 and (mean_g - mean_b) >= 18):
                     detected_commodity = "Banana"
-                # 6. Grains: Wheat (golden amber grain kernels)
-                elif (mean_r > 175 and mean_g > 155 and abs(mean_r - mean_g) <= 30 and mean_b < 155):
+                # 5. Earthy Tuber crops: Potato (warm khaki / tan / earthy ochre skin, R is noticeably > G, sat between 0.15 and 0.42, hue 16° to 52°)
+                elif (16 <= hue <= 52) and (mean_r > 110 and mean_g > 80 and (mean_r - mean_g) >= 16 and (mean_g / (mean_r + 0.001)) < 0.82 and (mean_r - mean_b) >= 28 and sat <= 0.42):
+                    detected_commodity = "Potato"
+                # 6. Grains: Wheat (golden amber grain kernels, moderate brightness, sat < 0.35)
+                elif (mean_r > 135 and mean_g > 115 and abs(mean_r - mean_g) <= 35 and sat < 0.35 and mean_b < 145):
                     detected_commodity = "Wheat"
-                # 7. Grains: Rice / Paddy
-                elif (mean_r > 165 and mean_g > 165 and mean_b > 145 and sat < 0.22):
+                # 7. Grains: Rice / Paddy (light white/cream slender grain)
+                elif (mean_r > 165 and mean_g > 165 and mean_b > 140 and sat < 0.20):
                     detected_commodity = "Paddy / Rice"
-                # 8. Oilseeds: Soybean
-                elif (25 <= hue <= 65 and sat > 0.40 and mean_r > 160 and mean_g > 140):
+                # 8. Oilseeds: Soybean (yellow spherical seed)
+                elif (25 <= hue <= 65 and sat > 0.38 and mean_r > 150 and mean_g > 135):
                     detected_commodity = "Yellow Soybean"
                 # 9. Pulses: Chana / Chickpeas
-                elif (18 <= hue <= 48 and mean_r > 140 and mean_g > 110 and (mean_r - mean_g) >= 20):
+                elif (18 <= hue <= 48 and mean_r > 135 and mean_g > 105 and (mean_r - mean_g) >= 20):
                     detected_commodity = "Desi Chana (Chickpeas)"
                 # 10. Fallback heuristics for organic produce
                 elif mean_r > mean_g and mean_g > mean_b:
-                    if (mean_g / (mean_r + 0.001)) >= 0.90 and sat >= 0.45:
+                    if (mean_g / (mean_r + 0.001)) >= 0.75 and (mean_g - mean_b) >= 18:
                         detected_commodity = "Banana"
                     elif (mean_r - mean_g) >= 18:
                         detected_commodity = "Potato"
