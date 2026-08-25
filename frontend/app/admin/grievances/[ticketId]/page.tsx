@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { GrievanceStatusBadge, GrievanceStatus } from '@/components/grievance/GrievanceStatusBadge';
 import { EscrowStatusCard, EscrowStatus } from '@/components/grievance/EscrowStatusCard';
 import { SlaTimer } from '@/components/grievance/SlaTimer';
-import { mockGrievances, GrievanceTicket } from '@/components/grievance/mockData';
+import { getGrievanceById, resolveGrievanceTicket, GrievanceTicket } from '@/components/grievance/mockData';
 import { ArrowLeft, CheckCircle2, XCircle, AlertCircle, Scale, ShieldAlert } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function GrievanceDetailPage() {
   const params = useParams();
@@ -19,8 +20,7 @@ export default function GrievanceDetailPage() {
   const [ticket, setTicket] = useState<GrievanceTicket | null>(null);
 
   useEffect(() => {
-    // In a real app, this would be a fetch to /api/grievances/[ticketId]
-    const found = mockGrievances.find(t => t.id === ticketId);
+    const found = getGrievanceById(ticketId);
     if (found) {
       setTicket(found);
     }
@@ -35,14 +35,18 @@ export default function GrievanceDetailPage() {
   }
 
   const handleResolve = (action: 'REFUNDED' | 'RELEASED') => {
-    // Mock update
-    setTicket(prev => prev ? {
-      ...prev,
-      status: 'RESOLVED',
-      escrowStatus: 'RELEASED',
-      resolvedAt: new Date().toISOString(),
-      resolutionOutcome: action
-    } : null);
+    const resolved = resolveGrievanceTicket(ticketId, action);
+    if (resolved) {
+      setTicket(resolved);
+      toast.success(
+        action === 'REFUNDED' 
+          ? `Dispute #${ticketId} Resolved: Refunded to Buyer` 
+          : `Dispute #${ticketId} Resolved: Escrow Funds Released to Farmer`,
+        {
+          description: `Escrow vault status changed to ${resolved.escrowStatus}. Statutory audit record logged.`
+        }
+      );
+    }
   };
 
   return (
@@ -53,7 +57,7 @@ export default function GrievanceDetailPage() {
         {/* Navigation & Header */}
         <div className="flex items-center justify-between">
           <Link href="/admin/grievances">
-            <Button variant="outline" size="sm" className="text-xs font-bold text-slate-600 bg-white border-slate-200">
+            <Button variant="outline" size="sm" className="text-xs font-bold text-slate-600 bg-white border-slate-200 rounded-xl cursor-pointer">
               <ArrowLeft className="w-4 h-4 mr-1.5" /> Back to Disputes
             </Button>
           </Link>
@@ -141,14 +145,14 @@ export default function GrievanceDetailPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Button 
                         onClick={() => handleResolve('REFUNDED')}
-                        className="bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 shadow-sm flex items-center gap-2 font-bold"
+                        className="bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 shadow-sm flex items-center gap-2 font-bold cursor-pointer rounded-xl"
                       >
                         <XCircle className="w-4 h-4" />
                         Refund / Cancel
                       </Button>
                       <Button 
                         onClick={() => handleResolve('RELEASED')}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-2 font-bold"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-2 font-bold cursor-pointer rounded-xl"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         Reallocate / Release
@@ -156,7 +160,7 @@ export default function GrievanceDetailPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex items-start gap-3">
+                  <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex items-start gap-3 animate-in fade-in">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                     <div>
                       <p className="text-sm font-bold text-emerald-900">Dispute Resolved</p>

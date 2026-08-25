@@ -66,3 +66,59 @@ export const mockGrievances: GrievanceTicket[] = [
     resolutionOutcome: 'REFUNDED'
   }
 ];
+
+const STORAGE_KEY = 'kisansetu_grievances_state_v1';
+
+export function getStoredGrievances(): GrievanceTicket[] {
+  if (typeof window === 'undefined') return mockGrievances;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mockGrievances));
+      return mockGrievances;
+    }
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    return mockGrievances;
+  } catch {
+    return mockGrievances;
+  }
+}
+
+export function getGrievanceById(id: string): GrievanceTicket | undefined {
+  const tickets = getStoredGrievances();
+  return tickets.find(t => t.id === id);
+}
+
+export function resolveGrievanceTicket(id: string, outcome: 'REFUNDED' | 'RELEASED'): GrievanceTicket | undefined {
+  const tickets = getStoredGrievances();
+  const index = tickets.findIndex(t => t.id === id);
+  if (index === -1) return undefined;
+
+  const updated: GrievanceTicket = {
+    ...tickets[index],
+    status: 'RESOLVED',
+    escrowStatus: 'RELEASED',
+    resolvedAt: new Date().toISOString(),
+    resolutionOutcome: outcome
+  };
+
+  tickets[index] = updated;
+
+  // Also update in-memory mockGrievances
+  const mockIdx = mockGrievances.findIndex(t => t.id === id);
+  if (mockIdx !== -1) {
+    mockGrievances[mockIdx] = updated;
+  }
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+      window.dispatchEvent(new CustomEvent('kisansetu_grievances_updated', { detail: updated }));
+    } catch {}
+  }
+
+  return updated;
+}
