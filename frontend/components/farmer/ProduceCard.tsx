@@ -4,7 +4,7 @@ import React from 'react';
 import { Trash2, Users, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { CropLot } from '@/lib/types';
 import { resolveCropImageUrl } from '@/lib/assayData';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 export interface ProduceCardProps {
   lot: CropLot;
@@ -14,6 +14,7 @@ export interface ProduceCardProps {
 
 export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
   const tList = useTranslations('listings');
+  const tCrop = useCropTranslation();
   const isPooled = Boolean(lot.is_fpo_pooled || (lot as any).isPooled || lot.status === 'POOLED');
   const isRejected = lot.grade === 'REJECTED' || lot.qualityGrade === 'REJECTED' || (lot.qualityScore && lot.qualityScore < 50);
   const tonnage = (lot.quantityTons || (lot.quantityKg / 1000)).toFixed(1);
@@ -43,7 +44,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onDelete(lot.id, lot.cropName);
+            onDelete(lot.id, tCrop(lot.cropName));
           }}
           className="absolute top-3 left-3 bg-black/50 hover:bg-rose-600 text-white rounded-full p-2 backdrop-blur-md transition-all shadow-md cursor-pointer border border-white/20 hover:scale-110 opacity-0 group-hover:opacity-100 duration-200"
           title={tList('delistTooltip')}
@@ -57,7 +58,6 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
             ? 'bg-rose-950/85 text-rose-200 border-rose-500/50'
             : 'bg-slate-950/80 text-emerald-300 border-emerald-400/40'
         }`}>
-          {/* TODO: dynamic content translation via Bhashini API */}
           <span>{lot.qualityGrade || (isRejected ? 'REJECTED' : 'Grade A')} ({lot.qualityScore || 95}%)</span>
         </div>
       </div>
@@ -80,12 +80,11 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
 
           {/* Crop Title & Certified Variety */}
           <div>
-            {/* TODO: dynamic content translation via Bhashini API */}
             <h4 className="text-base font-black text-slate-900 tracking-tight truncate group-hover:text-emerald-800 transition-colors">
-              {lot.cropName}
+              {tCrop(lot.cropName)}
             </h4>
             <p className="text-xs text-slate-500 font-medium truncate">
-              {lot.variety || 'Certified Variety'}
+              {tCrop(lot.variety || 'Certified Variety')}
             </p>
           </div>
 

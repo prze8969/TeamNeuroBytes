@@ -30,7 +30,7 @@ import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulator
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { resolveCropImageUrl } from '@/lib/assayData';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 export function FarmerDashboardLayout() {
   const tDash = useTranslations('dashboard');
@@ -38,6 +38,7 @@ export function FarmerDashboardLayout() {
   const tFpo = useTranslations('fpo');
   const tList = useTranslations('listings');
   const tEscrow = useTranslations('escrow');
+  const tCrop = useCropTranslation();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'fpo-pooling' | 'ai-grading' | 'decision-engine' | 'whatsapp-bot' | 'escrow'>('overview');
   const [isPooled, setIsPooled] = useState<boolean>(true);
@@ -859,7 +860,7 @@ export function FarmerDashboardLayout() {
               </div>
               <div>
                 <h3 className="text-base font-black text-slate-900">{tList('confirmDeleteTitle')}</h3>
-                <p className="text-xs text-slate-500 font-mono">{lotToDelete.id} • {lotToDelete.cropName}</p>
+                <p className="text-xs text-slate-500 font-mono">{lotToDelete.id} • {tCrop(lotToDelete.cropName)}</p>
               </div>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed">

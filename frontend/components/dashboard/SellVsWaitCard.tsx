@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 export function SellVsWaitCard() {
   const t = useTranslations('sellVsWait');
+  const tCrop = useCropTranslation();
 
   const [commodity, setCommodity] = useState('Wheat');
   const [weightKg, setWeightKg] = useState(5000);
@@ -61,9 +62,9 @@ export function SellVsWaitCard() {
             value={commodity}
             onChange={(e) => setCommodity(e.target.value)}
           >
-            <option value="Wheat">Wheat (Grain)</option>
-            <option value="Onion">Nashik Red Onion</option>
-            <option value="Tomato">Tomato (Perishable)</option>
+            <option value="Wheat">{tCrop('Wheat')}</option>
+            <option value="Onion">{tCrop('Nashik Red Onion')}</option>
+            <option value="Tomato">{tCrop('Tomato')}</option>
           </select>
         </div>
         <div>

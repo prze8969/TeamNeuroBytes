@@ -1,7 +1,7 @@
 'use client'
 
 import { MandiPrice } from '@/lib/types';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 interface PriceChartProps {
   commodity: string;
@@ -10,6 +10,7 @@ interface PriceChartProps {
 
 export function PriceChart({ commodity, mandiPrices }: PriceChartProps) {
   const t = useTranslations('priceChart');
+  const tCrop = useCropTranslation();
 
   return (
     <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm space-y-5">
@@ -18,7 +19,7 @@ export function PriceChart({ commodity, mandiPrices }: PriceChartProps) {
           <span className="text-xl">📊</span>
           <div>
             <h3 className="text-base font-extrabold text-slate-900">{t('title')}</h3>
-            <p className="text-xs text-slate-500">{t('subtitle')} ({commodity})</p>
+            <p className="text-xs text-slate-500">{t('subtitle')} ({tCrop(commodity)})</p>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs">

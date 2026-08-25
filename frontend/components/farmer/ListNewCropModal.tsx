@@ -32,6 +32,7 @@ import {
   getCropBySearch 
 } from '@/lib/assayData';
 import { CropLot } from '@/lib/types';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 export interface ListNewCropModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ export function ListNewCropModal({
   onClose,
   onLotPublished
 }: ListNewCropModalProps) {
+  const tCrop = useCropTranslation();
   // Section A: Produce Classification
   const [selectedCategory, setSelectedCategory] = useState<string>('Grains & Cereals');
   const [selectedCropId, setSelectedCropId] = useState<string>('wheat-lok1');
@@ -470,7 +472,7 @@ export function ListNewCropModal({
                 >
                   {availableCrops.map((c) => (
                     <option key={`crop-opt-${c.id}`} value={c.id}>
-                      {c.name} ({c.variety})
+                      {tCrop(c.name)} ({tCrop(c.variety)})
                     </option>
                   ))}
                 </select>

@@ -25,18 +25,26 @@ import {
 import { Button } from '@/components/ui/button';
 import { CropLot } from '@/lib/types';
 import { toast } from 'sonner';
+import { useCropTranslation } from '@/lib/LocaleContext';
 
 export interface FPOCollectiveViewProps {
   activeLots: CropLot[];
+  isPooled?: boolean;
+  onTogglePoolMode?: (nextState: boolean) => void;
+  onLotSelect?: (lot: CropLot) => void;
   onUpdatePoolSelection: (updatedLots: CropLot[], pooledLotIds: string[]) => void;
   onNavigateToTab?: (tab: string) => void;
 }
 
 export function FPOCollectiveView({
   activeLots = [],
+  isPooled = true,
+  onTogglePoolMode,
+  onLotSelect,
   onUpdatePoolSelection,
   onNavigateToTab
 }: FPOCollectiveViewProps) {
+  const tCrop = useCropTranslation();
   // Constant FPO Collective Details
   const FPO_NAME = "Nashik East Farmers Producer Company";
   const FPO_CODE = "FPC #MH-NSK-4412";
@@ -542,10 +550,10 @@ export function FPOCollectiveView({
                         </span>
                       </div>
                       <h4 className="text-sm font-black text-slate-900 truncate">
-                        {lot.cropName}
+                        {tCrop(lot.cropName)}
                       </h4>
                       <p className="text-xs text-slate-600 truncate">
-                        {lot.variety}
+                        {tCrop(lot.variety || '')}
                       </p>
                     </div>
                   </div>

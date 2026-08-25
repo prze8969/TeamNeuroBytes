@@ -7,11 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Clock, TrendingUp } from 'lucide-react';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   const pathname = usePathname();
   const t = useTranslations('nav');
+  const tCrop = useCropTranslation();
 
   const links = [
     { label: t('farmerPortal'), href: '/farmer/dashboard' },
@@ -33,12 +34,11 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
             {t('liveMandiFeed')}
           </span>
         </div>
-        {/* TODO: dynamic content translation via Bhashini API */}
         <div className="flex gap-6 font-medium">
-          <span>🌾 Nashik Wheat: <strong className="text-white font-bold font-mono">₹25.50/kg</strong> (+₹1.20)</span>
-          <span>🧅 Lasalgaon Onion: <strong className="text-white font-bold font-mono">₹21.50/kg</strong> (+₹0.80)</span>
-          <span>🍅 Pune Tomato: <strong className="text-white font-bold font-mono">₹19.00/kg</strong> (-₹0.50)</span>
-          <span>🌾 Vashi Sharbati: <strong className="text-white font-bold font-mono">₹28.50/kg</strong> (+₹2.10)</span>
+          <span>🌾 {tCrop('Wheat')} (Nashik): <strong className="text-white font-bold font-mono">₹25.50/kg</strong> (+₹1.20)</span>
+          <span>🧅 {tCrop('Onion')} (Lasalgaon): <strong className="text-white font-bold font-mono">₹21.50/kg</strong> (+₹0.80)</span>
+          <span>🍅 {tCrop('Tomato')} (Pune): <strong className="text-white font-bold font-mono">₹19.00/kg</strong> (-₹0.50)</span>
+          <span>🌾 {tCrop('Sharbati Wheat')} (Vashi): <strong className="text-white font-bold font-mono">₹28.50/kg</strong> (+₹2.10)</span>
         </div>
         <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-emerald-300/90 font-mono text-[10px]">
           <Clock size={11} className="text-emerald-400" />

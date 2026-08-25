@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, Camera, CheckCircle2, Sparkles, AlertCircle, RefreshCw, Layers } from 'lucide-react';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 export interface GradingResult {
   commodity: string;
@@ -20,6 +20,7 @@ export interface GradingResult {
 
 export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingResult) => void }) {
   const t = useTranslations('aiGrading');
+  const tCrop = useCropTranslation();
 
   const [analyzing, setAnalyzing] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(
@@ -255,7 +256,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
               }`}
             >
-              🍌 Banana
+              🍌 {tCrop('Banana')}
             </button>
             <button
               type="button"
@@ -266,7 +267,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
               }`}
             >
-              🧅 Onion
+              🧅 {tCrop('Onion')}
             </button>
             <button
               type="button"
@@ -277,7 +278,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
               }`}
             >
-              🍅 Tomato
+              🍅 {tCrop('Tomato')}
             </button>
             <button
               type="button"
@@ -288,7 +289,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
               }`}
             >
-              🌾 Wheat
+              🌾 {tCrop('Wheat')}
             </button>
             <button
               type="button"
@@ -299,7 +300,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
               }`}
             >
-              🥔 Potato
+              🥔 {tCrop('Potato')}
             </button>
           </div>
 
@@ -326,7 +327,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none z-10">
               <div className="w-40 h-28 border-2 border-dashed border-emerald-400 rounded-xl relative bg-emerald-500/15 flex items-start p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.4)] backdrop-blur-[0.5px]">
                 <span className="bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wide">
-                  {result.commodity.split(' ')[0]}: {result.score}%
+                  {tCrop(result.commodity.split(' ')[0])}: {result.score}%
                 </span>
                 <span className="absolute bottom-1 right-1.5 text-[9px] font-mono text-emerald-200 bg-slate-950/80 px-1 rounded">
                   Defect: {result.defectPercent}%
@@ -369,7 +370,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
                   <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-500 block">
                     {t('classifiedCommodity')}
                   </span>
-                  <h4 className="text-xl font-black text-slate-900">{result.commodity}</h4>
+                  <h4 className="text-xl font-black text-slate-900">{tCrop(result.commodity)}</h4>
                 </div>
                 <div className="text-right">
                   <span className={`inline-flex items-center gap-1 rounded-full px-4 py-1 text-sm font-black shadow-sm ${
