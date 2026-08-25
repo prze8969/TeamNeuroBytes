@@ -27,7 +27,8 @@ export const cropTranslations: Record<Locale, Record<string, string>> = {
   en: {
     'Wheat': 'Wheat',
     'Sharbati Wheat': 'Sharbati Wheat',
-    'Sharbati Wheat (Lok-1)': 'Sharbati Wheat (Lok-1)',
+    'Sharbati Wheat (Lok-1)': 'Sharbati Wheat (Lot-1)',
+    'Sharbati Wheat (Lot-1)': 'Sharbati Wheat (Lot-1)',
     'Onion': 'Onion',
     'Nashik Red Onion': 'Nashik Red Onion',
     'Nashik Red Onion (Garva)': 'Nashik Red Onion (Garva)',

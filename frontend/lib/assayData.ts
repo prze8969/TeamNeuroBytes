@@ -46,7 +46,7 @@ export const CROP_VARIETY_CATALOG: CropVarietyOption[] = [
   },
   {
     id: 'wheat-lok1',
-    name: 'Sharbati Wheat (Lok-1)',
+    name: 'Sharbati Wheat (Lot-1)',
     category: 'Grains & Cereals',
     variety: 'Lok-1 Clean Grain',
     mspFloorPerKg: 22.75,

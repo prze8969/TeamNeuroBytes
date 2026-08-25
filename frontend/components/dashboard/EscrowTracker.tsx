@@ -95,8 +95,9 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
   // Handshake: Farmer verifies pickup with driver OTP
   // Smart contract automatically disburses the 30% advance fuel funds upon verification!
   const handleVerifyPickupHandshake = async () => {
-    if (inputPickupOtp.trim() && inputPickupOtp.trim() !== escrow.pickupOtp) {
-      alert(`Invalid OTP. Please enter the 4-digit driver handshake OTP: ${escrow.pickupOtp}`);
+    const entered = inputPickupOtp.trim();
+    if (entered && entered !== escrow.pickupOtp) {
+      alert('Invalid OTP code. Please enter the correct 4-digit code provided by the driver.');
       return;
     }
 
@@ -107,7 +108,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
       await fetch(`http://localhost:8000/api/escrow/verify-pickup/${escrow.escrowId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ otp: escrow.pickupOtp })
+        body: JSON.stringify({ otp: entered || escrow.pickupOtp })
       });
     } catch {}
 
@@ -122,8 +123,9 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
   };
 
   const handleSettleDelivery = async () => {
-    if (inputDeliveryOtp.trim() && inputDeliveryOtp.trim() !== escrow.deliveryOtp) {
-      alert(`Invalid Delivery OTP. Demo OTP: ${escrow.deliveryOtp}`);
+    const entered = inputDeliveryOtp.trim();
+    if (entered && entered !== escrow.deliveryOtp) {
+      alert('Invalid Delivery OTP code. Please enter the verified inward code.');
       return;
     }
     setLoading(true);
@@ -318,9 +320,12 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
 
           {escrow.status === 'LOCKED' && (
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
-                <span className="text-xs font-bold text-slate-600">Your Secure Pickup OTP:</span>
-                <span className="text-lg font-black font-mono text-emerald-800 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">
+              <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-slate-700 block">Your Secret Farmgate Pickup Code:</span>
+                  <span className="text-[11px] text-slate-500">Read this 4-digit code aloud to the transporter driver upon loading</span>
+                </div>
+                <span className="text-xl font-black font-mono text-emerald-900 bg-emerald-100/90 px-3.5 py-1.5 rounded-xl border border-emerald-300 shadow-xs tracking-widest">
                   {escrow.pickupOtp}
                 </span>
               </div>
@@ -329,8 +334,8 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
                 <Input
                   type="text"
                   maxLength={4}
-                  placeholder={`Enter OTP (${escrow.pickupOtp})`}
-                  className="bg-white border-slate-300 text-slate-900 font-mono text-center text-xs h-10 font-bold rounded-xl"
+                  placeholder="Enter 4-digit code from driver"
+                  className="bg-white border-slate-300 text-slate-900 font-mono text-center text-xs h-10 font-bold rounded-xl placeholder:text-slate-400"
                   value={inputPickupOtp}
                   onChange={(e) => setInputPickupOtp(e.target.value)}
                 />
@@ -378,9 +383,12 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
 
           {escrow.status === 'IN_TRANSIT' ? (
             <div className="space-y-3 pt-2">
-              <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200">
-                <span className="text-xs font-bold text-slate-600">Mandi Delivery Inward OTP:</span>
-                <span className="text-lg font-black font-mono text-emerald-800 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">
+              <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-slate-700 block">Mandi Inward Authorization Code:</span>
+                  <span className="text-[11px] text-slate-500">Generated for terminal weighbridge receipt</span>
+                </div>
+                <span className="text-xl font-black font-mono text-emerald-900 bg-emerald-100/90 px-3.5 py-1.5 rounded-xl border border-emerald-300 shadow-xs tracking-widest">
                   {escrow.deliveryOtp}
                 </span>
               </div>
@@ -389,8 +397,8 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
                 <Input
                   type="text"
                   maxLength={4}
-                  placeholder={`Delivery OTP (${escrow.deliveryOtp})`}
-                  className="bg-white border-slate-300 text-slate-900 font-mono text-center text-xs h-10 font-bold rounded-xl"
+                  placeholder="Enter 4-digit inward code"
+                  className="bg-white border-slate-300 text-slate-900 font-mono text-center text-xs h-10 font-bold rounded-xl placeholder:text-slate-400"
                   value={inputDeliveryOtp}
                   onChange={(e) => setInputDeliveryOtp(e.target.value)}
                 />

@@ -40,7 +40,7 @@ export function AIInspectionModal({
   let dynamicImage = lot.imageUrl || 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80';
   let defectBoxes = [{ top: '38%', left: '44%', width: '18%', height: '18%', label: 'Broken Grain: 1.2%', conf: '94.2%' }];
   let assayMetrics = {
-    uniformity: `${lot.ripenessIndex || 97.4}% (Lok-1 Premium)`,
+    uniformity: `${lot.ripenessIndex || 97.4}% (Lot-1 Premium)`,
     blemish: `${lot.defectPercentage || 1.2}% (Agmarknet Pass)`,
     size: '6.8 mm (Uniform Grain)',
     moisture: '10.8% (Target < 12%)'

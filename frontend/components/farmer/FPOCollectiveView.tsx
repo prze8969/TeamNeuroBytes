@@ -127,12 +127,10 @@ export function FPOCollectiveView({
   const pooledTotalFreight = selectedWeightKg * POOLED_FREIGHT_PER_KG;
   const totalFreightSavings = soloTotalFreight - pooledTotalFreight;
 
-  // Collective Capacity Calculation
+  // Collective Capacity Calculation (Standard 45.0 MT multi-axle truck)
   const totalCombinedWeightMT = BASELINE_COLLECTIVE_WEIGHT_MT + selectedTonnage;
-  const capacityFillPercent = Math.min(
-    Math.round((totalCombinedWeightMT / TRUCK_CAPACITY_MT) * 100),
-    100
-  );
+  const actualCapacityPercent = Math.round((totalCombinedWeightMT / TRUCK_CAPACITY_MT) * 100);
+  const isOverflow = actualCapacityPercent > 100;
 
   // Toggle single lot
   const handleToggleLot = (lotId: string, isLocked: boolean) => {
@@ -335,7 +333,7 @@ export function FPOCollectiveView({
                 </span>
               </div>
               <p className="text-lg font-black text-white">
-                {14 + (selectedLotIds.length > 0 ? 1 : 0)} Farmers Enrolled
+                {selectedLotIds.length > 0 ? '14 other farmers + you (15 Enrolled)' : '14 other farmers enrolled (+ you when joined)'}
               </p>
               <p className="text-[11px] text-purple-200">
                 {selectedLotIds.length > 0 ? (
@@ -350,8 +348,13 @@ export function FPOCollectiveView({
             <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4 space-y-2 backdrop-blur-xs">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-purple-300 font-bold">Truckload Capacity</span>
-                <span className="text-emerald-400 font-black font-mono">
-                  {totalCombinedWeightMT.toFixed(1)} MT / {TRUCK_CAPACITY_MT.toFixed(1)} MT ({capacityFillPercent}%)
+                <span className="text-emerald-400 font-black font-mono flex items-center gap-1.5">
+                  {totalCombinedWeightMT.toFixed(1)} MT / {TRUCK_CAPACITY_MT.toFixed(1)} MT ({actualCapacityPercent}%)
+                  {isOverflow && (
+                    <span className="text-[9px] font-black text-amber-300 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/50">
+                      OVERFLOW (+{(totalCombinedWeightMT - TRUCK_CAPACITY_MT).toFixed(1)} MT)
+                    </span>
+                  )}
                 </span>
               </div>
               
@@ -359,13 +362,15 @@ export function FPOCollectiveView({
               <div className="w-full h-3 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-purple-900/60">
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${
-                    capacityFillPercent >= 90
+                    isOverflow
+                      ? 'bg-gradient-to-r from-amber-400 to-rose-500'
+                      : actualCapacityPercent >= 90
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
-                      : capacityFillPercent >= 70
+                      : actualCapacityPercent >= 70
                       ? 'bg-gradient-to-r from-purple-500 to-emerald-400'
                       : 'bg-gradient-to-r from-amber-500 to-purple-400'
                   }`}
-                  style={{ width: `${capacityFillPercent}%` }}
+                  style={{ width: `${Math.min(actualCapacityPercent, 100)}%` }}
                 />
               </div>
 
@@ -600,6 +605,9 @@ export function FPOCollectiveView({
                   <div className="flex items-center justify-between lg:justify-end gap-6 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100">
                     
                     <div className="text-left lg:text-right space-y-0.5">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
+                        Freight Rate
+                      </span>
                       <div className="flex items-center lg:justify-end gap-2 text-xs font-mono">
                         <span className="text-slate-400 line-through">₹{SOLO_FREIGHT_PER_KG.toFixed(2)}/kg</span>
                         <strong className="text-emerald-700 font-bold">➔ ₹{POOLED_FREIGHT_PER_KG.toFixed(2)}/kg</strong>

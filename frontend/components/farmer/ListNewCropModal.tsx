@@ -268,8 +268,8 @@ export function ListNewCropModal({
 
     setIsSubmitting(true);
 
-    // 1. Submit to FastAPI backend to obtain official centralized lot ID
-    let finalLotId = `LOT-2026-NSK-${Math.floor(1000 + Math.random() * 9000)}`;
+    // 1. Submit to FastAPI backend to obtain official centralized lot ID (standardized LOT-XXX format)
+    let finalLotId = `LOT-${Math.floor(100 + Math.random() * 900)}`;
     try {
       const res = await fetch('http://localhost:8000/api/marketplace/lots', {
         method: 'POST',
@@ -296,7 +296,7 @@ export function ListNewCropModal({
       if (res.ok) {
         const data = await res.json();
         if (data && data.id) {
-          finalLotId = `LOT-${data.id}`;
+          finalLotId = `LOT-${data.id < 100 ? data.id + 100 : data.id}`;
         }
       }
     } catch {}

@@ -869,7 +869,7 @@ Status: 100% PAID VIA ESCROW VAULT | WEIGHBRIDGE PASS VERIFIED
               </span>
               <strong className="text-xs text-slate-900 font-bold">
                 {currentStep === 1 && '🔒 Funds Locked in RBI Nodal Vault • Awaiting Transporter 30% Fuel Advance'}
-                {currentStep === 2 && '⛽ Advance Disbursed • Loading Farmgate OTP (4821) Ready'}
+                {currentStep === 2 && '⛽ Advance Disbursed • Ready for Farmgate Driver OTP Handshake'}
                 {currentStep === 3 && !isArrivedAtMandi && '🚚 In Transit along NH-160 • Live Telemetry & GPS Broadcast Active'}
                 {currentStep === 3 && isArrivedAtMandi && '🚛 Mandi Arrival Verified • APMC Digital Weighbridge Pass Unlocked'}
                 {currentStep === 4 && '✅ 100% Escrow Settled • Statutory GST Invoice & Weighbridge Slip Issued'}
@@ -1006,7 +1006,7 @@ Status: 100% PAID VIA ESCROW VAULT | WEIGHBRIDGE PASS VERIFIED
               ) : (
                 <KeyRound size={13} className="mr-1.5" />
               )}
-              2. Verify OTP (4821)
+              2. Verify Driver Handshake
             </Button>
 
             {/* Simulate Mandi Arrival Helper Button when In-Transit */}

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { toast } from 'sonner';
 
 export function SellVsWaitCard() {
   const t = useTranslations('sellVsWait');
@@ -14,6 +15,14 @@ export function SellVsWaitCard() {
   const [currentPrice, setCurrentPrice] = useState(25.50);
   const [forecastPrice, setForecastPrice] = useState(27.80);
   const [holdDays, setHoldDays] = useState(7);
+
+  const commodityLotMap: Record<string, string> = {
+    Wheat: 'LOT-101',
+    Onion: 'LOT-102',
+    Tomato: 'LOT-103',
+  };
+
+  const activeLotId = commodityLotMap[commodity] || 'LOT-101';
 
   // Dynamic calculations
   const immediateRevenue = Math.round(weightKg * currentPrice);
@@ -33,6 +42,12 @@ export function SellVsWaitCard() {
   const netGainOrLoss = netFutureRevenue - immediateRevenue;
 
   const recommendation = netGainOrLoss > 1200 ? 'WAIT_AND_HOLD' : netGainOrLoss < -500 ? 'SELL_IMMEDIATELY' : 'POOL_IN_FPO';
+
+  const handleApplyStrategy = () => {
+    toast.success(`Strategy Applied to ${activeLotId}`, {
+      description: `Successfully configured [${recommendation.replace(/_/g, ' ')}] strategy for ${commodity} lot #${activeLotId} (${weightKg.toLocaleString('en-IN')} kg).`
+    });
+  };
 
   return (
     <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm space-y-6">
@@ -62,9 +77,9 @@ export function SellVsWaitCard() {
             value={commodity}
             onChange={(e) => setCommodity(e.target.value)}
           >
-            <option value="Wheat">{tCrop('Wheat')}</option>
-            <option value="Onion">{tCrop('Nashik Red Onion')}</option>
-            <option value="Tomato">{tCrop('Tomato')}</option>
+            <option value="Wheat">{tCrop('Wheat')} (LOT-101)</option>
+            <option value="Onion">{tCrop('Nashik Red Onion')} (LOT-102)</option>
+            <option value="Tomato">{tCrop('Tomato')} (LOT-103)</option>
           </select>
         </div>
         <div>
@@ -141,8 +156,11 @@ export function SellVsWaitCard() {
               : `Price margins are tight. Best move is to pool produce in local FPO cluster to save ~30% in freight charges.`}
           </p>
         </div>
-        <Button className="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs h-10 px-5 shadow-md whitespace-nowrap cursor-pointer">
-          {t('applyToLot')}
+        <Button 
+          onClick={handleApplyStrategy}
+          className="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs h-10 px-5 shadow-md whitespace-nowrap cursor-pointer"
+        >
+          Apply to Lot #{activeLotId}
         </Button>
       </div>
     </div>

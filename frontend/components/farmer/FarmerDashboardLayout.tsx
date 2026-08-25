@@ -55,34 +55,54 @@ export function FarmerDashboardLayout() {
 
   const defaultBids: Bid[] = [
     {
-      id: 'BID-1',
-      lotId: 'LOT-1',
+      id: 'BID-101',
+      lotId: 'LOT-101',
       buyerId: '2',
-      buyerName: 'Sahyadri Farmers Producer Co.',
+      buyerName: 'Sahyadri Farms Trading Co.',
       amountPerKg: 26.50,
       totalAmount: 132500,
       escrowStatus: 'LOCKED',
-      createdAt: '2026-08-23 15:10',
+      createdAt: '2026-08-25 14:15',
     },
     {
-      id: 'BID-2',
-      lotId: 'LOT-1',
+      id: 'BID-102',
+      lotId: 'LOT-101',
       buyerId: '3',
       buyerName: 'AgroProcure Private Ltd',
       amountPerKg: 25.80,
       totalAmount: 129000,
       escrowStatus: 'INITIATED',
-      createdAt: '2026-08-23 16:45',
+      createdAt: '2026-08-25 15:30',
+    },
+    {
+      id: 'BID-103',
+      lotId: 'LOT-102',
+      buyerId: '4',
+      buyerName: 'Vashi Fresh Distributors',
+      amountPerKg: 22.40,
+      totalAmount: 179200,
+      escrowStatus: 'INITIATED',
+      createdAt: '2026-08-25 16:10',
+    },
+    {
+      id: 'BID-104',
+      lotId: 'LOT-102',
+      buyerId: '5',
+      buyerName: 'Nashik Agro Exports',
+      amountPerKg: 21.80,
+      totalAmount: 174400,
+      escrowStatus: 'INITIATED',
+      createdAt: '2026-08-25 16:45',
     }
   ];
 
   const defaultLots: CropLot[] = [
     {
-      id: 'LOT-1',
+      id: 'LOT-101',
       farmerId: '1',
       farmerName: 'Ramesh Patil',
       cropName: 'Wheat',
-      variety: 'Sharbati Lok-1',
+      variety: 'Sharbati Lot-1',
       quantityKg: 5000,
       quantityTons: 5.0,
       grade: 'A',
@@ -107,7 +127,7 @@ export function FarmerDashboardLayout() {
       imageUrl: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80'
     },
     {
-      id: 'LOT-2',
+      id: 'LOT-102',
       farmerId: '1',
       farmerName: 'Ramesh Patil',
       cropName: 'Onion',
@@ -221,15 +241,16 @@ export function FarmerDashboardLayout() {
       if (bidsRes.ok) {
         const rawBids = await bidsRes.json();
         if (Array.isArray(rawBids) && rawBids.length > 0) {
-          const mappedBids: Bid[] = rawBids.map((b: any) => ({
-            id: `BID-${b.id}`,
-            lotId: `LOT-${b.lot_id}`,
-            buyerId: String(b.buyer_id),
-            buyerName: b.buyer_name || 'AgroProcure Private Ltd',
+          const buyerNames = ['Sahyadri Farms Trading Co.', 'AgroProcure Private Ltd', 'Vashi Fresh Distributors', 'Nashik Agro Exports'];
+          const mappedBids: Bid[] = rawBids.map((b: any, idx: number) => ({
+            id: `BID-${b.id || idx + 101}`,
+            lotId: `LOT-${b.lot_id || 101}`,
+            buyerId: String(b.buyer_id || idx + 2),
+            buyerName: (b.buyer_name && b.buyer_name !== 'Buyer') ? b.buyer_name : buyerNames[idx % buyerNames.length],
             amountPerKg: b.amount_per_kg,
             totalAmount: b.total_amount,
             escrowStatus: b.status === 'ACCEPTED' ? 'LOCKED' : b.status === 'REJECTED' ? 'RELEASED' : 'INITIATED',
-            createdAt: b.created_at ? b.created_at.replace('T', ' ').slice(0, 16) : '2026-08-23 15:10'
+            createdAt: b.created_at ? b.created_at.replace('T', ' ').slice(0, 16) : '2026-08-25 15:10'
           }));
           setBids(prev => JSON.stringify(prev) === JSON.stringify(mappedBids) ? prev : mappedBids);
         } else {
@@ -404,9 +425,15 @@ export function FarmerDashboardLayout() {
     setIsPooled(pooledLotIds.length > 0);
   };
 
-  const highestBid = bids.length > 0
-    ? bids.reduce((max, b) => b.amountPerKg > max ? b.amountPerKg : max, 0)
-    : 26.50;
+  const highestBidItem = bids.length > 0
+    ? bids.reduce((max, b) => b.amountPerKg > max.amountPerKg ? b : max, bids[0])
+    : null;
+  const highestBid = highestBidItem ? highestBidItem.amountPerKg : 26.50;
+  const highestBidBuyer = highestBidItem ? highestBidItem.buyerName : 'Sahyadri Farms Trading Co.';
+
+  const avgQualityScore = myLots.length > 0
+    ? (myLots.reduce((acc, l) => acc + (l.qualityScore || 94.2), 0) / myLots.length).toFixed(1)
+    : '95.8';
 
   const pooledCount = myLots.filter(l => l.is_fpo_pooled || (l as any).isPooled).length;
 
@@ -588,20 +615,24 @@ export function FarmerDashboardLayout() {
           {/* KPI 1: AI Quality Grade */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('aiQualityGrade')}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                  {tKpi('aiQualityGrade')}
+                </span>
+                <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                  Portfolio Average
+                </span>
+              </div>
               <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
                 <Microscope size={18} />
               </div>
             </div>
             <div>
-              {/* TODO: dynamic content translation via Bhashini API */}
               <p className="text-2xl font-black tracking-tight text-slate-900">
                 Grade A
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-emerald-700 font-bold font-mono">95.8% Quality Score</span>
+                <span className="text-emerald-700 font-bold font-mono">{avgQualityScore}% Quality Score</span>
                 <span className="text-[10px] font-bold text-slate-400">{tKpi('aiVerified')}</span>
               </div>
             </div>
@@ -618,13 +649,16 @@ export function FarmerDashboardLayout() {
               </div>
             </div>
             <div>
-              {/* TODO: dynamic content translation via Bhashini API */}
               <p className="text-2xl font-black tracking-tight text-slate-900 font-mono">
                 ₹{highestBid.toFixed(2)}/kg
               </p>
               <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-blue-700 font-bold font-mono">+₹1.00/kg {tKpi('aboveFloor')}</span>
-                <span className="text-[10px] font-bold text-slate-400">Sahyadri FPC</span>
+                <span className="text-blue-700 font-bold font-mono">
+                  +₹{Math.max(0, highestBid - 24.50).toFixed(2)}/kg {tKpi('aboveFloor')}
+                </span>
+                <span className="text-[10px] font-bold text-slate-400 truncate max-w-[120px]" title={highestBidBuyer}>
+                  {highestBidBuyer}
+                </span>
               </div>
             </div>
           </div>

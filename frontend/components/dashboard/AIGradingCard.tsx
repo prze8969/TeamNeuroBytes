@@ -30,7 +30,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   const [result, setResult] = useState<GradingResult>({
-    commodity: 'Sharbati Wheat (Lok-1)',
+    commodity: 'Sharbati Wheat (Lot-1)',
     grade: 'A',
     score: 98.2,
     defectPercent: 1.2,
@@ -142,7 +142,7 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
       wheat: {
         img: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80',
         res: {
-          commodity: 'Sharbati Wheat (Lok-1)',
+          commodity: 'Sharbati Wheat (Lot-1)',
           grade: 'A',
           score: 98.2,
           defectPercent: 0.8,
