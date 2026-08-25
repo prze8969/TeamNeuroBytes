@@ -102,11 +102,11 @@ export function ListNewCropModal({
   const isBelow85PercentFloor = askingPricePerKg < minPermissibleFloor;
 
   // Active produce image (custom uploaded base64 vs catalog sample)
-  const activeDisplayImage = uploadedImage || currentCrop.sampleImageUrl;
+  const activeDisplayImage = (useSampleImage || !uploadedImage) ? currentCrop.sampleImageUrl : uploadedImage;
 
   // When crop selector changes and we are not using a live custom upload, sync metrics to catalog defaults
   useEffect(() => {
-    if (!uploadedImage) {
+    if (useSampleImage || !uploadedImage) {
       setInferredGrade(currentCrop.typicalGrade);
       setInferredDefect(currentCrop.typicalDefectPct);
       setInferredMoisture(currentCrop.typicalMoisturePct);
@@ -114,7 +114,7 @@ export function ListNewCropModal({
       setIsLiveGraded(false);
       setAskingPricePerKg(currentCrop.mandiBenchmarkPerKg + 1.00);
     }
-  }, [selectedCropId, uploadedImage, currentCrop]);
+  }, [selectedCropId, uploadedImage, useSampleImage, currentCrop]);
 
   // Trigger simulated 1.2s laser scanning animation when crop or image changes
   useEffect(() => {
@@ -452,7 +452,12 @@ export function ListNewCropModal({
                     const newCat = e.target.value;
                     setSelectedCategory(newCat);
                     const matching = CROP_VARIETY_CATALOG.find(c => c.category === newCat);
-                    if (matching) setSelectedCropId(matching.id);
+                    if (matching) {
+                      setSelectedCropId(matching.id);
+                      setUseSampleImage(true);
+                      setUploadedImage(null);
+                      setAutoDetectedCrop(null);
+                    }
                   }}
                   className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
@@ -467,7 +472,13 @@ export function ListNewCropModal({
                 <label className="text-[11px] font-bold text-slate-700">Crop &amp; Certified Variety</label>
                 <select
                   value={selectedCropId}
-                  onChange={(e) => setSelectedCropId(e.target.value)}
+                  onChange={(e) => {
+                    const newId = e.target.value;
+                    setSelectedCropId(newId);
+                    setUseSampleImage(true);
+                    setUploadedImage(null);
+                    setAutoDetectedCrop(null);
+                  }}
                   className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 >
                   {availableCrops.map((c) => (

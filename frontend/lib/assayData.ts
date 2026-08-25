@@ -193,26 +193,44 @@ export const CROP_VARIETY_CATALOG: CropVarietyOption[] = [
 ];
 
 export function getCropBySearch(query: string): CropVarietyOption {
-  if (!query) return CROP_VARIETY_CATALOG[0];
+  if (!query) return CROP_VARIETY_CATALOG[1]; // default to Wheat
   const normalized = query.toLowerCase().trim();
+
+  if (normalized.includes('potato') || normalized.includes('aloo') || normalized.includes('batata') || normalized.includes('chandramukhi') || normalized.includes('jyoti') || normalized.includes('tuber')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('potato')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('tomato') || normalized.includes('tamatar') || normalized.includes('abhinav') || normalized.includes('vaishali')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('tomato')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('onion') || normalized.includes('pyaz') || normalized.includes('garva') || normalized.includes('kanda')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('onion')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('banana') || normalized.includes('kela') || normalized.includes('robusta') || normalized.includes('naine')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('banana')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('wheat') || normalized.includes('gehu') || normalized.includes('gahu') || normalized.includes('sharbati') || normalized.includes('lokwan') || normalized.includes('grain')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('wheat')) || CROP_VARIETY_CATALOG[1];
+  }
+  if (normalized.includes('rice') || normalized.includes('basmati') || normalized.includes('chawal') || normalized.includes('paddy') || normalized.includes('dhan')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('rice')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('soybean') || normalized.includes('soya')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('soybean')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('chana') || normalized.includes('gram') || normalized.includes('chickpea')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('chana')) || CROP_VARIETY_CATALOG[0];
+  }
+  if (normalized.includes('tur') || normalized.includes('arhar') || normalized.includes('pigeon') || normalized.includes('dal')) {
+    return CROP_VARIETY_CATALOG.find(c => c.id.includes('tur')) || CROP_VARIETY_CATALOG[0];
+  }
+
   const matched = CROP_VARIETY_CATALOG.find(
     c => c.name.toLowerCase().includes(normalized) || 
          c.variety.toLowerCase().includes(normalized) ||
          c.id.includes(normalized) ||
-         normalized.includes(c.name.toLowerCase().split(' ')[0]) ||
-         (normalized.includes('banana') && c.id.includes('banana')) ||
-         (normalized.includes('kela') && c.id.includes('banana')) ||
-         (normalized.includes('robusta') && c.id.includes('banana')) ||
-         (normalized.includes('tomato') && c.id.includes('tomato')) ||
-         (normalized.includes('onion') && c.id.includes('onion')) ||
-         (normalized.includes('wheat') && c.id.includes('wheat')) ||
-         (normalized.includes('rice') && c.id.includes('rice')) ||
-         (normalized.includes('potato') && c.id.includes('potato')) ||
-         (normalized.includes('soybean') && c.id.includes('soybean')) ||
-         (normalized.includes('chana') && c.id.includes('chana')) ||
-         (normalized.includes('tur') && c.id.includes('tur'))
+         normalized.includes(c.name.toLowerCase().split(' ')[0])
   );
-  return matched || CROP_VARIETY_CATALOG[0];
+  return matched || CROP_VARIETY_CATALOG[1];
 }
 
 export function resolveCropImageUrl(cropName: string = '', customUrl?: string | null): string {
