@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-export interface KisanSetuLogoProps {
+export interface KrishiNitiLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   showTagline?: boolean;
   variant?: 'light' | 'dark' | 'auto';
@@ -10,13 +10,13 @@ export interface KisanSetuLogoProps {
   badge?: string;
 }
 
-export function KisanSetuLogo({
+export function KrishiNitiLogo({
   size = 'md',
   showTagline = false,
   variant = 'auto',
   className = '',
   badge
-}: KisanSetuLogoProps) {
+}: KrishiNitiLogoProps) {
   const sizeMap = {
     xs: { iconSize: 28, textClass: 'text-base', badgeClass: 'text-[8px] px-1.5 py-0.2' },
     sm: { iconSize: 34, textClass: 'text-lg', badgeClass: 'text-[9px] px-2 py-0.5' },
@@ -36,7 +36,7 @@ export function KisanSetuLogo({
       >
         <img
           src="/logo.png"
-          alt="KisanSetu Official Logo"
+          alt="Krishi Niti Official Logo"
           className="w-full h-full object-contain"
           loading="eager"
         />
@@ -54,15 +54,15 @@ export function KisanSetuLogo({
                 : 'text-slate-900'
             } ${currentSize.textClass}`}
           >
-            <span>Kisan</span>
+            <span>Krishi</span>
             <span className={`ml-1 font-black ${
               variant === 'light' 
                 ? 'text-emerald-300' 
                 : variant === 'dark' 
-                ? 'text-emerald-700' 
+                ? 'text-emerald-600' 
                 : 'text-emerald-600'
             }`}>
-              Setu
+              Niti
             </span>
           </span>
 
@@ -83,4 +83,6 @@ export function KisanSetuLogo({
   );
 }
 
-export default KisanSetuLogo;
+// Aliases for seamless backwards compatibility
+export const KisanSetuLogo = KrishiNitiLogo;
+export default KrishiNitiLogo;

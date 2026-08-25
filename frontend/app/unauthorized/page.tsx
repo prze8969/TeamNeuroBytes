@@ -132,7 +132,7 @@ function UnauthorizedContent() {
 
       {/* Footer info */}
       <p className="text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-100">
-        KisanSetu Unified Access Control • DigiLocker e-KYC
+        Krishi Niti Unified Access Control • DigiLocker e-KYC
       </p>
 
     </div>

@@ -222,7 +222,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="max-w-7xl mx-auto w-full px-6 py-8 border-t border-emerald-800/60 text-center text-xs text-emerald-300 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p>© 2026 KisanSetu • TeamNeuroBytes • Smart India Hackathon PS 26132.</p>
+        <p>© 2026 Krishi Niti • TeamNeuroBytes • Smart India Hackathon PS 26132.</p>
         <div className="flex gap-6 text-emerald-300 font-bold">
           <Link href="/login" className="hover:text-white">Sign In</Link>
           <Link href="/register" className="hover:text-white">Register</Link>

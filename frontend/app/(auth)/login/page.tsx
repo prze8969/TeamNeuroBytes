@@ -442,7 +442,7 @@ function LoginContent() {
 
           {/* Card Footer Row */}
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-            <span>New to Kisan Setu?</span>
+            <span>New to Krishi Niti?</span>
             <Link 
               href={`/register${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}&preselectedRole=${encodeURIComponent(role)}` : ''}`}
               className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 transition-colors"
