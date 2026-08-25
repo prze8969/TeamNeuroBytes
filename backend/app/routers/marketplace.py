@@ -56,9 +56,37 @@ def get_all_crop_lots(
     lots = session.exec(query).all()
     return lots
 
+COMMODITY_MANDI_BENCHMARKS = {
+    "wheat": 22.75,
+    "rice": 21.83,
+    "tomato": 18.00,
+    "onion": 20.00,
+    "banana": 16.00,
+    "potato": 16.00,
+    "soybean": 46.00,
+    "cotton": 66.20,
+    "chana": 54.40,
+    "tur": 70.00,
+}
+
 @router.post("/lots", response_model=CropLot)
 def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_session)):
-    """Creates a new crop lot listing with farmer's actual produce photo and AI grade."""
+    """Creates a new crop lot listing with farmer's actual produce photo, AI grade, and 85% anti-distress price floor enforcement."""
+    # Statutory 85% Anti-Distress Mandi Reserve Floor Guard
+    comm_lower = req.commodity.lower()
+    matched_benchmark = 15.0  # Safe default floor
+    for key, bench in COMMODITY_MANDI_BENCHMARKS.items():
+        if key in comm_lower:
+            matched_benchmark = bench
+            break
+
+    min_permissible_floor = round(matched_benchmark * 0.85, 2)
+    if req.base_price_per_kg < min_permissible_floor:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Asking floor ₹{req.base_price_per_kg:.2f}/kg is below the statutory 85% Mandi Reserve Floor (₹{min_permissible_floor:.2f}/kg) to protect smallholder farmers from distress selling."
+        )
+
     grade_enum = QualityGrade.GRADE_A
     if req.quality_grade:
         clean_g = req.quality_grade.upper()

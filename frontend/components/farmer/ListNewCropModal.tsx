@@ -92,10 +92,12 @@ export function ListNewCropModal({
   const totalQuantityKg = quantityUnit === 'MT' ? quantityValue * 1000 : quantityValue * 100;
   const totalEstimatedRevenue = totalQuantityKg * askingPricePerKg;
 
-  // Statutory MSP / Market benchmark safety check
+  // Statutory MSP / Market benchmark safety check (85% Anti-Distress Rule)
   const mspFloor = currentCrop.mspFloorPerKg;
   const mandiBenchmark = currentCrop.mandiBenchmarkPerKg;
-  const isBelowRecommendedPrice = askingPricePerKg < (mandiBenchmark * 0.88);
+  const min85PercentFloor = Number((mandiBenchmark * 0.85).toFixed(2));
+  const minPermissibleFloor = Number(Math.max(mspFloor * 0.90, min85PercentFloor).toFixed(2));
+  const isBelow85PercentFloor = askingPricePerKg < minPermissibleFloor;
 
   // Active produce image (custom uploaded base64 vs catalog sample)
   const activeDisplayImage = uploadedImage || currentCrop.sampleImageUrl;
@@ -108,6 +110,7 @@ export function ListNewCropModal({
       setInferredMoisture(currentCrop.typicalMoisturePct);
       setInferredScore(95.8);
       setIsLiveGraded(false);
+      setAskingPricePerKg(currentCrop.mandiBenchmarkPerKg + 1.00);
     }
   }, [selectedCropId, uploadedImage, currentCrop]);
 
@@ -249,6 +252,14 @@ export function ListNewCropModal({
       toast.error('❌ Cannot Publish Rejected Lot', {
         description: rejectionReason || 'Your produce failed AI quality standards. Please upload a clear photo of healthy produce.',
         duration: 5000,
+      });
+      return;
+    }
+
+    if (isBelow85PercentFloor) {
+      toast.error('🛡️ Asking Price Below 85% Mandi Reserve Floor', {
+        description: `To prevent distress selling, statutory guidelines require a minimum reserve of ₹${minPermissibleFloor.toFixed(2)}/kg for ${currentCrop.name}. Please adjust your asking price.`,
+        duration: 5500,
       });
       return;
     }
@@ -905,35 +916,44 @@ export function ListNewCropModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* Benchmark Reference Card */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 text-[10px] uppercase font-bold font-mono">Live Mandi Benchmarks</span>
+                  <span className="text-slate-500 text-[10px] uppercase font-bold font-mono">Statutory e-NAM Benchmarks</span>
                   <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full font-mono">
-                    Real-Time Feed
+                    Real-Time APMC Feed
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">Nashik APMC Modal:</span>
-                    <strong className="text-slate-900 text-sm font-black">₹{mandiBenchmark.toFixed(2)}/kg</strong>
+                <div className="grid grid-cols-3 gap-1.5 text-xs font-mono pt-1">
+                  <div className="bg-white p-2 rounded-xl border border-slate-200/80">
+                    <span className="text-slate-400 text-[9px] block">Mandi Modal:</span>
+                    <strong className="text-slate-900 text-xs font-black">₹{mandiBenchmark.toFixed(2)}/kg</strong>
                   </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] block">Govt. MSP Floor:</span>
-                    <strong className="text-purple-900 text-sm font-black">₹{mspFloor.toFixed(2)}/kg</strong>
+                  <div className="bg-blue-50/80 p-2 rounded-xl border border-blue-200">
+                    <span className="text-blue-700 text-[9px] font-bold block">85% Floor:</span>
+                    <strong className="text-blue-900 text-xs font-black">₹{minPermissibleFloor.toFixed(2)}/kg</strong>
+                  </div>
+                  <div className="bg-purple-50/80 p-2 rounded-xl border border-purple-200">
+                    <span className="text-purple-700 text-[9px] font-bold block">Govt. MSP:</span>
+                    <strong className="text-purple-900 text-xs font-black">₹{mspFloor.toFixed(2)}/kg</strong>
                   </div>
                 </div>
 
-                <p className="text-[10px] text-slate-500 pt-1 leading-relaxed">
-                  Institutional buyers compete above the mandi modal price for Grade A certified produce.
+                <p className="text-[10px] text-slate-500 leading-relaxed">
+                  🛡️ <strong>85% Anti-Distress Rule:</strong> Prevents predatory buyer lowballing and ensures farmers never sell below statutory market safety margins.
                 </p>
               </div>
 
               {/* Farmer Asking Floor Price */}
               <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
-                <label className="text-[11px] font-bold text-slate-800 block">
-                  Your Minimum Asking Floor Price (₹/kg)
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold text-slate-800 block">
+                    Your Asking Floor Price (₹/kg)
+                  </label>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    Min: ₹{minPermissibleFloor.toFixed(2)}
+                  </span>
+                </div>
 
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-black text-slate-400 font-mono">
@@ -942,10 +962,14 @@ export function ListNewCropModal({
                   <Input
                     type="number"
                     step="0.25"
-                    min="1.0"
+                    min={minPermissibleFloor}
                     value={askingPricePerKg}
-                    onChange={(e) => setAskingPricePerKg(Math.max(1, parseFloat(e.target.value) || 0))}
-                    className="h-11 pl-8 text-base font-black font-mono text-emerald-950 rounded-xl border-slate-300 focus-visible:ring-emerald-500"
+                    onChange={(e) => setAskingPricePerKg(parseFloat(e.target.value) || 0)}
+                    className={`h-11 pl-8 text-base font-black font-mono rounded-xl border focus-visible:ring-emerald-500 ${
+                      isBelow85PercentFloor
+                        ? 'border-rose-400 bg-rose-50/50 text-rose-950 ring-1 ring-rose-400'
+                        : 'border-slate-300 text-emerald-950'
+                    }`}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-mono">
                     per kg
@@ -955,7 +979,7 @@ export function ListNewCropModal({
                 {/* Total Lot Valuation Live Preview */}
                 <div className="flex items-center justify-between text-xs font-mono pt-1 border-t border-slate-100">
                   <span className="text-slate-500">Total Lot Valuation:</span>
-                  <strong className="text-emerald-900 font-black text-sm">
+                  <strong className={`font-black text-sm ${isBelow85PercentFloor ? 'text-rose-700' : 'text-emerald-900'}`}>
                     ₹{totalEstimatedRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                   </strong>
                 </div>
@@ -963,16 +987,41 @@ export function ListNewCropModal({
 
             </div>
 
-            {/* Warning if below recommended price */}
-            {isBelowRecommendedPrice && (
-              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs flex items-start gap-2.5 animate-in fade-in">
-                <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                <div className="space-y-0.5">
-                  <strong className="font-bold block">⚠️ Below Recommended Mandi Price</strong>
-                  <p className="text-[11px] text-amber-900 leading-relaxed">
-                    Your produce is certified <strong>{currentCrop.typicalGrade}</strong>. The recommended asking price in Nashik Cluster is ≥ <strong>₹{mandiBenchmark.toFixed(2)}/kg</strong> to avoid distress selling.
-                  </p>
+            {/* 85% Anti-Distress Floor Warning or Advisory */}
+            {isBelow85PercentFloor ? (
+              <div className="p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-400 text-rose-950 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in shadow-xs">
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle size={18} className="text-rose-600 shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <strong className="font-black text-rose-900 block text-xs">
+                      🛡️ Anti-Distress Price Floor Circuit Breaker Active
+                    </strong>
+                    <p className="text-[11px] text-rose-800 leading-relaxed">
+                      Your asking rate (<strong>₹{askingPricePerKg.toFixed(2)}/kg</strong>) is below the statutory 85% Mandi Reserve Floor (<strong>₹{minPermissibleFloor.toFixed(2)}/kg</strong>). You cannot list below this limit to protect smallholders from predatory buyer lowballing.
+                    </p>
+                  </div>
                 </div>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setAskingPricePerKg(mandiBenchmark)}
+                  className="bg-rose-700 hover:bg-rose-800 text-white text-xs font-black h-9 px-4 rounded-xl shrink-0 cursor-pointer shadow-xs"
+                >
+                  Set to Modal (₹{mandiBenchmark.toFixed(2)}) ⚡
+                </Button>
+              </div>
+            ) : (
+              <div className="p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-xs flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
+                  <span>
+                    Valid Fair-Trade Price: <strong>₹{askingPricePerKg.toFixed(2)}/kg</strong> is above the 85% reserve threshold (₹{minPermissibleFloor.toFixed(2)}).
+                  </span>
+                </span>
+                <span className="text-[10px] font-mono font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
+                  Fair Trade Verified
+                </span>
               </div>
             )}
 
