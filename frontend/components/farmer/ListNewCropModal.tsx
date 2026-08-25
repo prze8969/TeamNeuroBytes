@@ -812,10 +812,17 @@ export function ListNewCropModal({
                   {/* AI Bounding Boxes (When scanned) */}
                   {!isScanning && showAIOverlay && (
                     <>
-                      {currentCrop.defectBoxes.map((box, idx) => (
+                      {(inferredGrade === 'REJECTED' || !isPassed ? [
+                        { top: '24%', left: '16%', width: '68%', height: '36%', label: 'Non-Organic / Artifact Area: 100%', conf: '99.4%' },
+                        { top: '56%', left: '25%', width: '52%', height: '30%', label: 'Severe Anomaly / Failed Tolerance', conf: '98.1%' }
+                      ] : currentCrop.defectBoxes).map((box, idx) => (
                         <div
                           key={`assay-box-${idx}-${box.label.replace(/\s+/g, '-')}`}
-                          className="absolute border-2 border-emerald-400 bg-emerald-500/15 rounded-lg pointer-events-none transition-all duration-300 animate-in fade-in"
+                          className={`absolute border-2 rounded-lg pointer-events-none transition-all duration-300 animate-in fade-in ${
+                            inferredGrade === 'REJECTED' || !isPassed
+                              ? 'border-rose-500 bg-rose-500/15'
+                              : 'border-emerald-400 bg-emerald-500/15'
+                          }`}
                           style={{
                             top: box.top,
                             left: box.left,
@@ -823,7 +830,11 @@ export function ListNewCropModal({
                             height: box.height
                           }}
                         >
-                          <span className="absolute -top-5 left-0 bg-emerald-950/95 text-emerald-300 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shadow-sm border border-emerald-500/40 whitespace-nowrap">
+                          <span className={`absolute -top-5 left-0 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap ${
+                            inferredGrade === 'REJECTED' || !isPassed
+                              ? 'bg-rose-950/95 text-rose-300 border border-rose-500/50'
+                              : 'bg-emerald-950/95 text-emerald-300 border border-emerald-500/40'
+                          }`}>
                             {box.label} ({box.conf})
                           </span>
                         </div>
@@ -881,16 +892,22 @@ export function ListNewCropModal({
                     <span className="text-[9.5px] text-slate-500 font-sans">{inferredGrade === 'REJECTED' || !isPassed ? 'Exceeds Tolerance' : 'Blemish Ratio'}</span>
                   </div>
 
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div className={`p-2.5 rounded-xl border ${inferredGrade === 'REJECTED' || !isPassed ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-500 text-[9px] uppercase font-bold block font-mono">Est. Moisture</span>
-                    <strong className="text-slate-900 font-black text-sm block">{inferredMoisture}%</strong>
-                    <span className="text-[9.5px] text-emerald-700 font-sans">Optimal for Storage</span>
+                    <strong className={`font-black text-sm block ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-700' : 'text-slate-900'}`}>
+                      {inferredGrade === 'REJECTED' || !isPassed ? 'N/A' : `${inferredMoisture}%`}
+                    </strong>
+                    <span className={`text-[9.5px] font-sans ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-600 font-bold' : 'text-emerald-700'}`}>
+                      {inferredGrade === 'REJECTED' || !isPassed ? 'Non-Compliant' : 'Optimal for Storage'}
+                    </span>
                   </div>
 
                   <div className={`p-2.5 rounded-xl border ${inferredGrade === 'REJECTED' || !isPassed ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50 border-slate-200'}`}>
                     <span className="text-slate-500 text-[9px] uppercase font-bold block font-mono">AI Quality Score</span>
                     <strong className={`font-black text-sm block ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-700' : 'text-emerald-700'}`}>{inferredScore}%</strong>
-                    <span className="text-[9.5px] text-slate-500 font-sans">{isLiveGraded ? 'Neural Confidence' : 'YOLOv8 Segmentation'}</span>
+                    <span className={`text-[9.5px] font-sans ${inferredGrade === 'REJECTED' || !isPassed ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
+                      {inferredGrade === 'REJECTED' || !isPassed ? 'Defect / Failed' : isLiveGraded ? 'Neural Confidence' : 'YOLOv8 Segmentation'}
+                    </span>
                   </div>
 
                 </div>

@@ -305,7 +305,9 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
           </div>
 
           {/* Camera / Image Viewport */}
-          <div className="relative h-56 w-full rounded-2xl bg-slate-900 border-2 border-emerald-400/80 overflow-hidden flex flex-col justify-between p-3 shadow-inner group">
+          <div className={`relative h-56 w-full rounded-2xl bg-slate-900 border-2 overflow-hidden flex flex-col justify-between p-3 shadow-inner group ${
+            result.isPassed ? 'border-emerald-400/80' : 'border-rose-500/80'
+          }`}>
             {imagePreview && (
               <img
                 src={imagePreview}
@@ -315,29 +317,39 @@ export function AIGradingCard({ onApplyToLot }: { onApplyToLot?: (data: GradingR
             )}
 
             {/* Top HUD Overlay */}
-            <div className="relative z-10 flex justify-between items-center text-[10px] text-emerald-300 bg-slate-950/85 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-emerald-700/60 shadow-sm">
+            <div className={`relative z-10 flex justify-between items-center text-[10px] bg-slate-950/85 backdrop-blur-xs px-2.5 py-1 rounded-lg border shadow-sm ${
+              result.isPassed ? 'text-emerald-300 border-emerald-700/60' : 'text-rose-300 border-rose-700/60'
+            }`}>
               <span className="flex items-center gap-1.5 font-mono font-bold">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                AI INSPECTION HUD
+                <span className={`h-2 w-2 rounded-full animate-pulse ${result.isPassed ? 'bg-emerald-400' : 'bg-rose-500'}`}></span>
+                {result.isPassed ? 'AI INSPECTION HUD' : 'REJECTED: NON-ORGANIC / ANOMALY'}
               </span>
               <span className="font-mono text-slate-300">{result.modelVersion}</span>
             </div>
 
             {/* Simulated Bounding Box on Image */}
             <div className="absolute inset-0 flex items-center justify-center p-6 pointer-events-none z-10">
-              <div className="w-40 h-28 border-2 border-dashed border-emerald-400 rounded-xl relative bg-emerald-500/15 flex items-start p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.4)] backdrop-blur-[0.5px]">
-                <span className="bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wide">
-                  {tCrop(result.commodity.split(' ')[0])}: {result.score}%
+              <div className={`w-40 h-28 border-2 border-dashed rounded-xl relative flex items-start p-1.5 backdrop-blur-[0.5px] ${
+                result.isPassed
+                  ? 'border-emerald-400 bg-emerald-500/15 shadow-[0_0_15px_rgba(16,185,129,0.4)]'
+                  : 'border-rose-500 bg-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.4)]'
+              }`}>
+                <span className={`text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow-sm uppercase tracking-wide ${
+                  result.isPassed ? 'bg-emerald-600' : 'bg-rose-600'
+                }`}>
+                  {result.isPassed ? `${tCrop(result.commodity.split(' ')[0])}: ${result.score}%` : 'Anomaly: 100%'}
                 </span>
-                <span className="absolute bottom-1 right-1.5 text-[9px] font-mono text-emerald-200 bg-slate-950/80 px-1 rounded">
-                  Defect: {result.defectPercent}%
+                <span className="absolute bottom-1 right-1.5 text-[9px] font-mono text-slate-200 bg-slate-950/80 px-1 rounded">
+                  {result.isPassed ? `Defect: ${result.defectPercent}%` : 'Tolerance: Exceeded'}
                 </span>
               </div>
             </div>
 
             {/* Bottom Controls */}
             <div className="relative z-10 flex justify-between items-center text-xs text-white">
-              <span className="text-[10px] bg-black/60 backdrop-blur-xs px-2 py-0.5 rounded text-emerald-300 font-mono">
+              <span className={`text-[10px] backdrop-blur-xs px-2 py-0.5 rounded font-mono ${
+                result.isPassed ? 'bg-black/60 text-emerald-300' : 'bg-rose-950/80 text-rose-300 border border-rose-500/30'
+              }`}>
                 Status: {result.isPassed ? 'GRADE CERTIFIED' : 'REJECTED'}
               </span>
               <Button
