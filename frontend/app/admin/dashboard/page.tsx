@@ -1,6 +1,7 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import { EscrowTracker } from '@/components/dashboard/EscrowTracker';
@@ -21,8 +22,9 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
-      <Navbar activeRole="ADMIN" />
+    <ProtectedRoute allowedRoles={['ADMIN']}>
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+        <Navbar activeRole="ADMIN" />
 
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
         <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-5 rounded-2xl border border-emerald-100 shadow-xs">
@@ -171,6 +173,7 @@ export default function AdminDashboardPage() {
           </div>
         )}
       </main>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

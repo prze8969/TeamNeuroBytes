@@ -26,13 +26,14 @@ interface AuthContextValue {
   user: UserProfile | null;
   session: string | null;
   role: UserRole;
+  isAuthenticated: boolean;
   loading: boolean;
   login: (email: string, role?: UserRole) => void;
   logout: () => void;
   switchRole: (newRole: UserRole) => void;
 }
 
-const defaultUserProfiles: Record<UserRole, UserProfile> = {
+export const defaultUserProfiles: Record<UserRole, UserProfile> = {
   FARMER: {
     id: 'USR-FARMER-01',
     name: 'Ramesh Patil',
@@ -90,10 +91,11 @@ const defaultUserProfiles: Record<UserRole, UserProfile> = {
 };
 
 const AuthContext = createContext<AuthContextValue>({
-  user: defaultUserProfiles.FARMER,
-  session: 'mock-jwt-token',
+  user: null,
+  session: null,
   role: 'FARMER',
-  loading: false,
+  isAuthenticated: false,
+  loading: true,
   login: () => {},
   logout: () => {},
   switchRole: () => {},
@@ -108,24 +110,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      // Check cookies and localStorage
+      // Check cookies and localStorage for existing authentication
       const cookieRoleMatch = document.cookie.match(/user_role=([A-Z_]+)/);
       const cookieTokenMatch = document.cookie.match(/token=([^;]+)/);
       
       const storedRole = (cookieRoleMatch ? cookieRoleMatch[1] : localStorage.getItem('kisansetu_role')) as UserRole;
       const storedToken = cookieTokenMatch ? cookieTokenMatch[1] : localStorage.getItem('kisansetu_token');
 
-      const resolvedRole: UserRole = storedRole && defaultUserProfiles[storedRole] ? storedRole : 'FARMER';
-      const resolvedToken = storedToken || 'mock-jwt-token';
-
-      setRole(resolvedRole);
-      setSession(resolvedToken);
-      setUser(defaultUserProfiles[resolvedRole]);
-      
-      // Sync cookie
-      document.cookie = `user_role=${resolvedRole}; path=/; max-age=31536000; SameSite=Lax`;
-      document.cookie = `token=${resolvedToken}; path=/; max-age=31536000; SameSite=Lax`;
-    } catch {} finally {
+      if (storedToken && storedToken.trim() !== '') {
+        const resolvedRole: UserRole = storedRole && defaultUserProfiles[storedRole] ? storedRole : 'FARMER';
+        setRole(resolvedRole);
+        setSession(storedToken);
+        setUser(defaultUserProfiles[resolvedRole]);
+      } else {
+        setSession(null);
+        setUser(null);
+      }
+    } catch {
+      setSession(null);
+      setUser(null);
+    } finally {
       setLoading(false);
     }
   }, []);
@@ -154,7 +158,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     try {
       localStorage.removeItem('kisansetu_token');
+      localStorage.removeItem('kisansetu_role');
       document.cookie = 'token=; path=/; max-age=0;';
+      document.cookie = 'user_role=; path=/; max-age=0;';
     } catch {}
     router.push('/login');
   };
@@ -170,7 +176,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, role, loading, login, logout, switchRole }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        session, 
+        role, 
+        isAuthenticated: Boolean(session && user), 
+        loading, 
+        login, 
+        logout, 
+        switchRole 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

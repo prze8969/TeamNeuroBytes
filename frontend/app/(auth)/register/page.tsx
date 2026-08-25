@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
   Eye, 
@@ -14,26 +14,29 @@ import {
   Mail, 
   User, 
   Check, 
-  Building2, 
-  Users, 
-  Truck, 
-  Warehouse, 
-  Scale 
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
+import { useAuth, UserRole } from '@/lib/AuthContext';
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useAuth();
+
+  const redirectTo = searchParams.get('redirectTo') || searchParams.get('from') || '';
+  const preselectedRoleParam = searchParams.get('preselectedRole') || '';
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('FARMER');
+  const [role, setRole] = useState<UserRole>('FARMER');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const roles = [
+  const roles: { role: UserRole; label: string; icon: string; desc: string }[] = [
     { 
       role: 'FARMER', 
       label: 'Farmer', 
@@ -72,6 +75,23 @@ export default function RegisterPage() {
     },
   ];
 
+  useEffect(() => {
+    if (!preselectedRoleParam) return;
+    const norm = preselectedRoleParam.toLowerCase();
+    let matched = roles.find(r => r.role.toLowerCase() === norm || r.label.toLowerCase() === norm);
+    if (!matched) {
+      if (norm.includes('farm')) matched = roles.find(r => r.role === 'FARMER');
+      else if (norm.includes('buy')) matched = roles.find(r => r.role === 'BUYER');
+      else if (norm.includes('fpo') || norm.includes('org')) matched = roles.find(r => r.role === 'ORGANIZATION');
+      else if (norm.includes('trans') || norm.includes('truck')) matched = roles.find(r => r.role === 'TRANSPORTATION');
+      else if (norm.includes('ware') || norm.includes('cold')) matched = roles.find(r => r.role === 'WAREHOUSE');
+      else if (norm.includes('admin') || norm.includes('gov')) matched = roles.find(r => r.role === 'ADMIN');
+    }
+    if (matched) {
+      setRole(matched.role);
+    }
+  }, [preselectedRoleParam]);
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -88,19 +108,24 @@ export default function RegisterPage() {
         })
       });
 
-      document.cookie = `token=mock-jwt-token; path=/;`;
-      document.cookie = `user_role=${role}; path=/;`;
+      login(email, role);
+
       if (role === 'BUYER') {
         try {
           localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
         } catch {}
       }
 
+      if (redirectTo) {
+        router.push(redirectTo);
+        return;
+      }
+
       if (role === 'FARMER') {
         router.push('/kyc?role=FARMER');
       } else if (role === 'BUYER') {
         router.push('/kyc?role=BUYER');
-      } else if (role === 'FPO' || role === 'ORGANIZATION') {
+      } else if (role === 'ORGANIZATION') {
         router.push('/fpo/dashboard');
       } else if (role === 'TRANSPORTATION') {
         router.push('/transportation/dashboard');
@@ -110,19 +135,24 @@ export default function RegisterPage() {
         router.push('/admin/dashboard');
       }
     } catch {
-      document.cookie = `token=mock-jwt-token; path=/;`;
-      document.cookie = `user_role=${role}; path=/;`;
+      login(email, role);
+
       if (role === 'BUYER') {
         try {
           localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
         } catch {}
       }
 
+      if (redirectTo) {
+        router.push(redirectTo);
+        return;
+      }
+
       if (role === 'FARMER') {
         router.push('/kyc?role=FARMER');
       } else if (role === 'BUYER') {
         router.push('/kyc?role=BUYER');
-      } else if (role === 'FPO' || role === 'ORGANIZATION') {
+      } else if (role === 'ORGANIZATION') {
         router.push('/fpo/dashboard');
       } else if (role === 'TRANSPORTATION') {
         router.push('/transportation/dashboard');
@@ -192,7 +222,6 @@ export default function RegisterPage() {
               alt="Kisan Setu Smart Agriculture Platform" 
               className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            {/* Subtle Gradient vignette on image */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-emerald-950/60 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
@@ -386,7 +415,7 @@ export default function RegisterPage() {
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
             <span>Already have an account?</span>
             <Link 
-              href="/login" 
+              href={`/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}&preselectedRole=${encodeURIComponent(role)}` : ''}`}
               className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 transition-colors"
             >
               Sign In to Portal <ArrowRight size={13} />
@@ -406,5 +435,18 @@ export default function RegisterPage() {
       </section>
 
     </main>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-8 text-slate-400 flex items-center gap-2">
+        <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
+        <span>Loading registration gateway...</span>
+      </div>
+    }>
+      <RegisterContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import { 
@@ -250,8 +251,9 @@ export default function TransportationDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col font-sans">
-      <Navbar activeRole="TRANSPORTATION" />
+    <ProtectedRoute allowedRoles={['TRANSPORTATION', 'ADMIN']}>
+      <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col font-sans">
+        <Navbar activeRole="TRANSPORTATION" />
 
       {/* ========================================================================= */}
       {/* 1. STICKY TOP FLEET COMMAND HEADER */}
@@ -516,6 +518,7 @@ export default function TransportationDashboardPage() {
 
       </main>
 
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { Button } from '@/components/ui/button';
@@ -193,8 +194,9 @@ export default function FpoDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-purple-500 selection:text-white">
-      <Navbar activeRole="ORGANIZATION" />
+    <ProtectedRoute allowedRoles={['ORGANIZATION', 'FPO', 'ADMIN']}>
+      <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-purple-500 selection:text-white">
+        <Navbar activeRole="ORGANIZATION" />
 
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
         
@@ -633,6 +635,7 @@ export default function FpoDashboardPage() {
         onSuccess={loadFPOData}
       />
 
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

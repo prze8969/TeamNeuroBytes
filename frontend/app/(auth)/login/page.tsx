@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
   Eye, 
@@ -9,33 +9,32 @@ import {
   Sparkles, 
   ShieldCheck, 
   ArrowRight, 
-  TrendingUp, 
   Zap, 
-  CheckCircle2, 
   Lock, 
   Mail, 
-  Phone, 
-  ChevronRight,
   Check,
-  Building2,
-  Users,
-  Truck,
-  Warehouse,
-  Scale
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
+import { useAuth, UserRole } from '@/lib/AuthContext';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useAuth();
+
+  const redirectTo = searchParams.get('redirectTo') || searchParams.get('from') || '';
+  const preselectedRoleParam = searchParams.get('preselectedRole') || '';
+
   const [identifier, setIdentifier] = useState('farmer@kisansetu.in');
   const [password, setPassword] = useState('farmer123');
-  const [role, setRole] = useState('FARMER');
+  const [role, setRole] = useState<UserRole>('FARMER');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const quickRoles = [
+  const quickRoles: { role: UserRole; email: string; label: string; icon: string; desc: string }[] = [
     { 
       role: 'FARMER', 
       email: 'farmer@kisansetu.in', 
@@ -80,6 +79,28 @@ export default function LoginPage() {
     },
   ];
 
+  // Auto-focus and preselect role from query param
+  useEffect(() => {
+    if (!preselectedRoleParam) return;
+    const norm = preselectedRoleParam.toLowerCase();
+    
+    let matched = quickRoles.find(r => r.role.toLowerCase() === norm || r.label.toLowerCase() === norm);
+    if (!matched) {
+      if (norm.includes('farm')) matched = quickRoles.find(r => r.role === 'FARMER');
+      else if (norm.includes('buy')) matched = quickRoles.find(r => r.role === 'BUYER');
+      else if (norm.includes('fpo') || norm.includes('org')) matched = quickRoles.find(r => r.role === 'ORGANIZATION');
+      else if (norm.includes('trans') || norm.includes('truck')) matched = quickRoles.find(r => r.role === 'TRANSPORTATION');
+      else if (norm.includes('ware') || norm.includes('cold')) matched = quickRoles.find(r => r.role === 'WAREHOUSE');
+      else if (norm.includes('admin') || norm.includes('gov')) matched = quickRoles.find(r => r.role === 'ADMIN');
+    }
+
+    if (matched) {
+      setRole(matched.role);
+      setIdentifier(matched.email);
+      setPassword(`${matched.role.toLowerCase()}123`);
+    }
+  }, [preselectedRoleParam]);
+
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setLoading(true);
@@ -103,29 +124,35 @@ export default function LoginPage() {
 
       if (res.ok) {
         const data = await res.json();
-        const resolvedRole = data.role || role;
-        document.cookie = `token=${data.access_token}; path=/;`;
-        document.cookie = `user_role=${resolvedRole}; path=/;`;
+        const resolvedRole: UserRole = data.role || role;
+        login(identifier, resolvedRole);
+
         if (resolvedRole === 'BUYER') {
           try {
             localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
           } catch {}
         }
-        router.push(routeMap[resolvedRole] || '/farmer/dashboard');
+        
+        // Redirect to originally requested private route or role dashboard
+        const destination = redirectTo || routeMap[resolvedRole] || '/farmer/dashboard';
+        router.push(destination);
         return;
       }
     } catch {
       // Fallback in case backend is offline
     }
 
-    document.cookie = "token=mock-jwt-token; path=/;";
-    document.cookie = `user_role=${role}; path=/;`;
+    // Client-side authentication fallback
+    login(identifier, role);
     if (role === 'BUYER') {
       try {
         localStorage.setItem('kisansetu_buyer_tab', 'marketplace');
       } catch {}
     }
-    router.push(routeMap[role] || '/farmer/dashboard');
+
+    // Redirect to originally requested private route or role dashboard
+    const destination = redirectTo || routeMap[role] || '/farmer/dashboard';
+    router.push(destination);
     setLoading(false);
   };
 
@@ -191,7 +218,6 @@ export default function LoginPage() {
               alt="Kisan Setu Smart Agriculture Platform" 
               className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            {/* Subtle Gradient vignette on image */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-emerald-950/60 via-transparent to-transparent pointer-events-none" />
           </div>
         </div>
@@ -258,7 +284,13 @@ export default function LoginPage() {
                 Welcome back
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                Sign in to Price Discovery &amp; Trade Hub
+                {redirectTo ? (
+                  <span className="text-emerald-700 font-bold">
+                    Authentication required to access requested dashboard
+                  </span>
+                ) : (
+                  'Sign in to Price Discovery & Trade Hub'
+                )}
               </p>
             </div>
           </div>
@@ -373,7 +405,7 @@ export default function LoginPage() {
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
             <span>New to Kisan Setu?</span>
             <Link 
-              href="/register" 
+              href={`/register${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}&preselectedRole=${encodeURIComponent(role)}` : ''}`}
               className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 transition-colors"
             >
               Create Account <ArrowRight size={13} />
@@ -393,5 +425,18 @@ export default function LoginPage() {
       </section>
 
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-8 text-slate-400 flex items-center gap-2">
+        <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
+        <span>Loading authentication gateway...</span>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -390,8 +391,9 @@ export default function WarehouseDashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      <Navbar activeRole="WAREHOUSE" />
+    <ProtectedRoute allowedRoles={['WAREHOUSE', 'ADMIN']}>
+      <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+        <Navbar activeRole="WAREHOUSE" />
 
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
         
@@ -1319,6 +1321,7 @@ export default function WarehouseDashboardPage() {
         )}
 
       </main>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }
