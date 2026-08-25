@@ -17,6 +17,30 @@ class QualityGrade(str, Enum):
     GRADE_C = "C"
     REJECTED = "REJECTED"
 
+class AssessmentStatus(str, Enum):
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
+class ImageAssessmentBase(SQLModel):
+    image_hash: str = Field(index=True, unique=True)
+    status: AssessmentStatus = Field(default=AssessmentStatus.PENDING)
+    error_reason: Optional[str] = Field(default=None)
+    quality_grade: Optional[QualityGrade] = Field(default=None)
+    quality_score: Optional[float] = Field(default=None)
+    defect_percentage: Optional[float] = Field(default=None)
+    ripeness_index: Optional[float] = Field(default=None)
+    # AI auto-classification suggestions (audit/reference only — NOT what gets published)
+    ai_suggested_category: Optional[str] = Field(default=None)
+    ai_suggested_variety: Optional[str] = Field(default=None)
+
+class ImageAssessment(ImageAssessmentBase, table=True):
+    __tablename__ = "image_assessments"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class LotStatus(str, Enum):
     DRAFT = "DRAFT"
     LISTED = "LISTED"
@@ -32,10 +56,12 @@ class CropLotBase(SQLModel):
     farmer_phone: Optional[str] = Field(default=None, index=True)
     farmer_name: Optional[str] = None
     commodity: str = Field(index=True) # e.g. "Wheat", "Paddy", "Tomato", "Onion", "Soybean"
-    variety: Optional[str] = "Standard Hybrid"
+    # Farmer-confirmed classification (must be explicitly chosen — never auto-filled from AI)
+    commodity_category: str = Field(index=True)  # e.g. "Cereals", "Vegetables", "Fruits"
+    variety: str  # e.g. "Sharbati Lok-1", "Red Nashik"
     quantity_kg: float = Field(gt=0)
     base_price_per_kg: float = Field(gt=0)
-    
+
     # AI Quality Attributes
     quality_grade: QualityGrade = Field(default=QualityGrade.GRADE_B)
     quality_score: float = Field(default=85.0) # 0 to 100%

@@ -13,7 +13,7 @@ else:
 
 def create_db_and_tables():
     from app.models.database import (
-        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance, BuyerProfile
+        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance, BuyerProfile, ImageAssessment
     )
     SQLModel.metadata.create_all(engine)
     seed_initial_demo_data()
@@ -163,6 +163,7 @@ def seed_initial_demo_data():
                     farmer_phone="+919876543210",
                     farmer_name="Ramesh Patil",
                     commodity="Wheat",
+                    commodity_category="Cereals",
                     variety="Sharbati Lok-1",
                     quantity_kg=5000,
                     base_price_per_kg=24.50,
@@ -185,6 +186,7 @@ def seed_initial_demo_data():
                     farmer_phone="+919876543210",
                     farmer_name="Anil Deshmukh",
                     commodity="Onion",
+                    commodity_category="Vegetables",
                     variety="Red Nashik",
                     quantity_kg=8000,
                     base_price_per_kg=21.00,
@@ -207,6 +209,7 @@ def seed_initial_demo_data():
                     farmer_phone="+919876543210",
                     farmer_name="Sanjay Shinde",
                     commodity="Tomato",
+                    commodity_category="Vegetables",
                     variety="Hybrid Vaishali",
                     quantity_kg=5500,
                     base_price_per_kg=18.50,

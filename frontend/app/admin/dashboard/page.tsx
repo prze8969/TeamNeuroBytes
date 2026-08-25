@@ -113,39 +113,17 @@ export default function AdminDashboardPage() {
         )}
 
         {activeTab === 'grievances' && (
-          <div className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-xs space-y-4">
-            <h3 className="text-base font-extrabold text-slate-900">Active Grievance & Dispute Arbitration Queue</h3>
-            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 space-y-3">
-              {mockGrievances.map((g) => (
-                <div key={g.id} className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-slate-900">{g.id} • {g.farmer} vs {g.buyer}</span>
-                      <span className="rounded-full bg-amber-200 text-amber-900 border border-amber-300 px-2 py-0.5 text-xs font-bold font-mono">
-                        {g.status}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-700 mt-1">{g.issue} (Disputed: ₹{g.amountInDispute})</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold h-8"
-                      onClick={() => alert('Dispute resolved: 50% split applied.')}
-                    >
-                      Accept Evidence & Release
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-xs h-8 bg-white border-slate-300 text-slate-700 hover:bg-slate-100"
-                      onClick={() => alert('Inspection officer dispatched.')}
-                    >
-                      Dispatch Assessor
-                    </Button>
-                  </div>
-                </div>
-              ))}
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-rose-100 shadow-sm">
+              <div>
+                <h3 className="font-bold text-slate-900 text-lg">Active Grievance Cases</h3>
+                <p className="text-sm text-slate-500 mt-1">APMC Nodal Officer mediation queue. Resolve disputes and release escrow.</p>
+              </div>
+              <a href="/admin/grievances">
+                <Button className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+                  Open Arbitration Portal ↗
+                </Button>
+              </a>
             </div>
           </div>
         )}
