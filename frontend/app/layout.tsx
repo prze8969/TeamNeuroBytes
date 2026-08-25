@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 
 import { Toaster } from "sonner";
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,10 +36,14 @@ export default function RootLayout({
       lang="en"
       className={`${publicSans.variable} ${merriweather.variable} h-full antialiased`}
     >
+
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white">
         {children}
         <Toaster position="top-right" richColors closeButton expand={false} />
       </body>
+
+      <body className="min-h-full flex flex-col font-sans bg-background text-foreground">{children}</body>
+
     </html>
   );
 }
