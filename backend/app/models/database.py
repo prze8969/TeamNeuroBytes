@@ -14,6 +14,8 @@ from app.models.agriculture import (
     GeoCluster,
     MandiPriceBase,
     MandiPrice,
+    ImageAssessment,
+    AssessmentStatus,
 )
 from app.models.finance import (
     BidStatus,

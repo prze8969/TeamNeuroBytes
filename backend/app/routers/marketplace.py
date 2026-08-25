@@ -1,11 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
 from typing import List, Optional, Any
 from sqlmodel import Session, select
+import hashlib
+import urllib.request
+import base64
+import os
 
 from app.db.engine import get_session
 from app.models.database import (
-    CropLot, GeoCluster, Bid, BidStatus, LotStatus, QualityGrade, User
+    CropLot, GeoCluster, Bid, BidStatus, LotStatus, QualityGrade, User, ImageAssessment, AssessmentStatus
 )
 from app.core.tasks.geo_pooling import geo_pooling_worker
 
@@ -14,8 +18,15 @@ router = APIRouter()
 class CreateLotRequest(BaseModel):
     farmer_id: int = 1
     farmer_name: Optional[str] = "Ramesh Patil"
+
+    # --- Farmer-confirmed classification fields (required, no defaults) ---
     commodity: str
-    variety: Optional[str] = "Standard Hybrid"
+    commodity_category: str          # e.g. "Cereals", "Vegetables", "Fruits"
+    variety: str                      # e.g. "Sharbati Lok-1", "Red Nashik"
+
+    # --- Confirmation gate: must be True or request is rejected ---
+    farmer_confirmed_classification: bool
+
     quantity_kg: float
     base_price_per_kg: float
     district: str = "Nashik"
@@ -24,10 +35,30 @@ class CreateLotRequest(BaseModel):
     longitude: float = 73.7910
     destination_mandi: Optional[str] = "Nashik APMC"
     image_url: Optional[str] = None
-    quality_grade: Optional[str] = "A"
-    quality_score: Optional[float] = 94.0
-    defect_percentage: Optional[float] = 1.5
-    ripeness_index: Optional[float] = 95.0
+
+    # AI-grading fields below are ignored at publish time —
+    # the backend re-fetches them from ImageAssessment to prevent tampering.
+    quality_grade: Optional[str] = None
+    quality_score: Optional[float] = None
+    defect_percentage: Optional[float] = None
+    ripeness_index: Optional[float] = None
+
+    @field_validator("commodity", "commodity_category", "variety", mode="before")
+    @classmethod
+    def reject_blank_strings(cls, v: Any, info) -> str:
+        if not isinstance(v, str) or not v.strip():
+            raise ValueError(f"{info.field_name} must be a non-empty string")
+        return v.strip()
+
+    @model_validator(mode="after")
+    def require_explicit_confirmation(self) -> "CreateLotRequest":
+        if not self.farmer_confirmed_classification:
+            raise ValueError(
+                "category and crop variety must be explicitly confirmed before publishing"
+            )
+        return self
+
+
 
 class CreateBidRequest(BaseModel):
     lot_id: int
@@ -36,6 +67,28 @@ class CreateBidRequest(BaseModel):
     amount_per_kg: float
     delivery_deadline_days: int = 3
     note: Optional[str] = None
+
+def fetch_image_bytes(image_source: str) -> bytes:
+    if not image_source:
+        raise ValueError("Image source is empty")
+    if os.path.exists(image_source):
+        with open(image_source, "rb") as f:
+            return f.read()
+    if image_source.startswith("data:image"):
+        if "," in image_source:
+            encoded = image_source.split(",", 1)[1]
+        else:
+            encoded = image_source
+        return base64.b64decode(encoded)
+    elif image_source.startswith(("http://", "https://")):
+        req = urllib.request.Request(image_source, headers={"User-Agent": "KisanSetu/2.0"})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return resp.read()
+    else:
+        try:
+            return base64.b64decode(image_source)
+        except Exception:
+            raise ValueError("Unsupported image source format")
 
 @router.get("/lots", response_model=List[CropLot])
 def get_all_crop_lots(
@@ -58,21 +111,51 @@ def get_all_crop_lots(
 
 @router.post("/lots", response_model=CropLot)
 def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_session)):
-    """Creates a new crop lot listing with farmer's actual produce photo and AI grade."""
-    grade_enum = QualityGrade.GRADE_A
-    if req.quality_grade:
-        clean_g = req.quality_grade.upper()
-        if "B" in clean_g:
-            grade_enum = QualityGrade.GRADE_B
-        elif "C" in clean_g:
-            grade_enum = QualityGrade.GRADE_C
-        elif "REJECT" in clean_g:
-            grade_enum = QualityGrade.REJECTED
+    """
+    Creates a new crop lot listing.
+
+    Requires:
+    - farmer_confirmed_classification == True (Pydantic-validated)
+    - commodity, commodity_category, variety all non-empty (Pydantic-validated)
+    - Image must have an existing COMPLETED ImageAssessment (hash-validated)
+
+    The farmer's confirmed commodity/category/variety are written to the lot.
+    AI grading values are taken exclusively from the ImageAssessment record —
+    client-submitted grading fields are ignored to prevent tampering.
+    """
+    if not req.image_url:
+        raise HTTPException(
+            status_code=400,
+            detail="An image is required to publish an AI-graded lot."
+        )
+
+    try:
+        image_bytes = fetch_image_bytes(req.image_url)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to fetch image associated with the lot: {str(e)}"
+        )
+
+    img_hash = hashlib.sha256(image_bytes).hexdigest()
+
+    # Fetch the server-side assessment — never trust client-submitted grading values
+    assessment = session.exec(
+        select(ImageAssessment).where(ImageAssessment.image_hash == img_hash)
+    ).first()
+
+    if not assessment or assessment.status != AssessmentStatus.COMPLETED:
+        raise HTTPException(
+            status_code=409,
+            detail="image has changed since grading, please re-assess before publishing"
+        )
 
     new_lot = CropLot(
         farmer_id=req.farmer_id,
         farmer_name=req.farmer_name,
+        # Farmer-confirmed classification — authoritative values for the published lot
         commodity=req.commodity,
+        commodity_category=req.commodity_category,
         variety=req.variety,
         quantity_kg=req.quantity_kg,
         base_price_per_kg=req.base_price_per_kg,
@@ -82,10 +165,11 @@ def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_sessio
         longitude=req.longitude,
         destination_mandi=req.destination_mandi,
         image_url=req.image_url,
-        quality_grade=grade_enum,
-        quality_score=req.quality_score or 94.0,
-        defect_percentage=req.defect_percentage or 1.5,
-        ripeness_index=req.ripeness_index or 95.0,
+        # AI grading — sourced from DB assessment, NOT from client payload
+        quality_grade=assessment.quality_grade,
+        quality_score=assessment.quality_score,
+        defect_percentage=assessment.defect_percentage,
+        ripeness_index=assessment.ripeness_index,
         is_ai_verified=True,
         status=LotStatus.LISTED
     )
@@ -93,6 +177,7 @@ def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_sessio
     session.commit()
     session.refresh(new_lot)
     return new_lot
+
 
 @router.get("/lots/{lot_id}", response_model=CropLot)
 def get_crop_lot_by_id(lot_id: int, session: Session = Depends(get_session)):
