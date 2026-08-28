@@ -88,11 +88,12 @@ export function BuyerDashboardLayout() {
     openInvoice,
     closeInvoice,
     // Refresh
-    fetchLiveMarketplaceData
+    fetchLiveMarketplaceData,
+    isDemoMode,
+    setIsDemoMode
   } = useBuyerState();
 
   const [selectedDetailLot, setSelectedDetailLot] = React.useState<CropLot | null>(null);
-  const [isDemoMode, setIsDemoMode] = React.useState<boolean>(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">

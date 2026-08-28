@@ -24,9 +24,10 @@ def process_event(event):
     elif event_name == "OrderSettled":
         print("Action: Order completely settled. 100% DBT executed.")
 
-async def listen_for_events(poll_interval=5):
+async def listen_for_events(poll_interval=2):
     """
-    Asynchronous loop that polls the local Anvil node for new Escrow events.
+    Asynchronous loop that polls the Polygon Amoy node for new Escrow events.
+    Poller interval set to 2s to align with Amoy's average block time.
     """
     if not w3:
         print("INFO: Blockchain event listener in standby (Web3 node offline).")
@@ -40,10 +41,11 @@ async def listen_for_events(poll_interval=5):
     print("🎧 Starting Blockchain Event Listener on EscrowManager...")
     
     try:
-        event_filter = escrow.events.OrderCreated.create_filter(fromBlock='latest')
-        advance_filter = escrow.events.AdvanceReleased.create_filter(fromBlock='latest')
-        delivery_filter = escrow.events.DeliveryConfirmed.create_filter(fromBlock='latest')
-        settled_filter = escrow.events.OrderSettled.create_filter(fromBlock='latest')
+        # Reconciled event names and normalized Web3.py v7 'from_block' casing
+        event_filter = escrow.events.OrderCreated.create_filter(from_block="latest")
+        advance_filter = escrow.events.AdvanceReleased.create_filter(from_block='latest')
+        delivery_filter = escrow.events.DeliveryConfirmed.create_filter(from_block='latest')
+        settled_filter = escrow.events.OrderSettled.create_filter(from_block='latest')
         
         filters = [event_filter, advance_filter, delivery_filter, settled_filter]
         
@@ -54,4 +56,4 @@ async def listen_for_events(poll_interval=5):
             await asyncio.sleep(poll_interval)
             
     except Exception as e:
-        print(f"Event Listener Standby: {e}")
+        print(f"Event Listener Standby: {e}")

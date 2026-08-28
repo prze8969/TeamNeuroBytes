@@ -9,6 +9,14 @@ import { MOCK_CROP_LOTS } from '@/components/dashboard/VerifiedLotsGrid';
 import { API_BASE_URL } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
+import { 
+  ensureAmoyNetwork, 
+  getSigner, 
+  getEscrowContract, 
+  getTestTokenContract, 
+  ESCROW_MANAGER_ADDRESS 
+} from '@/lib/web3';
+import { ethers } from 'ethers';
 
 export type BuyerTabType = 'marketplace' | 'active_deals' | 'ledger';
 
@@ -85,6 +93,7 @@ export function useBuyerState() {
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<BuyerTabType>('marketplace');
+  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
 
   // Core Marketplace & Transaction Collections
   const [lots, setLots] = useState<CropLot[]>(MOCK_CROP_LOTS);
@@ -687,13 +696,77 @@ export function useBuyerState() {
     // 2. Append to active multi-deal state & save to per-user storage
     addActiveDeal(newActiveDeal);
 
+    // 3. Trigger MetaMask Wallet Signature Flow (when not in offline Demo Mode)
+    let transactionHash = "";
+    if (!isDemoMode) {
+      try {
+        toast.info("MetaMask: Ensuring network is set to Polygon Amoy...", { duration: 3000 });
+        await ensureAmoyNetwork();
+        
+        toast.info("MetaMask: Requesting signer...", { duration: 3000 });
+        const signer = await getSigner();
+        const tokenContract = getTestTokenContract(signer);
+        const escrowContract = getEscrowContract(signer);
+        
+        // Format parameters to matching wei dimensions (18 decimals)
+        const totalWei = ethers.parseUnits(String(bidData.totalEscrowAmount), 18);
+        const cropWei = ethers.parseUnits(String(bidData.totalCropValue), 18);
+        const freightWei = ethers.parseUnits(String(bidData.estimatedFreight), 18);
+        
+        // A. Approve EscrowManager to pull stablecoins
+        toast.info("MetaMask: Requesting token approval for Escrow contract...", { duration: 4000 });
+        const approveTx = await tokenContract.approve(ESCROW_MANAGER_ADDRESS, totalWei, {
+          maxFeePerGas: ethers.parseUnits("35", "gwei"),
+          maxPriorityFeePerGas: ethers.parseUnits("30", "gwei")
+        });
+        toast.info(`Approving tokens... Tx Hash: ${approveTx.hash.slice(0, 12)}...`, { duration: 4000 });
+        await approveTx.wait();
+        
+        // B. Lock order parameters on-chain
+        toast.info("MetaMask: Submitting Escrow Deposit order...", { duration: 4000 });
+        const orderIdBytes = ethers.keccak256(ethers.toUtf8Bytes(`ORDER-${uniqueVaultId}`));
+        const lotIdBytes = ethers.keccak256(ethers.toUtf8Bytes(bidData.lotId));
+        
+        // Farmer and logistics addresses matching our mock structure or fallback roles
+        const farmerAddress = biddingLot?.farmer_address || "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"; 
+        const logisticsAddress = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
+        
+        const createOrderTx = await escrowContract.createOrder(
+          orderIdBytes,
+          lotIdBytes,
+          farmerAddress,
+          logisticsAddress,
+          cropWei,
+          freightWei,
+          {
+            maxFeePerGas: ethers.parseUnits("35", "gwei"),
+            maxPriorityFeePerGas: ethers.parseUnits("30", "gwei")
+          }
+        );
+        toast.info(`Locking Escrow on-chain... Tx Hash: ${createOrderTx.hash.slice(0, 12)}...`, { duration: 5000 });
+        await createOrderTx.wait();
+        transactionHash = createOrderTx.hash;
+        
+        toast.success("On-Chain Escrow Locked Successfully!");
+      } catch (err: any) {
+        console.error("Blockchain execution failed:", err);
+        toast.error("Web3 Transaction Aborted / Failed", {
+          description: err?.reason || err?.message || "Transaction cancelled or failed.",
+          duration: 5000
+        });
+        // Abort and prevent the UI from creating a mock escrow record
+        setLoadingBidLotId(null);
+        return;
+      }
+    }
+
     try {
       const savedUserVaults = localStorage.getItem(userVaultsKey);
       const curUserVaults = savedUserVaults ? JSON.parse(savedUserVaults) : [];
       localStorage.setItem(userVaultsKey, JSON.stringify([newActiveDeal, ...curUserVaults.filter((v: any) => v.id !== newActiveDeal.id)]));
     } catch {}
 
-    // 3. Post to backend if available
+    // 4. Post bid statistics to backend database
     try {
       await fetch(`${API_BASE_URL}/api/marketplace/bids`, {
         method: 'POST',
@@ -705,7 +778,7 @@ export function useBuyerState() {
           buyer_email: user?.email,
           amount_per_kg: bidData.bidPricePerKg,
           delivery_deadline_days: bidData.deliveryDeadlineDays,
-          note: `Escrow Locked via ${bidData.paymentMethod} with ${chosenCarrier}`
+          note: `Escrow Locked via ${bidData.paymentMethod} with ${chosenCarrier}. On-Chain Hash: ${transactionHash || 'Local-Sim'}`
         })
       });
     } catch {}
@@ -777,6 +850,8 @@ export function useBuyerState() {
     openInvoice,
     closeInvoice,
     // Refresh
-    fetchLiveMarketplaceData
+    fetchLiveMarketplaceData,
+    isDemoMode,
+    setIsDemoMode
   };
 }

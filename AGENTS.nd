@@ -9,40 +9,34 @@
 
 ## Tech Stack (Fixed)
 - **Blockchain:** Foundry (forge, cast, anvil) + Solidity 0.8.20
-- **Network:** Polygon Amoy testnet (deployment target)
+- **Network:** Polygon Amoy testnet (Chain ID 80002)
 - **Dependencies:** OpenZeppelin Contracts (AccessControl, ReentrancyGuard, ERC‑20 mock)
-- **Off‑chain:** Python FastAPI backend (existing), Next.js frontend (existing), ethers.js for relayers
+- **Off‑chain:** Python FastAPI backend, Next.js frontend, ethers.js for MetaMask, web3.py for admin key signing.
 - **Security:** Slither static analysis (must pass before finalizing)
 
 ---
 
-## Folder Structure (Absolute)
+## Folder Structure
 TeamNeuroBytes/
-├── blockchain/ ← Primary focus for this agent
-│ ├── src/
-│ │ ├── Roles.sol ✅ COMPLETED
-│ │ ├── GradeRegistry.sol ✅ COMPLETED
-│ │ ├── EscrowManager.sol ⏳ PENDING (NEXT)
-│ │ ├── DisputeArbiter.sol ⏳ PENDING
-│ │ └── InvoiceToken.sol ⏳ STRETCH
-│ ├── test/
-│ │ ├── Roles.t.sol ✅ PASSING (3/3)
-│ │ └── GradeRegistry.t.sol ✅ PASSING (3/3)
-│ ├── script/
-│ │ └── Deploy.s.sol ⏳ PENDING
-│ ├── lib/ (forge-std, openzeppelin)
-│ ├── foundry.toml ✅ CONFIGURED
-│ └── remappings.txt ✅ CONFIGURED
-├── backend/ (Python FastAPI - exists, partially built)
-├── frontend/ (Next.js - exists)
-├── docker-compose.yml
+├── blockchain/
+│   ├── src/
+│   │   ├── Roles.sol ✅ COMPLETED
+│   │   ├── GradeRegistry.sol ✅ COMPLETED
+│   │   ├── EscrowManager.sol ✅ COMPLETED
+│   │   └── DisputeArbiter.sol ✅ COMPLETED
+│   ├── test/
+│   │   ├── Roles.t.sol ✅ PASSING
+│   │   ├── GradeRegistry.t.sol ✅ PASSING
+│   │   ├── EscrowManager.t.sol ✅ PASSING
+│   │   └── DisputeArbiter.t.sol ✅ PASSING
+├── backend/ (Python FastAPI - connected to Amoy via web3.py)
+├── frontend/ (Next.js - connected to Amoy via MetaMask / ethers.js)
+├── docs/ (System architecture and integration guides)
 └── README.md
-
-
 
 ---
 
-## Architecture Decisions (Do Not Override)
+## Architecture Decisions
 1. **Polygon (Solidity) over Hyperledger Fabric** – faster, matches existing skills.
 2. **DPDP Compliance** – only **SHA‑256 hashes** on‑chain. All PII/images in PostgreSQL/S3.
 3. **Mock ERC‑20 for value** – percentage math exact.
@@ -56,46 +50,7 @@ TeamNeuroBytes/
 ## Completed Work
 - `Roles.sol` ✅ (5 roles, tests pass)
 - `GradeRegistry.sol` ✅ (hash anchoring, tests pass)
-
----
-
-## Immediate Goal (Priority 1)
-**Build `EscrowManager.sol`** – the zero‑trust escrow core.
-- Buyer locks `cropValue + freight + 1.5% cess`.
-- Logistics confirms pickup → releases 30% freight.
-- Warehouse confirms delivery (via relayer) → releases 100% crop value to farmer + remaining freight.
-- State machine: `Created → PickedUp → Delivered → Settled`.
-- Security: `nonReentrant`, checks‑effects‑interactions, role‑gated, percentage math in basis points.
-
----
-
-## Secondary Goals (after EscrowManager)
-1. `DisputeArbiter.sol` – regulator resolves disputes using event history.
-2. **Backend event listener** (`event_listener.py`) – syncs on‑chain events to PostgreSQL.
-3. **Weighbridge relayer** (`weighbridge.py`) – calls `confirmDelivery` with backend hot wallet.
-4. Deployment script to Polygon Amoy → produce `deployments.json`.
-5. `InvoiceToken.sol` (stretch) – ERC‑721 tokenized invoices.
-
----
-
-## Security Non‑Negotiables
-- [ ] Slither passes with no medium/high findings.
-- [ ] No unbounded on‑chain loops.
-- [ ] Every state‑changing function role‑gated.
-- [ ] All fund transfers use `nonReentrant`.
-
----
-
-## Backend Integration Notes (for later)
-- **ABI loading:** `backend/app/services/chain_client.py` will read `blockchain/out/*.json` and `deployments.json`.
-- **Event sync:** run as a background task (e.g., FastAPI startup event or separate process) that polls `get_logs` and upserts to Postgres.
-- **Relayer:** endpoint `POST /api/warehouse/:orderId/confirm` calls `weighbridge.confirm_delivery(order_id, reading)` which signs and sends the transaction.
-
----
-
-## Handoff Instructions
-1. Read `skills.md` for coding patterns.
-2. Write tests *alongside* contracts, not after.
-3. Always run `forge test` and `slither` before pushing.
-4. Commit to `blkchn-wrk` branch.
-5. Do not attempt Fabric, real IoT, or proxy contracts – they are out of scope.
+- `EscrowManager.sol` ✅ (zero-trust escrow, tests pass)
+- `DisputeArbiter.sol` ✅ (APMC regulator dispute handling, tests pass)
+- `event_listener.py` ✅ (reconciled events to OrderCreated, polling interval set to 2s)
+- `weighbridge.py` ✅ (relayer integration with EscrowManager contract on Amoy)

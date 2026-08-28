@@ -23,6 +23,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
     { label: t('transporterHub'), href: '/transportation/dashboard', allowedRoles: ['TRANSPORTATION'] },
     { label: t('warehouseHub'), href: '/warehouse/dashboard', allowedRoles: ['WAREHOUSE'] },
     { label: t('governance'), href: '/admin/dashboard', allowedRoles: ['ADMIN'] },
+    { label: '⛓️ Trust Protocol', href: '/blockchain', allowedRoles: ['FARMER', 'BUYER', 'ORGANIZATION', 'FPO', 'TRANSPORTATION', 'WAREHOUSE', 'ADMIN'] },
   ];
 
   const visibleLinks = links.filter((link) => link.allowedRoles.includes(activeRole.toUpperCase()));
