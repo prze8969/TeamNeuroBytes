@@ -12,6 +12,7 @@ from app.models.database import (
     CropLot, GeoCluster, Bid, BidStatus, LotStatus, QualityGrade, User, ImageAssessment, AssessmentStatus
 )
 from app.core.tasks.geo_pooling import geo_pooling_worker
+from app.repositories.geo_cluster import GeoClusterRepository
 
 router = APIRouter()
 
@@ -311,7 +312,7 @@ def get_bids(
 @router.get("/clusters", response_model=List[GeoCluster])
 def get_all_geo_clusters(session: Session = Depends(get_session)):
     """Returns active FPO freight pooling clusters."""
-    clusters = session.exec(select(GeoCluster)).all()
+    clusters = GeoClusterRepository(session).get_all()
     return clusters
 
 @router.post("/clusters/pool-now")

@@ -36,7 +36,7 @@ import {
   FPODashboardSummary,
   FPOWarehouseBay,
   FPOLedgerTransaction
-} from '@/lib/fpo-api';
+} from '@/lib/api/fpo-api';
 
 
 import { FPOAccordionItem } from '@/components/fpo/FPOAccordionItem';

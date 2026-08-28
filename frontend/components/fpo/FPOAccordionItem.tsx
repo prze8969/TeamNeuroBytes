@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { resolveCropImageUrl } from '@/lib/assayData';
-import { updateFPOLotStatus } from '@/lib/fpo-api';
+import { updateFPOLotStatus } from '@/lib/api/fpo-api';
 import { toast } from 'sonner';
 
 interface FPOAccordionItemProps {

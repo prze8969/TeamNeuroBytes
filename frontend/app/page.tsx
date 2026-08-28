@@ -97,6 +97,14 @@ export default function Home() {
     },
   ];
 
+  const visiblePortals = isAuthenticated
+    ? stakeholderPortals.filter((portal) => {
+        if (role === 'ADMIN') return portal.role === 'ADMIN';
+        if (role === 'ORGANIZATION') return portal.role === 'ORGANIZATION';
+        return portal.role === role;
+      })
+    : stakeholderPortals;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-950 text-white font-sans flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
       {/* Top Navbar */}
@@ -164,7 +172,7 @@ export default function Home() {
 
         {/* All 6 Stakeholder Portals Grid with Authentication Interception */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 w-full max-w-6xl pt-4 text-left">
-          {stakeholderPortals.map((portal) => (
+          {visiblePortals.map((portal) => (
             <div
               key={portal.title}
               role="button"

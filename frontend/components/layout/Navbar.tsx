@@ -17,13 +17,15 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   const tCrop = useCropTranslation();
 
   const links = [
-    { label: t('farmerPortal'), href: '/farmer/dashboard' },
-    { label: t('buyerMarket'), href: '/buyer/dashboard' },
-    { label: t('fpoCollective'), href: '/fpo/dashboard' },
-    { label: t('transporterHub'), href: '/transportation/dashboard' },
-    { label: t('warehouseHub'), href: '/warehouse/dashboard' },
-    { label: t('governance'), href: '/admin/dashboard' },
+    { label: t('farmerPortal'), href: '/farmer/dashboard', allowedRoles: ['FARMER'] },
+    { label: t('buyerMarket'), href: '/buyer/dashboard', allowedRoles: ['BUYER'] },
+    { label: t('fpoCollective'), href: '/fpo/dashboard', allowedRoles: ['ORGANIZATION', 'FPO'] },
+    { label: t('transporterHub'), href: '/transportation/dashboard', allowedRoles: ['TRANSPORTATION'] },
+    { label: t('warehouseHub'), href: '/warehouse/dashboard', allowedRoles: ['WAREHOUSE'] },
+    { label: t('governance'), href: '/admin/dashboard', allowedRoles: ['ADMIN'] },
   ];
+
+  const visibleLinks = links.filter((link) => link.allowedRoles.includes(activeRole.toUpperCase()));
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-md bg-emerald-900 text-white">
@@ -57,7 +59,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
 
           {/* Role Navigation Pills */}
           <nav className="hidden md:flex items-center space-x-1 bg-emerald-950/60 p-1 rounded-xl border border-emerald-800/60">
-            {links.map((link) => {
+            {visibleLinks.map((link) => {
               const isActive = pathname.startsWith(link.href);
               return (
                 <Link

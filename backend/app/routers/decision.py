@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, List, Any
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.db.engine import get_session
 from app.models.database import MandiPrice
+from app.repositories.mandi_price import MandiPriceRepository
 from app.services.apmc_data import decision_engine
 
 router = APIRouter()
@@ -83,11 +84,8 @@ def get_agmarknet_price_feed(
     session: Session = Depends(get_session)
 ):
     """Returns official Agmarknet mandi modal benchmarks and AI 7-day forecasts."""
-    query = select(MandiPrice)
-    if commodity:
-        query = query.where(MandiPrice.commodity.ilike(f"%{commodity}%"))
-    if district:
-        query = query.where(MandiPrice.district.ilike(f"%{district}%"))
-    
-    prices = session.exec(query).all()
+    prices = MandiPriceRepository(session).get_prices(
+        commodity=commodity,
+        district=district,
+    )
     return prices
