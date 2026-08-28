@@ -49,4 +49,7 @@ frontend/out/
 *.swp
 *.swo
 .DS_Store
-Thumbs.db
+# Blockchain / Foundry
+blockchain/cache/
+blockchain/out/
+
