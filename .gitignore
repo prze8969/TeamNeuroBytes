@@ -9,7 +9,7 @@ frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
-
+blockchain/cache/*
 # Large ML Model Weights (Keep local or use Git LFS)
 *.pt
 *.pth
