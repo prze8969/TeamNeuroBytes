@@ -12,3 +12,6 @@ requests>=2.31.0
 numpy>=1.26.0
 pillow>=10.2.0
 ultralytics>=8.1.0
+web3>=6.15.0
+torch>=2.2.0
+torchvision>=0.17.0
