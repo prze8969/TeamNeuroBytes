@@ -18,6 +18,7 @@ router = APIRouter()
 class CreateLotRequest(BaseModel):
     farmer_id: int = 1
     farmer_name: Optional[str] = "Ramesh Patil"
+    farmer_email: Optional[str] = None
 
     # --- Farmer-confirmed classification fields ---
     commodity: str
@@ -82,10 +83,21 @@ def get_all_crop_lots(
     commodity: Optional[str] = None,
     grade: Optional[str] = None,
     status: Optional[str] = None,
+    farmer_id: Optional[int] = None,
+    farmer_email: Optional[str] = None,
     session: Session = Depends(get_session)
 ):
-    """Fetches all marketplace crop lots with optional filtering."""
+    """Fetches marketplace crop lots with optional farmer and quality filtering."""
     query = select(CropLot)
+    if farmer_email:
+        user = session.exec(select(User).where(User.email.ilike(farmer_email.strip()))).first()
+        if user:
+            query = query.where(CropLot.farmer_id == user.id)
+        else:
+            return []
+    elif farmer_id is not None:
+        query = query.where(CropLot.farmer_id == farmer_id)
+
     if commodity:
         query = query.where(CropLot.commodity.ilike(f"%{commodity}%"))
     if grade:
@@ -159,9 +171,18 @@ def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_sessio
         else:
             grade_enum = QualityGrade.GRADE_A
 
+    farmer_id = req.farmer_id
+    farmer_name = req.farmer_name or "Ramesh Patil"
+    if req.farmer_email:
+        user = session.exec(select(User).where(User.email.ilike(req.farmer_email.strip()))).first()
+        if user:
+            farmer_id = user.id
+            if user.full_name:
+                farmer_name = user.full_name
+
     new_lot = CropLot(
-        farmer_id=req.farmer_id,
-        farmer_name=req.farmer_name,
+        farmer_id=farmer_id,
+        farmer_name=farmer_name,
         commodity=req.commodity,
         commodity_category=req.commodity_category or "Grains & Cereals",
         variety=req.variety or "Standard",
@@ -193,6 +214,22 @@ def get_crop_lot_by_id(lot_id: int, session: Session = Depends(get_session)):
     if not lot:
         raise HTTPException(status_code=404, detail="Crop lot not found")
     return lot
+
+@router.delete("/lots/{lot_id}", response_model=Any)
+def delete_crop_lot(lot_id: int, session: Session = Depends(get_session)):
+    """Deletes a crop lot listing."""
+    lot = session.get(CropLot, lot_id)
+    if not lot:
+        raise HTTPException(status_code=404, detail="Crop lot not found")
+    
+    # Also clean up any associated bids
+    bids = session.exec(select(Bid).where(Bid.lot_id == lot_id)).all()
+    for b in bids:
+        session.delete(b)
+        
+    session.delete(lot)
+    session.commit()
+    return {"status": "DELETED", "message": f"Lot #{lot_id} removed successfully"}
 
 @router.post("/bids", response_model=Bid)
 def submit_buyer_bid(req: CreateBidRequest, session: Session = Depends(get_session)):

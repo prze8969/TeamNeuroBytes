@@ -13,7 +13,7 @@ else:
 
 def create_db_and_tables():
     from app.models.database import (
-        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance, BuyerProfile, ImageAssessment
+        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance, BuyerProfile, TransporterProfile, ImageAssessment
     )
     SQLModel.metadata.create_all(engine)
     seed_initial_demo_data()
@@ -24,7 +24,7 @@ def get_session():
 
 def seed_initial_demo_data():
     """Seeds rich Agmarknet prices, verified crop lots, and user accounts for SIH demo."""
-    from app.models.database import User, CropLot, MandiPrice, GeoCluster, QualityGrade, LotStatus, BuyerProfile, BuyerType
+    from app.models.database import User, CropLot, MandiPrice, GeoCluster, QualityGrade, LotStatus, BuyerProfile, BuyerType, TransporterProfile
     
     with Session(engine) as session:
         # Check if users already seeded
@@ -103,6 +103,32 @@ def seed_initial_demo_data():
                 preferred_apmc_mandi="Vashi APMC Mandi"
             )
             session.add(buyer_profile)
+            session.commit()
+
+            # Seed Demo Transporter Profile
+            transporter_profile = TransporterProfile(
+                user_id=transporter.id,
+                carrier_name="Kisan Express Fleet Logistics",
+                gstin="27AABCK9981F1Z2",
+                contact_phone="+91 99887 76655",
+                total_trucks=6,
+                vehicle_types="Medium Truck (3-7 MT), Reefer / Cold-Chain Truck",
+                total_drivers=5,
+                base_rate=1.50,
+                rate_unit="INR_PER_KG",
+                min_freight_charge=2500.0,
+                reefer_surcharge_enabled=True,
+                reefer_surcharge_type="PERCENTAGE",
+                reefer_surcharge_value=20.0,
+                preferred_target_trips=18,
+                target_frequency="PER_WEEK",
+                operating_corridors="Nashik → Mumbai (Vashi APMC), Pune → Vashi APMC Terminal, Lasalgaon Onion → Pune Gultekdi",
+                rating=4.9,
+                total_trips_completed=142,
+                available_escrow_balance_inr=42800.0,
+                is_onboarded=True
+            )
+            session.add(transporter_profile)
             session.commit()
             
             # Seed Demo Mandi Price Benchmarks
@@ -333,5 +359,35 @@ def seed_initial_demo_data():
                 payment_status="PAID"
             )
             session.add(demo_invoice)
+            session.commit()
+
+        # Ensure TransporterProfile exists for existing databases
+        existing_profile = session.exec(select(TransporterProfile)).first()
+        if not existing_profile:
+            trans_user = session.exec(select(User).where(User.role == "TRANSPORTATION")).first()
+            user_id = trans_user.id if trans_user else 4
+            default_profile = TransporterProfile(
+                user_id=user_id,
+                carrier_name="Kisan Express Fleet Logistics",
+                gstin="27AABCK9981F1Z2",
+                contact_phone="+91 99887 76655",
+                total_trucks=6,
+                vehicle_types="Medium Truck (3-7 MT), Reefer / Cold-Chain Truck",
+                total_drivers=5,
+                base_rate=1.50,
+                rate_unit="INR_PER_KG",
+                min_freight_charge=2500.0,
+                reefer_surcharge_enabled=True,
+                reefer_surcharge_type="PERCENTAGE",
+                reefer_surcharge_value=20.0,
+                preferred_target_trips=18,
+                target_frequency="PER_WEEK",
+                operating_corridors="Nashik → Mumbai (Vashi APMC), Pune → Vashi APMC Terminal, Lasalgaon Onion → Pune Gultekdi",
+                rating=4.9,
+                total_trips_completed=142,
+                available_escrow_balance_inr=42800.0,
+                is_onboarded=True
+            )
+            session.add(default_profile)
             session.commit()
 

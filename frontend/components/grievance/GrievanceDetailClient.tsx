@@ -13,18 +13,42 @@ import { toast } from 'sonner';
 
 export function GrievanceDetailClient({ ticketId }: { ticketId: string }) {
   const [ticket, setTicket] = useState<GrievanceTicket | null>(null);
+  const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
     const found = getGrievanceById(ticketId);
     if (found) {
       setTicket(found);
     }
+    setHasChecked(true);
   }, [ticketId]);
+
+  if (!ticket && hasChecked) {
+    return (
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+        <Navbar activeRole="ADMIN" />
+        <main className="flex-1 max-w-4xl mx-auto w-full p-8 flex flex-col items-center justify-center text-center space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-2xl shadow-inner">
+            <ShieldAlert className="w-8 h-8 text-rose-600" />
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-black text-slate-900">Dispute Ticket Not Found</h1>
+            <p className="text-sm text-slate-500">Ticket #{ticketId} does not exist in the arbitration register or has been purged.</p>
+          </div>
+          <Link href="/admin/grievances">
+            <Button className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl cursor-pointer">
+              <ArrowLeft className="w-4 h-4 mr-1.5" /> Return to Arbitration Registry
+            </Button>
+          </Link>
+        </main>
+      </div>
+    );
+  }
 
   if (!ticket) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center font-sans">
-        <p className="text-slate-500 font-medium">Loading dispute ticket #{ticketId}...</p>
+        <p className="text-slate-500 font-medium text-xs font-mono animate-pulse">Loading dispute ticket #{ticketId}...</p>
       </div>
     );
   }

@@ -80,6 +80,33 @@ class BuyerProfile(BuyerProfileBase, table=True):
     __tablename__ = "buyer_profiles"
     id: Optional[int] = Field(default=None, primary_key=True)
 
+class TransporterProfileBase(SQLModel):
+    user_id: int = Field(foreign_key="users.id", unique=True, index=True)
+    carrier_name: str = "Kisan Express Fleet Logistics"
+    gstin: str = "27AABCK9981F1Z2"
+    contact_phone: Optional[str] = "+91 99887 76655"
+    total_trucks: int = Field(default=4)
+    vehicle_types: str = Field(default="Medium Truck (3-7 MT), Reefer / Cold-Chain Truck")
+    total_drivers: int = Field(default=3)
+    base_rate: float = Field(default=1.50)
+    rate_unit: str = Field(default="INR_PER_KG")
+    min_freight_charge: float = Field(default=2000.0)
+    reefer_surcharge_enabled: bool = Field(default=True)
+    reefer_surcharge_type: str = Field(default="PERCENTAGE")
+    reefer_surcharge_value: float = Field(default=20.0)
+    preferred_target_trips: int = Field(default=12)
+    target_frequency: str = Field(default="PER_WEEK")
+    operating_corridors: str = Field(default="Nashik → Mumbai (Vashi APMC), Pune → Vashi APMC Terminal")
+    rating: float = Field(default=4.9)
+    total_trips_completed: int = Field(default=0)
+    available_escrow_balance_inr: float = Field(default=0.0)
+    is_onboarded: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TransporterProfile(TransporterProfileBase, table=True):
+    __tablename__ = "transporter_profiles"
+    id: Optional[int] = Field(default=None, primary_key=True)
+
 # Legacy alias for backward compatibility
 Listing = CropLot
 ListingBase = CropLotBase

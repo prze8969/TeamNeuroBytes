@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
@@ -119,11 +120,11 @@ export default function AdminDashboardPage() {
                 <h3 className="font-bold text-slate-900 text-lg">Active Grievance Cases</h3>
                 <p className="text-sm text-slate-500 mt-1">APMC Nodal Officer mediation queue. Resolve disputes and release escrow.</p>
               </div>
-              <a href="/admin/grievances">
-                <Button className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold">
+              <Link href="/admin/grievances">
+                <Button className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold cursor-pointer">
                   Open Arbitration Portal ↗
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         )}

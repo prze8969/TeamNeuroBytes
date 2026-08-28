@@ -7,6 +7,7 @@ import { InvoiceOrderData } from '@/components/dashboard/TaxInvoiceModal';
 import { BuyerAnalyticsData } from '@/components/dashboard/BuyerAnalyticsCards';
 import { MOCK_CROP_LOTS } from '@/components/dashboard/VerifiedLotsGrid';
 import { API_BASE_URL } from '@/lib/api';
+import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
 
 export type BuyerTabType = 'marketplace' | 'active_deals' | 'ledger';
@@ -73,7 +74,14 @@ export const DEFAULT_ACTIVE_VAULTS: EscrowVaultData[] = [
 ];
 
 export function useBuyerState() {
+  const { user } = useAuth();
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const isDemoBuyer = !user?.email || user.email.toLowerCase() === 'buyer@kisansetu.in';
+  const userVaultsKey = user?.email ? `kisansetu_buyer_vaults_${user.email.toLowerCase()}` : 'kisansetu_active_vaults';
+  const userOrdersKey = user?.email ? `kisansetu_buyer_orders_${user.email.toLowerCase()}` : 'kisansetu_orders';
+  const userBidsKey = user?.email ? `kisansetu_buyer_bids_${user.email.toLowerCase()}` : 'kisansetu_bids';
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<BuyerTabType>('marketplace');
@@ -84,19 +92,8 @@ export function useBuyerState() {
   const [orders, setOrders] = useState<InvoiceOrderData[]>([]);
 
   // Multi-Deal Escrow Vaults State
-  const [activeVaults, setActiveVaults] = useState<EscrowVaultData[]>(DEFAULT_ACTIVE_VAULTS);
-  const [selectedDealId, setSelectedDealId] = useState<number | null>(101);
-
-  const [analytics, setAnalytics] = useState<BuyerAnalyticsData>({
-    total_spend_inr: 1842850,
-    spend_change_pct: 14.2,
-    total_volume_tons: 84.5,
-    volume_change_pct: 8.5,
-    logistics_savings_inr: 48200,
-    logistics_savings_pct: 35.0,
-    avg_quality_score: 92.4,
-    grade_a_percentage: 88.0
-  });
+  const [activeVaults, setActiveVaults] = useState<EscrowVaultData[]>([]);
+  const [selectedDealId, setSelectedDealId] = useState<number | null>(null);
 
   // Modal / Drawer Selection States
   const [inspectionLot, setInspectionLot] = useState<CropLot | null>(null);
@@ -115,15 +112,53 @@ export function useBuyerState() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   // Buyer Profile
-  const [buyerProfile, setBuyerProfile] = useState<BuyerProfile>({
-    business_name: 'AgroProcure Private Ltd',
+  const buyerProfile: BuyerProfile = useMemo(() => ({
+    business_name: user?.name || 'AgroProcure Private Ltd',
     buyer_type: 'PROCESSOR',
     gstin: '27AABCA1234F1Z5',
     apmc_license_no: 'APMC-MH-NSK-2024-892',
     is_verified: true,
-    preferred_apmc_mandi: 'Vashi APMC Mandi Scale #4',
-    delivery_address: 'Plot 42, Turbhe Vashi APMC Terminal, Navi Mumbai 400703'
-  });
+    preferred_apmc_mandi: user?.location || 'Vashi APMC Mandi Scale #4',
+    delivery_address: user?.location ? `${user.location} APMC Terminal` : 'Plot 42, Turbhe Vashi APMC Terminal, Navi Mumbai 400703'
+  }), [user]);
+
+  // Dynamic KPI analytics calculated from actual active vaults & settled orders
+  const analytics: BuyerAnalyticsData = useMemo(() => {
+    const activeNonSettled = activeVaults.filter(v => v.status !== 'SETTLED');
+    const totalActiveLocked = activeNonSettled.reduce((sum, v) => sum + (Number(v.total_locked_amount) || 0), 0);
+    const totalSettledSpend = orders.reduce((sum, o) => sum + (Number(o.total_settlement) || Number(o.base_crop_value) || 0), 0);
+    const totalSpend = totalActiveLocked + totalSettledSpend;
+
+    const totalVolume = orders.reduce((sum, o) => sum + (Number(o.quantity_tons) || (Number(o.quantity_kg || 0) / 1000) || 0), 0) +
+      activeNonSettled.reduce((sum, v) => sum + ((v.crop_total_amount || 100000) / 25000), 0);
+
+    const logisticsSavings = orders.reduce((sum, o) => sum + (Number(o.freight_charges || 0) * 0.35), 0) +
+      activeNonSettled.reduce((sum, v) => sum + (Number(v.total_freight_cost || 0) * 0.35), 0);
+
+    if (totalSpend === 0 && orders.length === 0 && activeNonSettled.length === 0) {
+      return {
+        total_spend_inr: 0,
+        spend_change_pct: 0,
+        total_volume_tons: 0,
+        volume_change_pct: 0,
+        logistics_savings_inr: 0,
+        logistics_savings_pct: 0,
+        avg_quality_score: 0,
+        grade_a_percentage: 0
+      };
+    }
+
+    return {
+      total_spend_inr: Math.round(totalSpend),
+      spend_change_pct: totalSpend > 0 ? 14.2 : 0,
+      total_volume_tons: Number(totalVolume.toFixed(1)),
+      volume_change_pct: totalVolume > 0 ? 8.5 : 0,
+      logistics_savings_inr: Math.round(logisticsSavings),
+      logistics_savings_pct: logisticsSavings > 0 ? 35.0 : 0,
+      avg_quality_score: orders.length > 0 ? 94.2 : 0,
+      grade_a_percentage: orders.length > 0 ? 100 : 0
+    };
+  }, [orders, activeVaults]);
 
   const triggerToast = useCallback((msg: string) => {
     setToastMsg(msg);
@@ -158,7 +193,7 @@ export function useBuyerState() {
         } catch {}
       }
 
-      const savedVaults = localStorage.getItem('kisansetu_active_vaults');
+      const savedVaults = localStorage.getItem(userVaultsKey) || (isDemoBuyer ? localStorage.getItem('kisansetu_active_vaults') : null);
       if (savedVaults) {
         const parsed = JSON.parse(savedVaults);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -166,15 +201,30 @@ export function useBuyerState() {
             new Map(parsed.filter(Boolean).map((v: EscrowVaultData) => [v.id, v])).values()
           );
           setActiveVaults(uniqueVaults);
-          setSelectedDealId(uniqueVaults[0]?.id || 101);
+          setSelectedDealId(uniqueVaults[0]?.id || null);
+        } else if (isDemoBuyer) {
+          setActiveVaults(DEFAULT_ACTIVE_VAULTS);
+          setSelectedDealId(101);
+        } else {
+          setActiveVaults([]);
+          setSelectedDealId(null);
         }
+      } else if (isDemoBuyer) {
+        setActiveVaults(DEFAULT_ACTIVE_VAULTS);
+        setSelectedDealId(101);
+      } else {
+        setActiveVaults([]);
+        setSelectedDealId(null);
       }
 
-      const savedOrders = localStorage.getItem('kisansetu_orders');
+      const savedOrders = localStorage.getItem(userOrdersKey) || (isDemoBuyer ? localStorage.getItem('kisansetu_orders') : null);
       if (savedOrders) {
         setOrders(JSON.parse(savedOrders));
+      } else if (isDemoBuyer) {
+        setOrders([]);
       }
-      const savedBids = localStorage.getItem('kisansetu_bids');
+
+      const savedBids = localStorage.getItem(userBidsKey) || (isDemoBuyer ? localStorage.getItem('kisansetu_bids') : null);
       if (savedBids) {
         const parsedBids = JSON.parse(savedBids);
         if (Array.isArray(parsedBids)) {
@@ -216,29 +266,32 @@ export function useBuyerState() {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('kisansetu_lots_updated', handleStorageChange);
     };
-  }, []);
+  }, [user?.email]);
 
   // Automatic LocalStorage Persistence
   useEffect(() => {
     if (!isMounted) return;
     try {
+      localStorage.setItem(userVaultsKey, JSON.stringify(activeVaults));
       localStorage.setItem('kisansetu_active_vaults', JSON.stringify(activeVaults));
     } catch {}
-  }, [activeVaults, isMounted]);
+  }, [activeVaults, isMounted, userVaultsKey]);
 
   useEffect(() => {
     if (!isMounted) return;
     try {
+      localStorage.setItem(userOrdersKey, JSON.stringify(orders));
       localStorage.setItem('kisansetu_orders', JSON.stringify(orders));
     } catch {}
-  }, [orders, isMounted]);
+  }, [orders, isMounted, userOrdersKey]);
 
   useEffect(() => {
     if (!isMounted) return;
     try {
+      localStorage.setItem(userBidsKey, JSON.stringify(bids));
       localStorage.setItem('kisansetu_bids', JSON.stringify(bids));
     } catch {}
-  }, [bids, isMounted]);
+  }, [bids, isMounted, userBidsKey]);
 
   // Tab Switcher with Persistence
   const handleTabChange = useCallback((tab: BuyerTabType) => {
@@ -441,46 +494,73 @@ export function useBuyerState() {
           }
           setLots(finalLots);
         }
-      } else {
-        // If API fails (e.g. offline dev), fallback to localStorage farmer uploads + mock lots
-        let deletedIds: string[] = [];
-        try {
-          const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
-          if (deletedSaved) deletedIds = JSON.parse(deletedSaved);
-        } catch {}
-
-        let localLots: CropLot[] = [];
-        try {
-          const saved = localStorage.getItem('kisansetu_crop_lots');
-          if (saved) localLots = JSON.parse(saved);
-        } catch {}
-        const combined = [...localLots, ...MOCK_CROP_LOTS];
-        const finalLots: CropLot[] = [];
-        const seenIds = new Set<string>();
-        const seenSignatures = new Set<string>();
-
-        for (const lot of combined) {
-          if (deletedIds.includes(lot.id)) continue;
-          if (seenIds.has(lot.id)) continue;
-          seenIds.add(lot.id);
-
-          const sig = `${(lot.cropName || '').toLowerCase()}|${(lot.variety || '').toLowerCase()}|${lot.quantityKg}|${Number(lot.basePricePerKg || lot.askingFloorPerKg || 0).toFixed(1)}`;
-          if (seenSignatures.has(sig)) continue;
-          seenSignatures.add(sig);
-          finalLots.push(lot);
-        }
-        setLots(finalLots);
       }
 
-      const resBids = await fetch(`${API_BASE_URL}/api/escrow/bids`);
+      // Fetch Buyer Scoped Vaults
+      const vaultsUrl = user?.email
+        ? `${API_BASE_URL}/api/escrow/vaults?buyer_email=${encodeURIComponent(user.email.trim())}`
+        : `${API_BASE_URL}/api/escrow/vaults`;
+
+      const resVaults = await fetch(vaultsUrl);
+      if (resVaults.ok) {
+        const rawVaults = await resVaults.json();
+        if (Array.isArray(rawVaults) && rawVaults.length > 0) {
+          const mappedVaults: EscrowVaultData[] = rawVaults.map((v: any) => ({
+            id: v.id,
+            bid_id: v.bid_id || v.id,
+            lot_id: v.lot_id || 1,
+            crop_name: v.crop_name || 'Sharbati Wheat',
+            variety: v.variety || 'Standard Grade',
+            farmer_name: v.farmer_name || 'Ramesh Patil',
+            farmer_district: v.farmer_district || 'Nashik Cluster, Maharashtra',
+            total_locked_amount: v.total_locked_amount || 100000,
+            crop_total_amount: v.crop_total_amount || 90000,
+            total_freight_cost: v.total_freight_cost || 6000,
+            advance_freight_amount: v.advance_freight_amount || 1800,
+            advance_freight_disbursed: v.advance_freight_disbursed || 0,
+            balance_freight_amount: v.balance_freight_amount || 4200,
+            farmer_payout_amount: v.farmer_payout_amount || 90000,
+            platform_fee_inr: v.platform_fee_inr || 1500,
+            current_milestone: v.current_milestone || 'LOCKED',
+            status: v.status || 'FUNDS_LOCKED',
+            farm_gate_otp: v.farm_gate_otp || '4821',
+            destination_delivery_otp: v.destination_delivery_otp || '7394',
+            carrier_name: v.carrier_name || 'Kisan Express Logistics',
+            vehicle_number: v.vehicle_number || 'MH-15-EG-4421',
+            dispute_reason: v.dispute_reason || null
+          }));
+          setActiveVaults(mappedVaults);
+          setSelectedDealId(prev => prev || mappedVaults[0]?.id || null);
+        } else if (!isDemoBuyer) {
+          let localUserVaults: EscrowVaultData[] = [];
+          try {
+            const saved = localStorage.getItem(userVaultsKey);
+            if (saved) localUserVaults = JSON.parse(saved);
+          } catch {}
+          if (localUserVaults.length > 0) {
+            setActiveVaults(localUserVaults);
+            setSelectedDealId(prev => prev || localUserVaults[0]?.id || null);
+          } else {
+            setActiveVaults([]);
+            setSelectedDealId(null);
+          }
+        }
+      }
+
+      // Fetch Buyer Scoped Bids
+      const bidsUrl = user?.email
+        ? `${API_BASE_URL}/api/escrow/bids?buyer_email=${encodeURIComponent(user.email.trim())}`
+        : `${API_BASE_URL}/api/escrow/bids`;
+
+      const resBids = await fetch(bidsUrl);
       if (resBids.ok) {
         const data = await resBids.json();
         if (Array.isArray(data) && data.length > 0) {
           const mappedBids: Bid[] = data.map((b: any) => ({
             id: `BID-${b.id}`,
             lotId: `LOT-${b.lot_id}`,
-            buyerId: String(b.buyer_id || '2'),
-            buyerName: b.buyer_name || 'AgroProcure Ltd',
+            buyerId: String(b.buyer_id || user?.id || '2'),
+            buyerName: b.buyer_name || user?.name || 'AgroProcure Ltd',
             amountPerKg: b.bid_price_per_kg || b.amount_per_kg || 24.50,
             cropName: b.crop_name || 'Sharbati Wheat',
             bidAmountPerKg: b.bid_price_per_kg,
@@ -490,10 +570,27 @@ export function useBuyerState() {
             logisticsCarrier: b.carrier_name || 'Kisan Express Logistics'
           }));
           setBids(mappedBids);
+        } else if (!isDemoBuyer) {
+          let localBids: Bid[] = [];
+          try {
+            const saved = localStorage.getItem(userBidsKey);
+            if (saved) localBids = JSON.parse(saved);
+          } catch {}
+          setBids(localBids);
         }
       }
-    } catch {}
-  }, []);
+    } catch {
+      if (!isDemoBuyer) {
+        let localUserVaults: EscrowVaultData[] = [];
+        try {
+          const saved = localStorage.getItem(userVaultsKey);
+          if (saved) localUserVaults = JSON.parse(saved);
+        } catch {}
+        setActiveVaults(localUserVaults);
+        setSelectedDealId(localUserVaults[0]?.id || null);
+      }
+    }
+  }, [user?.email, user?.name, user?.id, isDemoBuyer, userVaultsKey, userBidsKey]);
 
   // =========================================================================
   // MODAL HANDLERS
@@ -587,8 +684,14 @@ export function useBuyerState() {
       vehicle_number: `MH-15-EG-${Math.floor(1000 + Math.random() * 9000)}`
     };
 
-    // 2. Append to active multi-deal state
+    // 2. Append to active multi-deal state & save to per-user storage
     addActiveDeal(newActiveDeal);
+
+    try {
+      const savedUserVaults = localStorage.getItem(userVaultsKey);
+      const curUserVaults = savedUserVaults ? JSON.parse(savedUserVaults) : [];
+      localStorage.setItem(userVaultsKey, JSON.stringify([newActiveDeal, ...curUserVaults.filter((v: any) => v.id !== newActiveDeal.id)]));
+    } catch {}
 
     // 3. Post to backend if available
     try {
@@ -597,8 +700,9 @@ export function useBuyerState() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           lot_id: numericLotId,
-          buyer_id: 2,
-          buyer_name: buyerProfile.business_name,
+          buyer_id: user?.id ? parseInt(String(user.id).replace(/\D/g, ''), 10) || 2 : 2,
+          buyer_name: user?.name || buyerProfile.business_name,
+          buyer_email: user?.email,
           amount_per_kg: bidData.bidPricePerKg,
           delivery_deadline_days: bidData.deliveryDeadlineDays,
           note: `Escrow Locked via ${bidData.paymentMethod} with ${chosenCarrier}`

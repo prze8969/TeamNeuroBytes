@@ -154,7 +154,7 @@ const DEFAULT_ORDERS: InvoiceOrderData[] = [
   }
 ];
 
-export function OrderHistoryTable({ orders = DEFAULT_ORDERS }: OrderHistoryTableProps) {
+export function OrderHistoryTable({ orders = [] }: OrderHistoryTableProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState<InvoiceOrderData | null>(null);
@@ -207,36 +207,52 @@ export function OrderHistoryTable({ orders = DEFAULT_ORDERS }: OrderHistoryTable
         </div>
 
         {/* Search & Filter Bar */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="relative w-full sm:w-64">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input
-              type="text"
-              placeholder="Search by lot, farmer, invoice..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 text-xs h-9 rounded-xl border-slate-200 focus-visible:ring-emerald-500"
-            />
-          </div>
+        {orders.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="relative w-full sm:w-64">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Input
+                type="text"
+                placeholder="Search by lot, farmer, invoice..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 text-xs h-9 rounded-xl border-slate-200 focus-visible:ring-emerald-500"
+              />
+            </div>
 
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
-            {(['ALL', 'SETTLED', 'DISPUTED'] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setStatusFilter(tab)}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  statusFilter === tab
-                    ? 'bg-white text-slate-900 shadow-xs font-black'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+              {(['ALL', 'SETTLED', 'DISPUTED'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setStatusFilter(tab)}
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                    statusFilter === tab
+                      ? 'bg-white text-slate-900 shadow-xs font-black'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {orders.length === 0 ? (
+        <div className="py-12 px-6 text-center rounded-2xl border-2 border-dashed border-slate-200 space-y-3 bg-slate-50/50">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
+            📄
+          </div>
+          <div className="space-y-1 max-w-sm mx-auto">
+            <h4 className="text-sm font-bold text-slate-800">No Settled Procurement Records Yet</h4>
+            <p className="text-xs text-slate-500">
+              When deliveries are verified at certified APMC weighbridges, settled orders, GST tax invoices, and DBT settlement receipts will appear here.
+            </p>
           </div>
         </div>
-      </div>
+      ) : null}
 
       {/* Disputed Tab Banner & Audit Card */}
       {statusFilter === 'DISPUTED' && (
@@ -337,10 +353,11 @@ export function OrderHistoryTable({ orders = DEFAULT_ORDERS }: OrderHistoryTable
       )}
 
       {/* Main Historical Table */}
-      <div className="rounded-2xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-600 text-[10px] uppercase font-black tracking-wider border-b border-slate-200 font-mono">
+      {orders.length > 0 && (
+        <div className="rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-600 text-[10px] uppercase font-black tracking-wider border-b border-slate-200 font-mono">
               <tr>
                 <th className="p-3.5">Order / Lot ID</th>
                 <th className="p-3.5">Commodity &amp; Grade</th>
@@ -476,6 +493,7 @@ export function OrderHistoryTable({ orders = DEFAULT_ORDERS }: OrderHistoryTable
           </table>
         </div>
       </div>
+      )}
 
       {/* Tax Invoice Modal Mount */}
       <TaxInvoiceModal

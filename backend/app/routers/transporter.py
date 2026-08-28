@@ -1,9 +1,34 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from datetime import datetime
+from sqlmodel import Session, select
+from app.db.engine import get_session
+from app.models.database import TransporterProfile, User
 
 router = APIRouter()
+
+class SaveTransporterProfileRequest(BaseModel):
+    user_id: Optional[int] = None
+    user_email: Optional[str] = None
+    carrier_name: str = Field(..., example="Kisan Express Fleet Logistics")
+    gstin: str = Field(..., example="27AABCK9981F1Z2")
+    contact_phone: Optional[str] = Field(default="+91 99887 76655")
+    total_trucks: int = Field(default=4, example=4)
+    vehicle_types: Union[List[str], str] = Field(default=["Medium Truck (3-7 MT)", "Reefer / Cold-Chain Truck"])
+    total_drivers: int = Field(default=3, example=3)
+    base_rate: float = Field(default=1.50, example=1.50)
+    rate_unit: str = Field(default="INR_PER_KG", example="INR_PER_KG")
+    min_freight_charge: float = Field(default=2000.0, example=2000.0)
+    reefer_surcharge_enabled: bool = Field(default=True)
+    reefer_surcharge_type: str = Field(default="PERCENTAGE")
+    reefer_surcharge_value: float = Field(default=20.0)
+    preferred_target_trips: int = Field(default=12)
+    target_frequency: str = Field(default="PER_WEEK")
+    operating_corridors: Union[List[str], str] = Field(default=["Nashik → Mumbai (Vashi APMC)"])
+    rating: Optional[float] = 4.9
+    total_trips_completed: Optional[int] = 0
+    available_escrow_balance_inr: Optional[float] = 0.0
 
 class AcceptLoadRequest(BaseModel):
     tender_id: str
@@ -98,16 +123,211 @@ FLEET_STATE = {
     ]
 }
 
+@router.post("/profile", tags=["Transporter Portal"])
+def save_transporter_profile(
+    req: SaveTransporterProfileRequest,
+    session: Session = Depends(get_session)
+):
+    """
+    Saves or updates a Transporter Fleet Profile directly in Supabase / PostgreSQL DB.
+    """
+    # 1. Resolve user
+    user = None
+    if req.user_email:
+        clean_email = req.user_email.strip().lower()
+        user = session.exec(select(User).where(User.email.ilike(clean_email))).first()
+    elif req.user_id:
+        user = session.get(User, req.user_id)
+    
+    if not user:
+        # If user registered with this email, create user record if missing
+        if req.user_email:
+            user = User(
+                email=req.user_email.strip().lower(),
+                full_name=req.carrier_name,
+                role="TRANSPORTATION",
+                phone_number=req.contact_phone,
+                hashed_password="transporter_hashed"
+            )
+            session.add(user)
+            session.commit()
+            session.refresh(user)
+        else:
+            user = session.exec(select(User).where(User.role == "TRANSPORTATION")).first()
+
+    user_id = user.id if user else 4
+
+    # 2. Serialize vehicle types & corridors
+    vehicle_types_str = req.vehicle_types if isinstance(req.vehicle_types, str) else ", ".join(req.vehicle_types)
+    corridors_str = req.operating_corridors if isinstance(req.operating_corridors, str) else ", ".join(req.operating_corridors)
+
+    # 3. Check existing profile for this specific user
+    profile = session.exec(select(TransporterProfile).where(TransporterProfile.user_id == user_id)).first()
+    if profile:
+        profile.carrier_name = req.carrier_name
+        profile.gstin = req.gstin
+        profile.contact_phone = req.contact_phone
+        profile.total_trucks = req.total_trucks
+        profile.vehicle_types = vehicle_types_str
+        profile.total_drivers = req.total_drivers
+        profile.base_rate = req.base_rate
+        profile.rate_unit = req.rate_unit
+        profile.min_freight_charge = req.min_freight_charge
+        profile.reefer_surcharge_enabled = req.reefer_surcharge_enabled
+        profile.reefer_surcharge_type = req.reefer_surcharge_type
+        profile.reefer_surcharge_value = req.reefer_surcharge_value
+        profile.preferred_target_trips = req.preferred_target_trips
+        profile.target_frequency = req.target_frequency
+        profile.operating_corridors = corridors_str
+        profile.is_onboarded = True
+    else:
+        profile = TransporterProfile(
+            user_id=user_id,
+            carrier_name=req.carrier_name,
+            gstin=req.gstin,
+            contact_phone=req.contact_phone,
+            total_trucks=req.total_trucks,
+            vehicle_types=vehicle_types_str,
+            total_drivers=req.total_drivers,
+            base_rate=req.base_rate,
+            rate_unit=req.rate_unit,
+            min_freight_charge=req.min_freight_charge,
+            reefer_surcharge_enabled=req.reefer_surcharge_enabled,
+            reefer_surcharge_type=req.reefer_surcharge_type,
+            reefer_surcharge_value=req.reefer_surcharge_value,
+            preferred_target_trips=req.preferred_target_trips,
+            target_frequency=req.target_frequency,
+            operating_corridors=corridors_str,
+            rating=req.rating or 4.9,
+            total_trips_completed=req.total_trips_completed or 0,
+            available_escrow_balance_inr=req.available_escrow_balance_inr or 0.0,
+            is_onboarded=True
+        )
+        session.add(profile)
+
+    session.commit()
+    session.refresh(profile)
+
+    # Sync in-memory FLEET_STATE for fast mock read access
+    FLEET_STATE["carrier_name"] = profile.carrier_name
+    FLEET_STATE["gstin"] = profile.gstin
+    FLEET_STATE["rating"] = profile.rating
+    FLEET_STATE["total_trips_completed"] = profile.total_trips_completed
+
+    return {
+        "status": "SUCCESS",
+        "message": f"Transporter profile for '{profile.carrier_name}' saved to Supabase/PostgreSQL database successfully.",
+        "profile": {
+            "id": profile.id,
+            "user_id": profile.user_id,
+            "carrier_name": profile.carrier_name,
+            "gstin": profile.gstin,
+            "contact_phone": profile.contact_phone,
+            "total_trucks": profile.total_trucks,
+            "vehicle_types": [v.strip() for v in profile.vehicle_types.split(",") if v.strip()],
+            "total_drivers": profile.total_drivers,
+            "base_rate": profile.base_rate,
+            "rate_unit": profile.rate_unit,
+            "min_freight_charge": profile.min_freight_charge,
+            "reefer_surcharge_enabled": profile.reefer_surcharge_enabled,
+            "reefer_surcharge_type": profile.reefer_surcharge_type,
+            "reefer_surcharge_value": profile.reefer_surcharge_value,
+            "preferred_target_trips": profile.preferred_target_trips,
+            "target_frequency": profile.target_frequency,
+            "operating_corridors": [c.strip() for c in profile.operating_corridors.split(",") if c.strip()],
+            "rating": profile.rating,
+            "total_trips_completed": profile.total_trips_completed,
+            "available_escrow_balance_inr": profile.available_escrow_balance_inr,
+            "is_onboarded": profile.is_onboarded,
+            "created_at": profile.created_at
+        }
+    }
+
+@router.get("/profile/me", tags=["Transporter Portal"])
+def get_my_transporter_profile(
+    user_id: Optional[int] = None,
+    email: Optional[str] = None,
+    session: Session = Depends(get_session)
+):
+    """
+    Fetches the authenticated transporter's fleet profile from the database.
+    Ensures new users only receive their own profile and are prompted with onboarding if not yet set up.
+    """
+    profile = None
+    
+    if user_id:
+        profile = session.exec(select(TransporterProfile).where(TransporterProfile.user_id == user_id)).first()
+    elif email:
+        clean_email = email.strip().lower()
+        user = session.exec(select(User).where(User.email.ilike(clean_email))).first()
+        if user:
+            profile = session.exec(select(TransporterProfile).where(TransporterProfile.user_id == user.id)).first()
+
+    if not profile:
+        matched_user = None
+        if email:
+            clean_email = email.strip().lower()
+            matched_user = session.exec(select(User).where(User.email.ilike(clean_email))).first()
+        elif user_id:
+            matched_user = session.get(User, user_id)
+
+        user_name = matched_user.full_name if matched_user else None
+        user_phone = matched_user.phone_number if matched_user else None
+
+        return {
+            "status": "NOT_FOUND",
+            "is_onboarded": False,
+            "user_name": user_name,
+            "user_phone": user_phone,
+            "profile": None
+        }
+
+    return {
+        "status": "SUCCESS",
+        "is_onboarded": profile.is_onboarded,
+        "profile": {
+            "id": profile.id,
+            "user_id": profile.user_id,
+            "carrier_name": profile.carrier_name,
+            "gstin": profile.gstin,
+            "contact_phone": profile.contact_phone,
+            "total_trucks": profile.total_trucks,
+            "vehicle_types": [v.strip() for v in profile.vehicle_types.split(",") if v.strip()],
+            "total_drivers": profile.total_drivers,
+            "base_rate": profile.base_rate,
+            "rate_unit": profile.rate_unit,
+            "min_freight_charge": profile.min_freight_charge,
+            "reefer_surcharge_enabled": profile.reefer_surcharge_enabled,
+            "reefer_surcharge_type": profile.reefer_surcharge_type,
+            "reefer_surcharge_value": profile.reefer_surcharge_value,
+            "preferred_target_trips": profile.preferred_target_trips,
+            "target_frequency": profile.target_frequency,
+            "operating_corridors": [c.strip() for c in profile.operating_corridors.split(",") if c.strip()],
+            "rating": profile.rating,
+            "total_trips_completed": profile.total_trips_completed,
+            "available_escrow_balance_inr": profile.available_escrow_balance_inr,
+            "is_onboarded": profile.is_onboarded,
+            "created_at": profile.created_at
+        }
+    }
+
 @router.get("/trips", tags=["Transporter Portal"])
-def get_transporter_trips():
+def get_transporter_trips(session: Session = Depends(get_session)):
     """Returns load board tenders, active hauls, and carrier financial summary."""
+    # Attempt to sync carrier name from database
+    profile = session.exec(select(TransporterProfile)).first()
+    carrier_name = profile.carrier_name if profile else FLEET_STATE["carrier_name"]
+    gstin = profile.gstin if profile else FLEET_STATE["gstin"]
+    rating = profile.rating if profile else FLEET_STATE["rating"]
+    total_trips = profile.total_trips_completed if profile else FLEET_STATE["total_trips_completed"]
+
     return {
         "status": "SUCCESS",
         "carrier_profile": {
-            "carrier_name": FLEET_STATE["carrier_name"],
-            "gstin": FLEET_STATE["gstin"],
-            "rating": FLEET_STATE["rating"],
-            "total_trips_completed": FLEET_STATE["total_trips_completed"],
+            "carrier_name": carrier_name,
+            "gstin": gstin,
+            "rating": rating,
+            "total_trips_completed": total_trips,
             "available_escrow_balance_inr": FLEET_STATE["available_escrow_balance_inr"],
             "active_vehicles_on_road": FLEET_STATE["active_vehicles_on_road"]
         },

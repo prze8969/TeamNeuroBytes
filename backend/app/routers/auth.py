@@ -95,8 +95,23 @@ def register_user(user: UserCreate, session: Session = Depends(get_session)):
     )
     session.add(new_user)
     session.commit()
-    session.refresh(new_user)
-    return {"message": "User registered successfully", "user_id": new_user.id}
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        subject=new_user.email,
+        role=new_user.role,
+        user_id=new_user.id,
+        expires_delta=access_token_expires
+    )
+    return {
+        "message": "User registered successfully", 
+        "user_id": new_user.id,
+        "access_token": access_token,
+        "token_type": "bearer",
+        "role": new_user.role,
+        "full_name": new_user.full_name,
+        "email": new_user.email,
+        "kyc_verified": new_user.kyc_verified
+    }
 
 @router.post("/login", response_model=Any)
 def login_user(user: UserLogin, session: Session = Depends(get_session)):

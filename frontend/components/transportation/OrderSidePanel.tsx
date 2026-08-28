@@ -31,6 +31,7 @@ interface OrderSidePanelProps {
   onSelectOrder: (order: TransportationOrder) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  onBrowseTenders?: () => void;
 }
 
 export function OrderSidePanel({
@@ -38,7 +39,8 @@ export function OrderSidePanel({
   selectedOrderId,
   onSelectOrder,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
+  onBrowseTenders
 }: OrderSidePanelProps) {
   // Filter & Sort state
   const [filters, setFilters] = useState<OrderFilterState>(DEFAULT_FILTER_STATE);
@@ -326,7 +328,31 @@ export function OrderSidePanel({
       {/* 2. ORDER LIST SCROLLABLE AREA */}
       {/* ========================================================================= */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
-        {sortedOrders.length === 0 ? (
+        {orders.length === 0 ? (
+          /* Empty Orders Initial State */
+          <div className="p-6 text-center bg-white rounded-2xl border border-slate-200 space-y-3 my-4">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto font-bold border border-emerald-200 text-lg">
+              🚚
+            </div>
+            <div>
+              <h3 className="font-extrabold text-slate-900 text-xs">
+                No active hauls assigned
+              </h3>
+              <p className="text-[11px] text-slate-500 pt-1 leading-relaxed">
+                Accept open freight tenders from the Load Board to start tracking trips.
+              </p>
+            </div>
+            {onBrowseTenders && (
+              <Button
+                size="sm"
+                onClick={onBrowseTenders}
+                className="h-8 rounded-xl font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer"
+              >
+                Browse Load Board →
+              </Button>
+            )}
+          </div>
+        ) : sortedOrders.length === 0 ? (
           /* Empty Filter State */
           <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-3 my-4">
             <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto font-bold border border-emerald-200">

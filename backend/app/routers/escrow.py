@@ -4,7 +4,7 @@ from typing import List, Optional, Any, Dict
 from sqlmodel import Session, select
 
 from app.db.engine import get_session
-from app.models.database import EscrowVault, Bid, CropLot, Invoice, Grievance
+from app.models.database import EscrowVault, Bid, CropLot, Invoice, Grievance, User, BidStatus, LotStatus
 from app.services.escrow_service import escrow_service
 
 router = APIRouter()
@@ -13,6 +13,7 @@ class CreateBidVaultRequest(BaseModel):
     lot_id: int
     buyer_id: int = 2
     buyer_name: Optional[str] = "AgroProcure Private Ltd"
+    buyer_email: Optional[str] = None
     bid_price_per_kg: float
     payment_method: Optional[str] = "VIRTUAL_ESCROW"
     delivery_deadline_days: int = 3
@@ -41,11 +42,20 @@ def create_bid_and_lock_escrow_vault(
     Feature #4 & #5: Validates asking floor, calculates total landed cost,
     creates Bid, and initializes 100% Locked Escrow Vault.
     """
+    buyer_id = req.buyer_id
+    buyer_name = req.buyer_name or "AgroProcure Private Ltd"
+    if req.buyer_email:
+        user = session.exec(select(User).where(User.email.ilike(req.buyer_email.strip()))).first()
+        if user:
+            buyer_id = user.id
+            if user.full_name:
+                buyer_name = user.full_name
+
     result = escrow_service.create_bid_and_lock_vault(
         session=session,
         lot_id=req.lot_id,
-        buyer_id=req.buyer_id,
-        buyer_name=req.buyer_name or "AgroProcure Private Ltd",
+        buyer_id=buyer_id,
+        buyer_name=buyer_name,
         bid_price_per_kg=req.bid_price_per_kg,
         payment_method=req.payment_method or "VIRTUAL_ESCROW",
         delivery_deadline_days=req.delivery_deadline_days,
@@ -53,14 +63,63 @@ def create_bid_and_lock_escrow_vault(
     )
     return result
 
+class AcceptBidRequest(BaseModel):
+    transporter_id: Optional[int] = 4
+
+@router.post("/accept-bid/{bid_id}", response_model=Any)
+def accept_buyer_bid(
+    bid_id: int,
+    req: AcceptBidRequest = AcceptBidRequest(),
+    session: Session = Depends(get_session)
+):
+    """
+    Farmer accepts a buyer bid on their listed crop lot.
+    Updates Bid status to ACCEPTED and creates/locks EscrowVault.
+    """
+    bid = session.get(Bid, bid_id)
+    if not bid:
+        raise HTTPException(status_code=404, detail="Bid not found")
+    
+    bid.status = BidStatus.ACCEPTED
+    session.add(bid)
+    session.commit()
+    session.refresh(bid)
+
+    lot = session.get(CropLot, bid.lot_id)
+    if lot:
+        lot.status = LotStatus.ASSIGNED_TO_BUYER
+        session.add(lot)
+        session.commit()
+        session.refresh(lot)
+
+    # Lock escrow vault for this accepted bid
+    result = escrow_service.create_bid_and_lock_vault(
+        session=session,
+        lot_id=bid.lot_id,
+        buyer_id=bid.buyer_id,
+        buyer_name=bid.buyer_name or "AgroProcure Private Ltd",
+        bid_price_per_kg=bid.amount_per_kg,
+        payment_method="VIRTUAL_ESCROW",
+        delivery_deadline_days=bid.delivery_deadline_days
+    )
+    return result
+
 @router.get("/vaults", response_model=List[Any])
+@router.get("/transactions", response_model=List[Any])
 def get_all_escrow_vaults(
     buyer_id: Optional[int] = None,
+    buyer_email: Optional[str] = None,
     session: Session = Depends(get_session)
 ):
     """Returns active escrow vaults with associated crop lot metadata."""
     query = select(EscrowVault)
-    if buyer_id:
+    if buyer_email:
+        user = session.exec(select(User).where(User.email.ilike(buyer_email.strip()))).first()
+        if user:
+            query = query.where(EscrowVault.buyer_id == user.id)
+        else:
+            return []
+    elif buyer_id is not None:
         query = query.where(EscrowVault.buyer_id == buyer_id)
     
     vaults = session.exec(query).all()
@@ -98,6 +157,43 @@ def get_all_escrow_vaults(
         })
     return results
 
+@router.get("/bids", response_model=List[Any])
+def get_escrow_bids(
+    buyer_id: Optional[int] = None,
+    buyer_email: Optional[str] = None,
+    session: Session = Depends(get_session)
+):
+    """Returns buyer bids with associated crop info."""
+    query = select(Bid)
+    if buyer_email:
+        user = session.exec(select(User).where(User.email.ilike(buyer_email.strip()))).first()
+        if user:
+            query = query.where(Bid.buyer_id == user.id)
+        else:
+            return []
+    elif buyer_id is not None:
+        query = query.where(Bid.buyer_id == buyer_id)
+
+    bids = session.exec(query).all()
+    results = []
+    for b in bids:
+        lot = session.get(CropLot, b.lot_id)
+        results.append({
+            "id": b.id,
+            "lot_id": b.lot_id,
+            "buyer_id": b.buyer_id,
+            "buyer_name": b.buyer_name,
+            "crop_name": lot.commodity if lot else "Crop Lot",
+            "amount_per_kg": b.amount_per_kg,
+            "bid_price_per_kg": b.amount_per_kg,
+            "total_amount": b.total_amount,
+            "status": b.status,
+            "escrow_status": "LOCKED" if b.status == BidStatus.ACCEPTED else "INITIATED",
+            "delivery_deadline_days": b.delivery_deadline_days,
+            "created_at": b.created_at
+        })
+    return results
+
 @router.get("/vaults/{vault_id}", response_model=Any)
 def get_escrow_vault_details(vault_id: int, session: Session = Depends(get_session)):
     """Fetches full state and milestone history of a specific escrow vault."""
@@ -112,6 +208,7 @@ def get_escrow_vault_details(vault_id: int, session: Session = Depends(get_sessi
     }
 
 @router.post("/{vault_id}/advance-freight", response_model=Any)
+@router.post("/advance-freight/{vault_id}", response_model=Any)
 def disburse_advance_freight(vault_id: int, session: Session = Depends(get_session)):
     """
     Milestone 2: Disburses 30% advance fuel & transit fee to carrier.
@@ -120,6 +217,8 @@ def disburse_advance_freight(vault_id: int, session: Session = Depends(get_sessi
     return result
 
 @router.post("/{vault_id}/verify-pickup-otp", response_model=Any)
+@router.post("/{vault_id}/verify-pickup", response_model=Any)
+@router.post("/verify-pickup/{vault_id}", response_model=Any)
 def verify_farmgate_pickup_otp(
     vault_id: int,
     req: PickupOtpRequest,
@@ -137,6 +236,7 @@ def verify_farmgate_pickup_otp(
 
 @router.post("/{vault_id}/complete-settlement", response_model=Any)
 @router.post("/{vault_id}/settle", response_model=Any)
+@router.post("/settle/{vault_id}", response_model=Any)
 def complete_delivery_and_settlement(
     vault_id: int,
     req: SettleDeliveryRequest = SettleDeliveryRequest(),

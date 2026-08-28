@@ -8,9 +8,11 @@ import { Clock, TrendingUp } from 'lucide-react';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { useAuth } from '@/lib/AuthContext';
 
 export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   const pathname = usePathname();
+  const { logout } = useAuth();
   const t = useTranslations('nav');
   const tCrop = useCropTranslation();
 
@@ -97,12 +99,7 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
             size="sm"
             className="text-xs h-9 bg-emerald-800/80 border-emerald-700 text-white hover:bg-emerald-700 hover:text-white font-bold cursor-pointer"
             onClick={() => {
-              document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-              document.cookie = "user_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-              try {
-                localStorage.removeItem('kisansetu_buyer_tab');
-              } catch {}
-              window.location.href = '/login';
+              logout();
             }}
           >
             {t('signOut')}

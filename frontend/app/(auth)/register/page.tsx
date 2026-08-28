@@ -109,7 +109,12 @@ function RegisterContent() {
         })
       });
 
-      login(email, role);
+      login(email, role, 'authenticated-session-token', {
+        name: name,
+        email: email,
+        role: role,
+        isKycVerified: false
+      });
 
       if (role === 'BUYER') {
         try {
@@ -136,7 +141,12 @@ function RegisterContent() {
         router.push('/admin/dashboard');
       }
     } catch {
-      login(email, role);
+      login(email, role, 'authenticated-session-token', {
+        name: name,
+        email: email,
+        role: role,
+        isKycVerified: false
+      });
 
       if (role === 'BUYER') {
         try {

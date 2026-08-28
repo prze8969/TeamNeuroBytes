@@ -34,6 +34,7 @@ import {
 } from '@/lib/assayData';
 import { CropLot } from '@/lib/types';
 import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { useAuth } from '@/lib/AuthContext';
 
 export interface ListNewCropModalProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ export function ListNewCropModal({
   onClose,
   onLotPublished
 }: ListNewCropModalProps) {
+  const { user } = useAuth();
   const tCrop = useCropTranslation();
   // Section A: Produce Classification
   const [selectedCategory, setSelectedCategory] = useState<string>('Grains & Cereals');
@@ -437,14 +439,14 @@ export function ListNewCropModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          farmer_id: 1,
-          farmer_name: 'Ramesh Patil',
+          farmer_id: user?.id ? parseInt(String(user.id).replace(/\D/g, '')) || 1 : 1,
+          farmer_name: user?.name || 'Ramesh Patil',
           commodity: currentCrop.name,
           variety: currentCrop.variety,
           quantity_kg: totalQuantityKg,
           base_price_per_kg: askingPricePerKg,
-          district: 'Nashik',
-          state: 'Maharashtra',
+          district: user?.location?.split(',')[0]?.trim() || 'Nashik',
+          state: user?.location?.split(',')[1]?.trim() || 'Maharashtra',
           latitude: 20.0125,
           longitude: 73.7910,
           destination_mandi: 'Vashi APMC Mandi',
@@ -473,8 +475,8 @@ export function ListNewCropModal({
 
     const newCropLot: CropLot = {
       id: finalLotId,
-      farmerId: '1',
-      farmerName: 'Ramesh Patil',
+      farmerId: user?.id ? String(user.id) : '1',
+      farmerName: user?.name || 'Ramesh Patil',
       cropName: currentCrop.name,
       variety: currentCrop.variety,
       quantityKg: totalQuantityKg,
@@ -508,9 +510,17 @@ export function ListNewCropModal({
 
     // 2. Immediately store in localStorage so buyer marketplace syncs cross-tab without duplicates
     try {
+      const userStorageKey = user?.email ? `kisansetu_crop_lots_${user.email.toLowerCase()}` : 'kisansetu_crop_lots';
+      const savedUserLots = localStorage.getItem(userStorageKey);
+      const currentUserLots = savedUserLots ? JSON.parse(savedUserLots) : [];
+      const updatedUserLots = [
+        newCropLot,
+        ...currentUserLots.filter((l: any) => l.id !== finalLotId && !(l.cropName === currentCrop.name && l.quantityKg === totalQuantityKg && Math.abs((l.basePricePerKg || 0) - askingPricePerKg) < 0.01))
+      ];
+      localStorage.setItem(userStorageKey, JSON.stringify(updatedUserLots));
+
       const saved = localStorage.getItem('kisansetu_crop_lots');
       const currentLots = saved ? JSON.parse(saved) : [];
-      // Clean any previous duplicate mock or random LOT ID with same crop parameters
       const updatedLots = [
         newCropLot,
         ...currentLots.filter((l: any) => l.id !== finalLotId && !(l.cropName === currentCrop.name && l.quantityKg === totalQuantityKg && Math.abs((l.basePricePerKg || 0) - askingPricePerKg) < 0.01))
@@ -556,7 +566,7 @@ export function ListNewCropModal({
             </p>
             <div className="flex items-center gap-2 pt-1 text-[11px] text-emerald-300 font-mono">
               <ShieldCheck size={13} className="text-emerald-400" />
-              <span>Ramesh Patil • Nashik East Cluster (DigiLocker Verified Farmer)</span>
+              <span>{user?.name || 'Ramesh Patil'} • {user?.location || 'Nashik East Cluster'} (DigiLocker Verified Farmer)</span>
             </div>
           </div>
 

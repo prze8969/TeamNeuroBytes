@@ -345,20 +345,20 @@ export function BuyerDashboardLayout() {
             {activeVaults.length === 0 ? (
               <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-12 text-center space-y-4 shadow-xs">
                 <div className="h-16 w-16 mx-auto rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl">
-                  📦
+                  🛒
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900">No Active Procurement Corridors</h3>
+                  <h3 className="text-base font-black text-slate-900">No Active Procurements Found</h3>
                   <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
-                    You do not have any live escrow shipments currently in transit. Place a bid on the verified marketplace to initiate 4-stage escrow fulfillment.
+                    You have not placed any bids or locked escrow for crop lots yet. Explore verified farmer produce in the live market feed to initiate your first order.
                   </p>
                 </div>
                 <Button
                   type="button"
                   onClick={() => setActiveTab('marketplace')}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 h-10 rounded-xl cursor-pointer"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 h-10 rounded-xl cursor-pointer inline-flex items-center gap-1.5 shadow-sm"
                 >
-                  Browse Verified Marketplace →
+                  🔍 Explore Live Crop Lots
                 </Button>
               </div>
             ) : (
