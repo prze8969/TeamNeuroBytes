@@ -16,6 +16,7 @@ from app.models.agriculture import (
     MandiPrice,
     ImageAssessment,
     AssessmentStatus,
+    CropInventory,
 )
 from app.models.finance import (
     BidStatus,

@@ -13,10 +13,11 @@ else:
 
 def create_db_and_tables():
     from app.models.database import (
-        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowTransaction, Invoice, Grievance, BuyerProfile, TransporterProfile, ImageAssessment
+        User, CropLot, GeoCluster, MandiPrice, Bid, EscrowVault, EscrowTransaction, Invoice, Grievance, BuyerProfile, TransporterProfile, ImageAssessment, CropInventory
     )
     SQLModel.metadata.create_all(engine)
     seed_initial_demo_data()
+
 
 def get_session():
     with Session(engine) as session:
