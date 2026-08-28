@@ -1,37 +1,44 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-try:
-    import seaborn as sns
-except Exception:
-    sns = None
+from sklearn.metrics import confusion_matrix
+from typing import List
 
-def save_confusion_matrix_plot(cm_matrix: list, class_names: list = ["Grade A", "Grade B", "Grade C", "Grade D"], output_path: str = "results/confusion_matrix.png"):
+def plot_and_save_confusion_matrix(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    class_names: List[str] = ["Grade A", "Grade B", "Grade C", "Grade D"],
+    output_path: str = "crop_quality_ai/results/confusion_matrix.png"
+):
     """
-    Renders and saves a clean annotated confusion matrix image.
+    Computes and saves a sleek, professional confusion matrix plot.
     """
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    cm_arr = np.array(cm_matrix)
-
-    plt.figure(figsize=(7, 6))
-    if sns is not None:
-        sns.heatmap(cm_arr, annot=True, fmt="d", cmap="Blues",
-                    xticklabels=class_names, yticklabels=class_names,
-                    cbar=False, linewidths=1.0, annot_kws={"size": 14, "weight": "bold"})
-    else:
-        plt.imshow(cm_arr, interpolation='nearest', cmap=plt.cm.Blues)
-        plt.colorbar()
-        tick_marks = np.arange(len(class_names))
-        plt.xticks(tick_marks, class_names)
-        plt.yticks(tick_marks, class_names)
-        for i in range(cm_arr.shape[0]):
-            for j in range(cm_arr.shape[1]):
-                plt.text(j, i, str(cm_arr[i, j]), horizontalalignment="center", color="white" if cm_arr[i, j] > cm_arr.max() / 2 else "black", fontweight="bold")
-
-    plt.title("Crop Quality Ordinal Confusion Matrix", fontsize=14, pad=12, fontweight="bold")
-    plt.xlabel("Predicted Grade", fontsize=12, labelpad=8)
-    plt.ylabel("Actual True Grade", fontsize=12, labelpad=8)
+    
+    cm = confusion_matrix(y_true, y_pred, labels=list(range(len(class_names))))
+    
+    fig, ax = plt.subplots(figsize=(7, 6), dpi=300)
+    cax = ax.matshow(cm, cmap=plt.cm.Blues, alpha=0.85)
+    
+    fig.colorbar(cax)
+    
+    ax.set_xticks(np.arange(len(class_names)))
+    ax.set_yticks(np.arange(len(class_names)))
+    ax.set_xticklabels(class_names, fontsize=11, fontweight='bold')
+    ax.set_yticklabels(class_names, fontsize=11, fontweight='bold')
+    
+    plt.xlabel('Predicted Grade', fontsize=12, labelpad=10)
+    plt.ylabel('True Grade', fontsize=12, labelpad=10)
+    plt.title('Crop Quality Grading — Confusion Matrix', fontsize=13, fontweight='bold', pad=15)
+    
+    # Annotate counts inside cells
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            val = cm[i, j]
+            color = "white" if val > cm.max() / 2.0 else "black"
+            ax.text(j, i, str(val), ha="center", va="center", color=color, fontsize=13, fontweight='bold')
+            
     plt.tight_layout()
-    plt.savefig(output_path, dpi=200)
+    plt.savefig(output_path, dpi=300)
     plt.close()
-    print(f"[OK] Saved confusion matrix to: {output_path}")
+    print(f"[OK] Saved confusion matrix to '{output_path}'.")

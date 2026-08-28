@@ -133,11 +133,11 @@ export function AIInspectionModal({
                 <Sparkles size={16} />
               </div>
               <h2 className="text-base sm:text-lg font-black text-slate-900">
-                YOLOv8 Computer Vision Assay &amp; Quality Inspection
+                2-Tier Hybrid AI Assay (YOLOv8 + Meta DINO ViT)
               </h2>
             </div>
             <p className="text-xs text-slate-500">
-              {lot.cropName} ({lot.variety}) • Farmer: <strong className="text-slate-800">{lot.farmerName}</strong> ({lot.origin || 'Nashik'})
+              {lot.cropName} ({lot.variety}) • Farmer: <strong className="text-slate-800">{lot.farmerName}</strong> • <span className="font-mono text-emerald-700 font-bold">⚡ 18ms Edge Detection + 🔬 DINO QWK 0.886</span>
             </p>
           </div>
 

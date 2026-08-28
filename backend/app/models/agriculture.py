@@ -126,3 +126,35 @@ class MandiPrice(MandiPriceBase, table=True):
     __tablename__ = "mandi_prices"
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class CropInventoryBase(SQLModel):
+    farmer_id: int = Field(default=1, index=True)
+    batch_id: str = Field(index=True)
+    crop_name: str = Field(index=True)
+    overall_grade: str = Field(default="A")
+    quality_score: float = Field(default=95.0)
+    item_count: int = Field(default=1)
+    image_url: Optional[str] = None
+    bounding_box_data: Optional[str] = None
+    distribution_json: Optional[str] = None
+
+class CropInventory(CropInventoryBase, table=True):
+    __tablename__ = "crop_inventories"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class BatchCropInventoryItem(SQLModel):
+    farmer_id: Optional[int] = 1
+    crop_name: str
+    overall_grade: str = "A"
+    quality_score: float = 95.0
+    item_count: int = 1
+    image_url: Optional[str] = None
+    bounding_box_data: Optional[str] = None
+    distribution_json: Optional[str] = None
+
+class BatchCropInventoryCreate(SQLModel):
+    farmer_id: Optional[int] = 1
+    batch_id: Optional[str] = None
+    items: List[BatchCropInventoryItem]
+
