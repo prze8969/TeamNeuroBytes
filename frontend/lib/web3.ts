@@ -14,10 +14,10 @@ export const GRADE_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_GRADE_REGISTRY_ADD
 export const DISPUTE_ARBITER_ADDRESS = process.env.NEXT_PUBLIC_DISPUTE_ARBITER_ADDRESS || "0xfa56743872bc0457C3667609677EE0877d340E5e";
 
 export async function getSigner() {
-  if (typeof window === "undefined" || !window.ethereum) {
+  if (typeof window === "undefined" || !(window as any).ethereum) {
     throw new Error("MetaMask extension not found. Please install a compatible Web3 wallet.");
   }
-  const provider = new ethers.BrowserProvider(window.ethereum);
+  const provider = new ethers.BrowserProvider((window as any).ethereum);
   await provider.send("eth_requestAccounts", []);
   return provider.getSigner();
 }
@@ -43,22 +43,22 @@ export function getDisputeArbiterContract(signer: ethers.Signer) {
 }
 
 export async function ensureAmoyNetwork() {
-  if (typeof window === "undefined" || !window.ethereum) return;
+  const eth = typeof window !== "undefined" ? (window as any).ethereum : null;
+  if (!eth) return;
   
   const targetChainId = "0x13882"; // Hex for 80002 (Polygon Amoy Testnet)
   
   try {
-    const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+    const currentChainId = await eth.request({ method: "eth_chainId" });
     if (currentChainId !== targetChainId) {
       try {
-        await window.ethereum.request({
+        await eth.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: targetChainId }],
         });
       } catch (switchError: any) {
-        // Error code 4902 indicates that the chain has not been added to MetaMask
         if (switchError.code === 4902) {
-          await window.ethereum.request({
+          await eth.request({
             method: "wallet_addEthereumChain",
             params: [{
               chainId: targetChainId,

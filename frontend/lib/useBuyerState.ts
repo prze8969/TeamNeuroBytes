@@ -728,7 +728,7 @@ export function useBuyerState() {
         const lotIdBytes = ethers.keccak256(ethers.toUtf8Bytes(bidData.lotId));
         
         // Farmer and logistics addresses matching our mock structure or fallback roles
-        const farmerAddress = biddingLot?.farmer_address || "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"; 
+        const farmerAddress = (biddingLot as any)?.farmer_address || "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"; 
         const logisticsAddress = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
         
         const createOrderTx = await escrowContract.createOrder(
