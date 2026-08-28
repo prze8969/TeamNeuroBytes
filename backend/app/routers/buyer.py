@@ -10,6 +10,7 @@ from sqlmodel import Session, select
 from app.core.config import settings
 from app.db.engine import get_session
 from app.models.database import BuyerProfile, BuyerType, User
+from app.repositories.buyer_profile import BuyerProfileRepository
 
 router = APIRouter()
 
@@ -671,7 +672,7 @@ def get_current_buyer_profile(
     """
     Fetches the institutional buyer's current profile, KYC verification state, and logistics parameters.
     """
-    profile = session.exec(select(BuyerProfile).where(BuyerProfile.user_id == user_id)).first()
+    profile = BuyerProfileRepository(session).get_by_user_id(user_id)
     
     if not profile:
         # Fallback profile for initial demo seed buyer

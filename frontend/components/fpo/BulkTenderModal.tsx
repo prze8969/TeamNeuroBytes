@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { createFPOTender } from '@/lib/fpo-api';
+import { createFPOTender } from '@/lib/api/fpo-api';
 import { toast } from 'sonner';
 import { Sparkles, X, AlertCircle, ShieldCheck } from 'lucide-react';
 
