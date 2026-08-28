@@ -1,13 +1,27 @@
 {
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/backend/:path*",
-      "destination": "/backend/app/main.py"
+    "services": {
+        "frontend": {
+            "root": "frontend",
+            "framework": "nextjs"
+        },
+        "backend": {
+            "root": "backend"
+        }
     },
-    {
-      "source": "/:path*",
-      "destination": "/frontend/:path*"
-    }
-  ]
+    "rewrites": [
+        {
+            "source": "/api/backend(/.*)?",
+            "destination": {
+                "type": "service",
+                "service": "backend"
+            }
+        },
+        {
+            "source": "/(.*)",
+            "destination": {
+                "type": "service",
+                "service": "frontend"
+            }
+        }
+    ]
 }

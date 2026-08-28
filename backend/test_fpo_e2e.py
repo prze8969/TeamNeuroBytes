@@ -20,9 +20,11 @@ def run_fpo_e2e_tests():
 
     # 1. Initialize database & tables
     print("\n[Step 1] Initializing Database Engine & Tables...")
+    from sqlmodel import SQLModel
+    SQLModel.metadata.drop_all(engine)
     create_db_and_tables()
     client = TestClient(app)
-    print("✓ All 8 database tables created and seeded successfully.")
+    print("✓ All database tables dropped, recreated, and seeded successfully.")
 
     with Session(engine) as session:
         # -------------------------------------------------------------------------
@@ -178,11 +180,11 @@ def run_fpo_e2e_tests():
     assert len(res.json()) >= 3
     print("✓ GET /api/fpo/lots: Real DB Read (`crop_lots` table)")
 
-    # 3. Create Lot POST API
     new_lot_payload = {
         "farmer_name": "Ramesh Patil",
         "farmer_phone": "+919876543210",
         "commodity": "Yellow Soybean",
+        "commodity_category": "Oilseeds",
         "variety": "JS-335",
         "quantity_kg": 4000.0,
         "base_price_per_kg": 48.0,

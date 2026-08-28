@@ -18,6 +18,7 @@ class CreateFPOLotRequest(BaseModel):
     farmer_name: str = "Ramesh Patil"
     farmer_phone: Optional[str] = "+919876543210"
     commodity: str
+    commodity_category: Optional[str] = "Cereals"
     variety: Optional[str] = "Certified Standard"
     quantity_kg: float
     base_price_per_kg: float
@@ -144,6 +145,7 @@ def create_fpo_member_lot(req: CreateFPOLotRequest, session: Session = Depends(g
         farmer_phone=req.farmer_phone or "+919876543210",
         farmer_name=req.farmer_name,
         commodity=req.commodity,
+        commodity_category=req.commodity_category or "Cereals",
         variety=req.variety or "Certified Variety",
         quantity_kg=req.quantity_kg,
         base_price_per_kg=req.base_price_per_kg,

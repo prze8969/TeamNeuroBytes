@@ -23,9 +23,9 @@ class CreateLotRequest(BaseModel):
 
     # --- Farmer-confirmed classification fields ---
     commodity: str
-    commodity_category: Optional[str] = "Grains & Cereals"
+    commodity_category: str
     variety: Optional[str] = "Standard"
-    farmer_confirmed_classification: Optional[bool] = True
+    farmer_confirmed_classification: bool
 
     quantity_kg: float
     base_price_per_kg: float
@@ -40,6 +40,12 @@ class CreateLotRequest(BaseModel):
     quality_score: Optional[float] = 95.4
     defect_percentage: Optional[float] = 1.4
     ripeness_index: Optional[float] = 96.0
+
+    @model_validator(mode="after")
+    def validate_farmer_confirmation(self) -> 'CreateLotRequest':
+        if not self.farmer_confirmed_classification:
+            raise ValueError("Farmer must have explicitly confirmed the classification")
+        return self
 
     @field_validator("commodity", mode="before")
     @classmethod
@@ -150,16 +156,23 @@ def create_crop_lot(req: CreateLotRequest, session: Session = Depends(get_sessio
         try:
             image_bytes = fetch_image_bytes(req.image_url)
             img_hash = hashlib.sha256(image_bytes).hexdigest()
-            assessment = session.exec(
-                select(ImageAssessment).where(ImageAssessment.image_hash == img_hash)
-            ).first()
-            if assessment and assessment.status == AssessmentStatus.COMPLETED:
-                grade_enum = assessment.quality_grade
-                quality_score = assessment.quality_score
-                defect_percentage = assessment.defect_percentage
-                ripeness_index = assessment.ripeness_index
-        except Exception:
-            pass
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Invalid image format: {str(e)}")
+
+        assessment = session.exec(
+            select(ImageAssessment).where(ImageAssessment.image_hash == img_hash)
+        ).first()
+
+        if not assessment or assessment.status != AssessmentStatus.COMPLETED:
+            raise HTTPException(
+                status_code=409,
+                detail="Image has changed since grading or quality assessment is still processing."
+            )
+
+        grade_enum = assessment.quality_grade
+        quality_score = assessment.quality_score
+        defect_percentage = assessment.defect_percentage
+        ripeness_index = assessment.ripeness_index
 
     if req.quality_grade and not isinstance(grade_enum, QualityGrade):
         clean_g = str(req.quality_grade).upper()
