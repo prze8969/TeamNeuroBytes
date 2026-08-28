@@ -1,0 +1,2 @@
+experiment_id,model,image_size,batch_size,learning_rate,epochs,accuracy,macro_f1,weighted_f1,qwk,mae,training_time_sec
+exp_dinov3_coral,DINOv3+QualityFeat+CORAL,224,8,0.0003,6,0.3676,0.1812,0.2664,0.7726,0.6324,186.29
