@@ -2,16 +2,16 @@
 pragma solidity ^0.8.20;
 
 import "forge-std/Script.sol";
-import "../src/TestToken.sol";
-import "../src/Roles.sol";
-import "../src/GradeRegistry.sol";
-import "../src/EscrowManager.sol";
-import "../src/DisputeArbiter.sol";
+import "./TestToken.sol";
+import "./Roles.sol";
+import "./GradeRegistry.sol";
+import "./EscrowManager.sol";
+import "./DisputeArbiter.sol";
 
 contract Deploy is Script {
     function run() external {
-        // Load the private key from .env file
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        // Try to read from .env, fallback to Anvil default Account #0 if Git Bash blocks it
+        uint256 deployerPrivateKey = vm.envOr("PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
         
         vm.startBroadcast(deployerPrivateKey);
 
@@ -25,7 +25,6 @@ contract Deploy is Script {
         DisputeArbiter arbiter = new DisputeArbiter(address(escrow));
 
         // 3. Grant cross-contract permissions
-        // Allows the Arbiter to update the Escrow state to 'Disputed'
         escrow.grantRole(escrow.REGULATOR_ROLE(), address(arbiter));
 
         vm.stopBroadcast();

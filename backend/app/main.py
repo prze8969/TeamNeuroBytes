@@ -8,11 +8,19 @@ from app.db.engine import create_db_and_tables
 # Import all API Routers
 from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo
 
+import asyncio
+from app.services.event_listener import listen_for_events
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize SQLModel DB and auto-seed initial demo dataset
     create_db_and_tables()
+    listener_task = asyncio.create_task(listen_for_events())
+    
     yield
+    
+    # 3. Clean up on shutdown
+    listener_task.cancel()
 
 app = FastAPI(
     title="KisanSetu & AgMarknet Core API",

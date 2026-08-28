@@ -10,6 +10,7 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 blockchain/cache/*
+blockchain/broadcast/*
 # Large ML Model Weights (Keep local or use Git LFS)
 *.pt
 *.pth
