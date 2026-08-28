@@ -1,0 +1,2746 @@
+{
+  "summary": {
+    "total_images": 454,
+    "train_images": 317,
+    "val_images": 68,
+    "test_images": 69,
+    "corrupted_images": 0,
+    "duplicate_images": 146,
+    "classes": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ]
+  },
+  "train": [
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0002.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0144.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0112.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0058.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0034.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0050.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0044.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0132.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0035.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0038.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0104.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0146.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0052.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0149.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0037.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0097.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0096.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0048.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0089.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0148.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0072.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0141.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0028.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0018.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0113.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0141.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0012.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0076.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0071.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0004.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0086.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0031.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0134.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0119.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0000.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0035.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0067.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0047.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0121.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0094.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0032.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0081.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0140.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0010.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0116.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0125.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0079.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0101.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0015.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0124.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0029.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0146.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0099.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0065.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0024.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0070.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0049.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0088.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0058.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0082.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0129.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0038.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0075.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0127.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0036.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0137.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0053.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0147.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0011.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0000.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0043.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0056.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0016.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0131.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0069.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0115.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0055.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0114.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0138.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0079.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0100.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0041.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0041.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0046.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0092.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0130.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0123.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0050.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0053.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0040.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0060.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0105.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0128.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0124.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0092.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0110.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0020.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0133.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0099.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0017.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0125.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0063.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0085.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0084.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0049.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0009.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0013.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0030.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0116.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0102.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0039.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0089.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0021.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0059.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0115.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0121.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0007.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0086.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0021.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0135.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0034.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0067.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0119.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0014.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0092.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0071.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0003.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0111.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0072.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0108.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0018.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0117.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0134.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0090.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0107.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0073.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0149.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0143.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0061.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0143.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0025.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0051.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0054.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0048.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0076.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0061.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0060.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0115.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0016.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0145.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0063.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0140.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0038.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0129.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0073.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0083.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0052.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0075.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0065.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0074.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0101.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0030.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0059.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0026.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0120.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0011.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0131.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_A\\tomato_Grade_A_0000.jpg",
+      "class_name": "A",
+      "label": 0,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0033.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0019.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0001.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0077.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0046.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0064.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0066.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0127.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0061.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0124.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0039.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0030.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0059.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0109.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0023.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0015.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0113.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0122.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0029.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0058.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0108.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0024.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0094.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0081.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0075.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0068.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0097.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0056.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0109.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0011.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0049.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0098.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0066.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0008.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0134.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0138.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0118.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0068.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0128.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0135.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0045.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0041.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0132.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0000.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0012.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0010.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0002.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0022.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0093.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0101.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0139.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0116.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0132.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0069.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_A\\banana_Grade_A_0008.jpg",
+      "class_name": "A",
+      "label": 0,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0085.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0055.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0053.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0005.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0025.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0039.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0085.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0148.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0071.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0070.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0076.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0020.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0131.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0089.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0027.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0064.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0140.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0083.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0078.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0045.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0054.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0095.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0111.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0079.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0106.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0036.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0003.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0077.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0141.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0074.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0123.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0002.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0069.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0146.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0043.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0125.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0022.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0136.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_A\\potato_Grade_A_0003.jpg",
+      "class_name": "A",
+      "label": 0,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0147.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0065.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0004.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0028.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0080.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0064.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0050.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0021.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0102.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0100.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0108.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0028.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0040.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0032.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0144.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0008.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0044.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0088.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0112.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0102.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0031.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0144.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0082.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0103.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0023.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0025.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0084.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0006.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0077.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0084.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0093.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0004.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0056.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0109.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0082.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0003.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0099.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0033.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0138.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0139.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0136.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0037.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0117.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0006.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0026.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0068.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0080.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0142.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0096.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0051.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0019.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0136.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0127.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0005.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0073.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    }
+  ],
+  "val": [
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0090.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0072.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0046.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0019.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0024.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0009.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0147.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0044.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0001.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0088.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0107.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0054.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0137.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0080.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0045.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0120.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0117.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0098.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0033.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0016.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0091.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0105.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0023.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0114.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0027.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0070.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0062.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0149.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0139.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0087.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0062.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0066.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0057.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0098.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0042.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0094.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0017.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0100.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0086.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0103.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0091.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0110.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0083.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0018.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0051.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0063.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0104.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0128.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0007.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0119.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0104.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0013.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0142.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0031.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0020.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0126.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0055.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0087.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0015.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0042.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0093.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0137.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0114.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0007.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0027.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0135.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0036.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0091.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    }
+  ],
+  "test": [
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0017.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0118.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0008.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0040.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0005.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0006.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0107.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0057.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0133.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0095.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0111.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0142.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0047.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0145.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0026.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0014.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0110.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0009.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0067.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0148.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0106.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\potato_Grade_C_0012.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0112.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0087.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0032.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0143.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0010.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0103.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0095.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0074.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0062.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0145.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0052.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0043.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0042.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0105.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0126.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0057.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0013.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0048.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0122.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0122.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0129.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0022.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0130.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0001.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_A\\onion_Grade_A_0002.jpg",
+      "class_name": "A",
+      "label": 0,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\tomato_Grade_C_0034.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0090.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0106.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0060.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0097.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0113.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0126.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\banana_Grade_D_0029.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_D\\onion_Grade_D_0118.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0078.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\tomato_Grade_B_0078.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_D\\potato_Grade_D_0037.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0121.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0035.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0130.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0120.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_C\\banana_Grade_C_0133.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_B\\potato_Grade_B_0047.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "potato"
+    },
+    {
+      "path": "data\\Grade_B\\onion_Grade_B_0081.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "onion"
+    },
+    {
+      "path": "data\\Grade_D\\tomato_Grade_D_0123.jpg",
+      "class_name": "D",
+      "label": 3,
+      "crop_id": "tomato"
+    },
+    {
+      "path": "data\\Grade_B\\banana_Grade_B_0014.jpg",
+      "class_name": "B",
+      "label": 1,
+      "crop_id": "banana"
+    },
+    {
+      "path": "data\\Grade_C\\onion_Grade_C_0096.jpg",
+      "class_name": "C",
+      "label": 2,
+      "crop_id": "onion"
+    }
+  ]
+}

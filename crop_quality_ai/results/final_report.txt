@@ -1,0 +1,34 @@
+========================================
+CROP QUALITY AI - FINAL EVALUATION REPORT
+========================================
+
+Dataset Summary:
+Total Images: 454
+Training Images: 317
+Validation Images: 68
+Testing Images: 69
+
+Classes Evaluated: Grade A, Grade B, Grade C, Grade D
+
+Best Model Checkpoint: checkpoints/best_model.pth (Trained Epoch 1)
+
+Held-Out Test Set Performance Metrics:
+----------------------------------------
+Accuracy:          28.99%
+Macro F1:          0.1700
+Weighted F1:       0.1672
+Precision (Macro): 0.1180
+Recall (Macro):    0.5000
+
+Ordinal Metrics:
+Quadratic Weighted Kappa (QWK): 0.7272
+Mean Absolute Error (MAE):       0.7246 grade ranks
+
+Confusion Matrix (Actual rows x Predicted columns):
+[[ 1  0  0  0]
+ [24  0  0  1]
+ [ 0  0  0 24]
+ [ 0  0  0 19]]
+
+========================================
+Report generated successfully on untouched test set.
