@@ -354,7 +354,7 @@ export function VerifiedLotsGrid({
                 <option value="floor_asc">Lowest Asking Floor (₹/kg)</option>
                 <option value="floor_desc">Highest Asking Floor (₹/kg)</option>
                 <option value="volume_desc">Largest Available Volume</option>
-                <option value="grade_desc">Highest YOLOv8 AI Grade</option>
+                <option value="grade_desc">Highest DINOv2 AI Grade</option>
                 <option value="distance_asc">Closest Distance to Hub</option>
               </select>
               <ArrowUpDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -421,7 +421,7 @@ export function VerifiedLotsGrid({
                 </div>
                 <div>
                   <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-                    YOLOv8 AI Vision Assay: {inspectingLot.cropName}
+                    DINOv2 AI Vision Assay: {inspectingLot.cropName}
                     <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200 font-mono font-bold">
                       {inspectingLot.id}
                     </span>
@@ -540,7 +540,7 @@ export function VerifiedLotsGrid({
                 {/* Live Confidence Watermark */}
                 <div className="absolute bottom-3 left-3 px-3 py-1 rounded-xl bg-slate-950/85 backdrop-blur-md border border-slate-800 text-xs font-mono font-bold text-white flex items-center gap-2">
                   <ShieldCheck size={14} className="text-emerald-400" />
-                  <span>Model: YOLOv8-{inspectingLot.cropName.replace(/\s+/g, '')} (mAP 0.942)</span>
+                  <span>Model: DINOv2-ViT-B/14 + CORAL (Acc: 68.14%, QWK: 0.91)</span>
                 </div>
               </div>
 

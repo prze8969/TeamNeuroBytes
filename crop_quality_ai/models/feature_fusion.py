@@ -1,37 +1,39 @@
 import torch
 import torch.nn as nn
 
-class FeatureFusionNetwork(nn.Module):
+class FeatureFusionModule(nn.Module):
     """
-    Fuses deep pretrained DINO visual embeddings with explicit handcrafted quality features.
-    Uses bottleneck projections, LayerNorm, GELU activations, and dropout for regularized fusion.
+    Lightweight Feature Fusion MLP combining DINO visual embeddings (e.g., 768-dim)
+    and handcrafted quality features (32-dim).
+    Uses LayerNorm, GELU activation, and Dropout for regularization.
     """
-    def __init__(self, embed_dim: int = 384, quality_dim: int = 24, fusion_dim: int = 256, dropout: float = 0.2):
+    def __init__(
+        self,
+        backbone_dim: int = 768,
+        handcrafted_dim: int = 32,
+        hidden_dim: int = 256,
+        output_dim: int = 128,
+        dropout: float = 0.2
+    ):
         super().__init__()
-        self.dino_proj = nn.Sequential(
-            nn.Linear(embed_dim, 192),
-            nn.LayerNorm(192),
+        in_dim = backbone_dim + handcrafted_dim
+        
+        self.fusion = nn.Sequential(
+            nn.LayerNorm(in_dim),
+            nn.Linear(in_dim, hidden_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.LayerNorm(hidden_dim),
+            nn.Linear(hidden_dim, output_dim),
             nn.GELU(),
             nn.Dropout(dropout)
         )
 
-        self.quality_proj = nn.Sequential(
-            nn.Linear(quality_dim, 64),
-            nn.LayerNorm(64),
-            nn.GELU(),
-            nn.Dropout(dropout)
-        )
-
-        self.fusion_head = nn.Sequential(
-            nn.Linear(192 + 64, fusion_dim),
-            nn.LayerNorm(fusion_dim),
-            nn.GELU(),
-            nn.Dropout(dropout)
-        )
-
-    def forward(self, dino_embed: torch.Tensor, quality_feat: torch.Tensor) -> torch.Tensor:
-        proj_dino = self.dino_proj(dino_embed)
-        proj_quality = self.quality_proj(quality_feat)
-        concatenated = torch.cat([proj_dino, proj_quality], dim=1)
-        fused = self.fusion_head(concatenated)
-        return fused
+    def forward(self, backbone_feats: torch.Tensor, handcrafted_feats: torch.Tensor) -> torch.Tensor:
+        """
+        backbone_feats: [B, backbone_dim]
+        handcrafted_feats: [B, handcrafted_dim]
+        Output: Bottleneck embedding [B, output_dim]
+        """
+        combined = torch.cat([backbone_feats, handcrafted_feats], dim=-1)
+        return self.fusion(combined)

@@ -303,7 +303,7 @@ export function BuyerDashboardLayout() {
                   <span>🌾</span> Verified Institutional Crop Lots
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Real-time harvest lots inspected by YOLOv8 Computer Vision with PostGIS freight pooling
+                  Real-time harvest lots inspected by DINOv2 Computer Vision with PostGIS freight pooling
                 </p>
               </div>
 

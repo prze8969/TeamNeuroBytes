@@ -48,7 +48,7 @@ export default function Home() {
       role: 'FARMER',
       roleKey: 'farmer',
       badge: 'Farmgate AI & Bids',
-      description: 'Ultralytics YOLOv8 crop grading, Agmarknet Sell vs. Wait profit calculator & zero-friction WhatsApp Bot simulator.'
+      description: 'DINOv2 + CORAL crop quality grading, Agmarknet Sell vs. Wait profit calculator & zero-friction WhatsApp Bot simulator.'
     },
     {
       title: 'Buyer Marketplace',
@@ -159,7 +159,7 @@ export default function Home() {
         </h2>
 
         <p className="max-w-3xl text-base sm:text-lg text-emerald-100/90 leading-relaxed font-normal">
-          An omnichannel agricultural ecosystem combining zero-friction WhatsApp bot crop listing, Ultralytics YOLOv8 AI vision grading, PostGIS shared freight milk-runs, and milestone-backed bank escrow settlement.
+          An omnichannel agricultural ecosystem combining zero-friction WhatsApp bot crop listing, DINOv2 + CORAL AI vision grading, PostGIS shared freight milk-runs, and milestone-backed bank escrow settlement.
         </p>
 
         {/* All 6 Stakeholder Portals Grid with Authentication Interception */}
@@ -209,7 +209,7 @@ export default function Home() {
           </div>
           <div className="space-y-1.5">
             <span className="text-teal-300 text-xs font-black uppercase tracking-wider block">02 / Neural Quality Vision</span>
-            <h4 className="text-white font-bold text-sm">Ultralytics YOLOv8 Grading</h4>
+            <h4 className="text-white font-bold text-sm">DINOv2 + CORAL AI Grading</h4>
             <p className="text-xs text-emerald-200/70">Sub-second grain segmentation, defect surface area calculation, and Grade A/B/C certification.</p>
           </div>
           <div className="space-y-1.5">

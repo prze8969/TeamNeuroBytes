@@ -248,11 +248,11 @@ function RegisterContent() {
             <p className="text-[11px] text-emerald-200/70 font-medium">RBI-Compliant Escrow Vaults</p>
           </div>
 
-          {/* Badge 3: YOLOv8 AI Quality Grading */}
+          {/* Badge 3: DINOv2 AI Quality Grading */}
           <div className="p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-400/25 backdrop-blur-md space-y-1 hover:border-emerald-400/50 transition-colors">
             <div className="flex items-center gap-1.5 text-emerald-300 font-mono text-xs font-black">
               <Sparkles size={14} className="text-emerald-400" />
-              <span>YOLOv8 AI Grading</span>
+              <span>DINOv2 AI Grading</span>
             </div>
             <p className="text-[11px] text-emerald-200/70 font-medium">Computer Vision Assay</p>
           </div>

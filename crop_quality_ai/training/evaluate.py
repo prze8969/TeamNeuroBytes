@@ -1,100 +1,104 @@
 import os
 import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath("."))
 import json
-import torch
+import yaml
 import numpy as np
+import torch
 from torch.utils.data import DataLoader
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from crop_quality_ai.models.crop_grading_model import CropQualityGradingModel
+from crop_quality_ai.training.train import CropDataset, get_transforms
+from crop_quality_ai.evaluation.metrics import compute_all_metrics, print_metrics_summary
+from crop_quality_ai.evaluation.confusion_matrix import plot_and_save_confusion_matrix
 
-from models.crop_grading_model import CropGradingModel
-from training.extract_features import CropDataset
-from evaluation.metrics import compute_all_metrics
-from evaluation.confusion_matrix import save_confusion_matrix_plot
-
-def evaluate_test_set(checkpoint_path: str = "checkpoints/best_model.pth", manifest_path: str = "dataset_split/dataset_manifest.json"):
+def evaluate_test_set():
     """
-    Evaluates the trained crop quality model EXACTLY ONCE on the untouched test split.
-    Generates results/final_report.txt and results/confusion_matrix.png.
+    Phase 3: Final Test Set Evaluation.
+    Evaluates the best trained model exactly ONCE on the completely untouched test set.
     """
-    if not os.path.exists(checkpoint_path):
-        raise FileNotFoundError(f"Checkpoint not found at '{checkpoint_path}'. Run training first.")
+    config_path = "crop_quality_ai/configs/config.yaml"
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
 
-    checkpoint = torch.load(checkpoint_path, map_location="cpu")
-    cfg = checkpoint["config"]
+    manifest_path = os.path.join(config["data"]["split_dir"], "dataset_manifest.json")
+    if not os.path.exists(manifest_path):
+        raise FileNotFoundError(f"Dataset manifest not found at '{manifest_path}'. Run prepare_dataset.py first.")
 
     with open(manifest_path, "r") as f:
         manifest = json.load(f)
 
-    test_records = manifest["test"]
-    test_dataset = CropDataset(test_records, image_size=cfg["model"]["image_size"], is_train=False)
-    test_loader = DataLoader(test_dataset, batch_size=cfg["training"]["batch_size"], shuffle=False)
+    test_recs = manifest["test"]
+    print(f"[INFO] Loaded untouched Test Set with {len(test_recs)} images.")
 
-    device = torch.device(cfg["training"]["device"] if torch.cuda.is_available() else "cpu")
-    model = CropGradingModel(
-        variant="dinov2_vits14",
-        freeze_backbone=cfg["model"]["freeze_backbone"],
-        quality_dim=cfg["model"]["quality_feature_dim"],
-        fusion_dim=cfg["model"]["fusion_dim"],
-        num_classes=cfg["model"]["num_classes"]
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"[INFO] Evaluation Device: {device}")
+
+    image_size = config["data"]["image_size"]
+    _, test_transform = get_transforms(image_size)
+
+    test_dataset = CropDataset(test_recs, transform=test_transform)
+    test_loader = DataLoader(
+        test_dataset, batch_size=config["training"]["batch_size"],
+        shuffle=False, num_workers=config["training"]["num_workers"]
+    )
+
+    best_model_path = os.path.join(config["data"]["checkpoints_dir"], "best_model.pth")
+    if not os.path.exists(best_model_path):
+        best_model_path = os.path.join(config["data"]["checkpoints_dir"], "last_model.pth")
+        if not os.path.exists(best_model_path):
+            raise FileNotFoundError("No trained checkpoint found in checkpoints directory.")
+
+    model = CropQualityGradingModel(
+        backbone_name=config["model"]["backbone_name"],
+        freeze_backbone=True,
+        num_classes=config["model"]["num_classes"],
+        dropout=config["model"]["dropout"]
     ).to(device)
 
-    model.load_state_dict(checkpoint["model_state_dict"])
+    model.load_state_dict(torch.load(best_model_path, map_location=device))
     model.eval()
+    print(f"[OK] Successfully loaded weights from '{best_model_path}'.")
 
-    all_preds, all_targets = [], []
+    all_preds = []
+    all_targets = []
+    all_scores = []
+    all_probs = []
+
     with torch.no_grad():
-        for images, quality_feats, targets in test_loader:
+        for images, labels in test_loader:
             images = images.to(device)
-            quality_feats = quality_feats.to(device)
-            logits, probs, scores = model(images, quality_feats)
-            preds = torch.argmax(probs, dim=-1)
-            all_preds.extend(preds.cpu().numpy())
-            all_targets.extend(targets.cpu().numpy())
+            out = model.predict(images)
 
+            ranks = out["ranks"].cpu().numpy()
+            scores = out["scores"].cpu().numpy()
+            probs = out["probabilities"].cpu().numpy()
+
+            all_preds.extend(ranks)
+            all_targets.extend(labels.numpy())
+            all_scores.extend(scores)
+            all_probs.extend(probs)
+
+    all_preds = np.array(all_preds)
+    all_targets = np.array(all_targets)
+
+    # Compute metrics
     metrics = compute_all_metrics(all_targets, all_preds)
-    save_confusion_matrix_plot(metrics["confusion_matrix"], output_path="results/confusion_matrix.png")
+    print_metrics_summary(metrics, title="FINAL UNTOUCHED TEST SET EVALUATION")
 
-    report_content = f"""========================================
-CROP QUALITY AI - FINAL EVALUATION REPORT
-========================================
+    # Save metrics JSON
+    results_dir = config["data"]["results_dir"]
+    os.makedirs(results_dir, exist_ok=True)
+    metrics_path = os.path.join(results_dir, "test_metrics.json")
+    with open(metrics_path, "w") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"[OK] Saved test set metrics to '{metrics_path}'.")
 
-Dataset Summary:
-Total Images: {manifest['summary']['total_images']}
-Training Images: {manifest['summary']['train_images']}
-Validation Images: {manifest['summary']['val_images']}
-Testing Images: {manifest['summary']['test_images']}
+    # Save Confusion Matrix
+    cm_path = os.path.join(results_dir, "confusion_matrix.png")
+    plot_and_save_confusion_matrix(all_targets, all_preds, class_names=["Grade A", "Grade B", "Grade C", "Grade D"], output_path=cm_path)
 
-Classes Evaluated: Grade A, Grade B, Grade C, Grade D
-
-Best Model Checkpoint: {checkpoint_path} (Trained Epoch {checkpoint.get('epoch', 'N/A')})
-
-Held-Out Test Set Performance Metrics:
-----------------------------------------
-Accuracy:          {metrics['accuracy'] * 100:.2f}%
-Macro F1:          {metrics['macro_f1']:.4f}
-Weighted F1:       {metrics['weighted_f1']:.4f}
-Precision (Macro): {metrics['precision']:.4f}
-Recall (Macro):    {metrics['recall']:.4f}
-
-Ordinal Metrics:
-Quadratic Weighted Kappa (QWK): {metrics['qwk']:.4f}
-Mean Absolute Error (MAE):       {metrics['mae']:.4f} grade ranks
-
-Confusion Matrix (Actual rows x Predicted columns):
-{np.array(metrics['confusion_matrix'])}
-
-========================================
-Report generated successfully on untouched test set.
-"""
-
-    os.makedirs("results", exist_ok=True)
-    report_path = "results/final_report.txt"
-    with open(report_path, "w") as f:
-        f.write(report_content)
-
-    print("\n" + report_content)
-    print(f"[OK] Saved final test evaluation report to: {report_path}")
     return metrics
 
 if __name__ == "__main__":

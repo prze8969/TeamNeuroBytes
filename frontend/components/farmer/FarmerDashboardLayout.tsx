@@ -827,7 +827,7 @@ export function FarmerDashboardLayout() {
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 3: YOLOv8 AI QUALITY ASSAY STUDIO */}
+        {/* TAB 3: DINOv2 AI QUALITY ASSAY STUDIO */}
         {/* ========================================================================= */}
         {activeTab === 'ai-grading' && (
           <div className="space-y-6">

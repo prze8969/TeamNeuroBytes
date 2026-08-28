@@ -378,7 +378,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
               </span>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Upon truck arrival at destination APMC terminal, gross weight and quality assays are verified against the YOLOv8 certificate before full payout disbursement.
+              Upon truck arrival at destination APMC terminal, gross weight and quality assays are verified against the DINOv2 certificate before full payout disbursement.
             </p>
           </div>
 

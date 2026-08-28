@@ -167,7 +167,7 @@ export function CropListingCard({
             <span className="text-xs font-black text-white flex items-center gap-1 drop-shadow">
               Inspect AI Grade <Sparkles size={12} className="text-emerald-300" />
             </span>
-            <span className="text-[9px] text-slate-200 font-medium">View YOLOv8 Defect Heatmap</span>
+            <span className="text-[9px] text-slate-200 font-medium">View DINOv2 Defect Assay</span>
           </button>
         </div>
 

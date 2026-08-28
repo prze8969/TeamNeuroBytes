@@ -1,32 +1,54 @@
-model:
-  backbone: "facebook/dinov2-small" # Efficient DINOv2 / DINOv3 backbone via torchvision/timm/transformers
-  freeze_backbone: true
-  image_size: 224
-  embedding_dim: 384
-  quality_feature_dim: 24
-  fusion_dim: 256
-  num_classes: 4 # Grade A, B, C, D
+# Crop Quality AI Configuration - High-Accuracy Strategy (384x384, 50 Epochs)
 
-training:
-  epochs: 25
-  batch_size: 8
-  learning_rate: 0.0003
-  weight_decay: 0.0001
-  patience: 5
-  seed: 42
-  device: "cuda" # Automatically falls back to cpu if cuda unavailable
-
-optimizer:
-  name: "AdamW"
-
-scheduler:
-  name: "cosine"
-  min_lr: 1.0e-6
-
-mixed_precision: true
-
-dataset:
+data:
+  data_dir: "crop_quality_ai/data_augmented"
+  valid_images_dir: "valid_images"
+  split_dir: "crop_quality_ai/dataset_split"
+  results_dir: "crop_quality_ai/results"
+  checkpoints_dir: "crop_quality_ai/checkpoints"
+  image_size: 392  # 392x392 higher resolution (28 * 14 patch size for dinov2_vitb14)
   train_ratio: 0.70
   val_ratio: 0.15
   test_ratio: 0.15
-  data_dir: "data"
+
+dataset:
+  use_augmented_data: true
+  train_ratio: 0.70
+  val_ratio: 0.15
+  test_ratio: 0.15
+
+model:
+  backbone_name: "dinov2_vitb14"
+  freeze_backbone: false  # Unfreeze from start
+  unfreeze_last_n_blocks: 4  # Unfreeze top 4 transformer blocks
+  handcrafted_dim: 32
+  fusion_hidden_dim: 256
+  num_classes: 4  # Grade A (0), B (1), C (2), D (3)
+  dropout: 0.2
+
+training:
+  epochs: 50
+  batch_size: 8  # Reduced for 384x384 resolution on 12GB VRAM
+  learning_rate: 0.0001  # Classifier / Head LR
+  backbone_lr: 0.00001   # Differential LR for DINO backbone
+  weight_decay: 0.0001
+  patience: 15  # Early stopping patience
+  warmup_epochs: 5  # Cosine warmup epochs
+  num_workers: 4
+  pin_memory: true
+  use_amp: true
+
+optimizer:
+  name: AdamW
+  betas: [0.9, 0.999]
+
+scheduler:
+  name: cosine
+  T_max: 50
+
+augmentation:
+  random_rotation: 15
+  color_jitter: 0.3
+  random_flip: true
+  random_crop_scale: [0.8, 1.0]
+  gaussian_blur: 0.5

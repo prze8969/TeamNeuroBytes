@@ -133,7 +133,7 @@ export function AIInspectionModal({
                 <Sparkles size={16} />
               </div>
               <h2 className="text-base sm:text-lg font-black text-slate-900">
-                YOLOv8 Computer Vision Assay &amp; Quality Inspection
+                DINOv2 Computer Vision Assay &amp; Quality Inspection
               </h2>
             </div>
             <p className="text-xs text-slate-500">

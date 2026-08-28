@@ -94,7 +94,7 @@ class WhatsAppBotService:
             user_state["data"]["district"] = payload.get("district", "Nashik")
             user_state["step"] = "AWAITING_IMAGE"
             return {
-                "reply": f"📸 *Step 4/4: AI Crop Quality Check*\n\nPlease snap and send a clear photo of your produce sample in daylight.\n\nOur YOLOv8 AI model will instantly analyze grain uniformity, ripeness, and defects to issue an official Grade badge!"
+                "reply": f"📸 *Step 4/4: AI Crop Quality Check*\n\nPlease snap and send a clear photo of your produce sample in daylight.\n\nOur DINOv2 + CORAL AI model will instantly analyze grain uniformity, ripeness, and defects to issue an official Grade badge!"
             }
 
         # State 5: Produce Photo & AI Verification

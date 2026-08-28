@@ -268,7 +268,7 @@ function LoginContent() {
           <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/20 backdrop-blur-md flex flex-col justify-center space-y-1 hover:border-emerald-500/40 transition-colors">
             <div className="flex items-center gap-1.5 text-emerald-300 font-extrabold text-xs">
               <Sparkles size={14} className="text-teal-300" />
-              <span>YOLOv8 AI Grading</span>
+              <span>DINOv2 AI Grading</span>
             </div>
             <p className="text-[11px] text-emerald-200/70 font-medium">Computer Vision Assay</p>
           </div>

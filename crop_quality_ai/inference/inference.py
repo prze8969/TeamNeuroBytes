@@ -1,110 +1,116 @@
 import os
 import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath("."))
 import argparse
 import json
+import yaml
+import numpy as np
 import torch
 from torchvision import transforms
 from PIL import Image
-import numpy as np
+from typing import Dict, Any
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from crop_quality_ai.models.crop_grading_model import CropQualityGradingModel
 
-from models.crop_grading_model import CropGradingModel
-from models.quality_features import QualityFeatureExtractor
-from training.prepare_dataset import REVERSE_GRADE_MAP
+GRADE_NAMES = ["A", "B", "C", "D"]
 
-class CropQualityInferencePipeline:
+class CropQualityPredictor:
     """
-    End-to-end inference pipeline for crop image quality grading.
-    Loads trained DINOv3 + CORAL model, extracts handcrafted quality features,
-    and returns standardized prediction dictionary.
+    Production-ready single-image inference pipeline.
+    Loads best_model.pth and returns detailed JSON payload.
     """
-    def __init__(self, checkpoint_path: str = "checkpoints/best_model.pth"):
-        if not os.path.exists(checkpoint_path):
-            raise FileNotFoundError(f"Checkpoint not found at '{checkpoint_path}'. Train the model first.")
+    def __init__(self, config_path: str = "crop_quality_ai/configs/config.yaml", checkpoint_path: str = None):
+        with open(config_path, "r") as f:
+            self.config = yaml.safe_load(f)
 
-        self.checkpoint = torch.load(checkpoint_path, map_location="cpu")
-        self.cfg = self.checkpoint["config"]
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.device = torch.device(self.cfg["training"]["device"] if torch.cuda.is_available() else "cpu")
-        self.model = CropGradingModel(
-            variant="dinov2_vits14",
+        if checkpoint_path is None:
+            checkpoint_path = os.path.join(self.config["data"]["checkpoints_dir"], "best_model.pth")
+            if not os.path.exists(checkpoint_path):
+                checkpoint_path = os.path.join(self.config["data"]["checkpoints_dir"], "last_model.pth")
+
+        self.model = CropQualityGradingModel(
+            backbone_name=self.config["model"]["backbone_name"],
             freeze_backbone=True,
-            quality_dim=self.cfg["model"]["quality_feature_dim"],
-            fusion_dim=self.cfg["model"]["fusion_dim"],
-            num_classes=self.cfg["model"]["num_classes"]
+            num_classes=self.config["model"]["num_classes"],
+            dropout=self.config["model"]["dropout"]
         ).to(self.device)
 
-        self.model.load_state_dict(self.checkpoint["model_state_dict"])
+        if os.path.exists(checkpoint_path):
+            self.model.load_state_dict(torch.load(checkpoint_path, map_location=self.device))
+            print(f"[OK] CropQualityPredictor loaded weights from '{checkpoint_path}'.")
+        else:
+            print(f"[WARN] Checkpoint '{checkpoint_path}' not found. Initialized with default weights.")
+
         self.model.eval()
 
-        self.feature_extractor = QualityFeatureExtractor()
+        image_size = self.config["data"]["image_size"]
         self.transform = transforms.Compose([
-            transforms.Resize((self.cfg["model"]["image_size"], self.cfg["model"]["image_size"])),
+            transforms.Resize((image_size, image_size)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
 
-    def predict_image(self, image_path: str) -> dict:
-        if not os.path.exists(image_path):
-            return {"error": f"Image file not found at '{image_path}'"}
-
-        with Image.open(image_path) as img:
-            img_rgb = img.convert("RGB")
-            img_np = np.array(img_rgb)
-
-            # Handcrafted visual features
-            quality_feat = self.feature_extractor.extract_from_numpy(img_np)
-            quality_tensor = torch.tensor(quality_feat, dtype=torch.float32).unsqueeze(0).to(self.device)
-
-            image_tensor = self.transform(img_rgb).unsqueeze(0).to(self.device)
+    def predict_image(self, image: Image.Image) -> Dict[str, Any]:
+        """
+        Runs model inference on PIL Image instance.
+        Returns clean JSON dict format.
+        """
+        img_tensor = self.transform(image).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
-            logits, probs, scores = self.model(image_tensor, quality_tensor)
+            out = self.model.predict(img_tensor)
 
-        prob_vec = probs[0].cpu().numpy()
-        pred_idx = int(np.argmax(prob_vec))
-        grade_letter = REVERSE_GRADE_MAP.get(pred_idx, "A")
+        rank_idx = int(out["ranks"].cpu().item())
+        score = float(out["scores"].cpu().item())
+        probs_np = out["probabilities"].cpu().squeeze(0).numpy()
 
-        confidence = float(prob_vec[pred_idx])
-        quality_score = float(scores[0].item())
+        predicted_grade = GRADE_NAMES[rank_idx] if rank_idx < len(GRADE_NAMES) else "D"
+        confidence = float(probs_np[rank_idx])
 
-        if confidence > 0.85:
+        # Probabilities dictionary
+        prob_dict = {
+            GRADE_NAMES[i]: round(float(probs_np[i]), 4) for i in range(len(GRADE_NAMES))
+        }
+
+        # Confidence level
+        if confidence >= 0.85:
             conf_level = "High"
-        elif confidence >= 0.60:
+        elif confidence >= 0.65:
             conf_level = "Medium"
         else:
             conf_level = "Low"
 
-        probabilities_dict = {
-            "A": round(float(prob_vec[0]), 4),
-            "B": round(float(prob_vec[1]), 4),
-            "C": round(float(prob_vec[2]), 4),
-            "D": round(float(prob_vec[3]), 4)
-        }
-
-        result = {
-            "grade": grade_letter,
+        return {
+            "grade": predicted_grade,
             "confidence": round(confidence, 4),
-            "quality_score": round(quality_score, 1),
-            "probabilities": probabilities_dict,
+            "quality_score": round(score, 1),
+            "probabilities": prob_dict,
             "confidence_level": conf_level
         }
 
-        if conf_level == "Low":
-            result["warning"] = "Prediction uncertain. Please provide another clear image of the produce."
-
-        return result
+    def predict_image_path(self, image_path: str) -> Dict[str, Any]:
+        """
+        Loads image from disk and runs prediction.
+        """
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"Image not found at path '{image_path}'")
+        image = Image.open(image_path).convert("RGB")
+        return self.predict_image(image)
 
 def main():
-    parser = argparse.ArgumentParser(description="Crop Quality AI Inference CLI")
+    parser = argparse.ArgumentParser(description="Crop Quality Grading AI Inference")
     parser.add_argument("--image", type=str, required=True, help="Path to input crop image")
-    parser.add_argument("--checkpoint", type=str, default="checkpoints/best_model.pth", help="Model checkpoint path")
+    parser.add_argument("--config", type=str, default="crop_quality_ai/configs/config.yaml", help="Path to config yaml")
+    parser.add_argument("--checkpoint", type=str, default=None, help="Optional path to model checkpoint")
     args = parser.parse_args()
 
-    pipeline = CropQualityInferencePipeline(checkpoint_path=args.checkpoint)
-    res = pipeline.predict_image(args.image)
-    print(json.dumps(res, indent=2))
+    predictor = CropQualityPredictor(config_path=args.config, checkpoint_path=args.checkpoint)
+    result = predictor.predict_image_path(args.image)
+
+    print(json.dumps(result, indent=2))
 
 if __name__ == "__main__":
     main()
