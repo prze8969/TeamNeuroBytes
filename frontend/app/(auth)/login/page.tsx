@@ -150,8 +150,30 @@ function LoginContent() {
           description: `Logged in as ${resolvedRole} • Session secured via JWT`,
         });
 
-        // Redirect to originally requested private route or role dashboard
-        const destination = redirectTo || routeMap[resolvedRole] || '/farmer/dashboard';
+        // Safely resolve destination dashboard matching the authenticated role
+        let destination = routeMap[resolvedRole] || '/farmer/dashboard';
+        if (redirectTo && redirectTo.startsWith('/')) {
+          const isFarmerRoute = redirectTo.startsWith('/farmer');
+          const isBuyerRoute = redirectTo.startsWith('/buyer');
+          const isFpoRoute = redirectTo.startsWith('/fpo') || redirectTo.startsWith('/organization');
+          const isTransRoute = redirectTo.startsWith('/transportation') || redirectTo.startsWith('/transporter');
+          const isWhRoute = redirectTo.startsWith('/warehouse');
+          const isAdminRoute = redirectTo.startsWith('/admin');
+
+          // Only use redirectTo if it matches the current user's role
+          if (
+            (resolvedRole === 'FARMER' && isFarmerRoute) ||
+            (resolvedRole === 'BUYER' && isBuyerRoute) ||
+            ((resolvedRole === 'ORGANIZATION' || (resolvedRole as string) === 'FPO') && isFpoRoute) ||
+            (resolvedRole === 'TRANSPORTATION' && isTransRoute) ||
+            (resolvedRole === 'WAREHOUSE' && isWhRoute) ||
+            (resolvedRole === 'ADMIN' && isAdminRoute) ||
+            (!isFarmerRoute && !isBuyerRoute && !isFpoRoute && !isTransRoute && !isWhRoute && !isAdminRoute)
+          ) {
+            destination = redirectTo;
+          }
+        }
+
         router.push(destination);
         return;
       } else {
