@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from sqlmodel import Session
 
 from app.db.engine import get_session
 from app.models.database import MandiPrice
 from app.repositories.mandi_price import MandiPriceRepository
-from app.services.apmc_data import decision_engine
+from app.services.apmc_data import decision_engine, AgmarknetSyncService
 
 router = APIRouter()
 
@@ -32,6 +32,11 @@ class SellVsWaitRequest(BaseModel):
     current_mandi_price_kg: float
     forecast_price_7d_kg: float
     planned_hold_days: int = 7
+
+class AgmarknetSyncRequest(BaseModel):
+    api_key: Optional[str] = None
+    state: str = "Maharashtra"
+    limit: int = 50
 
 @router.post("/net-realisation")
 def calculate_net_realisation(req: NetRealisationRequest):
@@ -89,3 +94,20 @@ def get_agmarknet_price_feed(
         district=district,
     )
     return prices
+
+@router.post("/sync-agmarknet")
+def sync_agmarknet_feed(
+    req: AgmarknetSyncRequest = AgmarknetSyncRequest(),
+    session: Session = Depends(get_session)
+):
+    """
+    Fetches real-time commodity modal rates from data.gov.in AGMARKNET API (Resource: 9ef84268-d588-465a-a308-a864a43d0070).
+    Falls back to cached benchmarks if rate-limited (HTTP 429) or offline.
+    """
+    result = AgmarknetSyncService.sync_prices(
+        session=session,
+        api_key=req.api_key,
+        state=req.state,
+        limit=req.limit
+    )
+    return result

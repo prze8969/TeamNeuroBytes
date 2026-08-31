@@ -1,7 +1,122 @@
 import math
+import os
+import urllib.request
+import json
+import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
+from sqlmodel import Session, select
+from app.models.database import MandiPrice
 from app.utils.geo_utils import haversine_distance, calculate_road_distance
+
+logger = logging.getLogger(__name__)
+
+AGMARKNET_RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070"
+DEFAULT_SAMPLE_KEY = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b"
+
+class AgmarknetSyncService:
+    """
+    Ingests live daily mandi arrival and modal prices from data.gov.in AGMARKNET feed.
+    Falls back gracefully to cached baseline benchmarks on API rate limits (429) or offline states.
+    """
+
+    @classmethod
+    def sync_prices(
+        cls, 
+        session: Session, 
+        api_key: Optional[str] = None, 
+        state: str = "Maharashtra",
+        limit: int = 50
+    ) -> Dict[str, Any]:
+        key = api_key or os.getenv("AGMARKNET_API_KEY") or DEFAULT_SAMPLE_KEY
+        url = (
+            f"https://api.data.gov.in/resource/{AGMARKNET_RESOURCE_ID}"
+            f"?api-key={key}&format=json&limit={limit}&filters[state]={urllib.parse.quote(state)}"
+        )
+
+        try:
+            req = urllib.request.Request(
+                url, 
+                headers={"User-Agent": "KrishiNiti-Backend/1.0 (SmartIndiaHackathon2026)"}
+            )
+            with urllib.request.urlopen(req, timeout=8) as response:
+                if response.status == 200:
+                    data = json.loads(response.read().decode("utf-8"))
+                    records = data.get("records", [])
+                    
+                    synced_count = 0
+                    for rec in records:
+                        mandi = rec.get("market") or rec.get("mandi_name")
+                        commodity = rec.get("commodity")
+                        variety = rec.get("variety") or "Standard"
+                        modal_quintal = float(rec.get("modal_price") or 0)
+                        min_quintal = float(rec.get("min_price") or modal_quintal * 0.9)
+                        max_quintal = float(rec.get("max_price") or modal_quintal * 1.1)
+                        arrival_date = rec.get("arrival_date") or datetime.now().strftime("%Y-%m-%d")
+
+                        if mandi and commodity and modal_quintal > 0:
+                            modal_kg = round(modal_quintal / 100.0, 2)
+                            forecast_7d_kg = round(modal_kg * 1.06, 2)
+
+                            # Upsert record in database
+                            existing = session.exec(
+                                select(MandiPrice).where(
+                                    MandiPrice.mandi_name == mandi,
+                                    MandiPrice.commodity == commodity
+                                )
+                            ).first()
+
+                            if existing:
+                                existing.min_price_quintal = min_quintal
+                                existing.max_price_quintal = max_quintal
+                                existing.modal_price_quintal = modal_quintal
+                                existing.modal_price_kg = modal_kg
+                                existing.forecast_7d_modal_kg = forecast_7d_kg
+                                existing.date = arrival_date
+                                session.add(existing)
+                            else:
+                                new_price = MandiPrice(
+                                    mandi_name=mandi,
+                                    district=rec.get("district") or "Maharashtra Mandi",
+                                    state=state,
+                                    commodity=commodity,
+                                    variety=variety,
+                                    min_price_quintal=min_quintal,
+                                    max_price_quintal=max_quintal,
+                                    modal_price_quintal=modal_quintal,
+                                    modal_price_kg=modal_kg,
+                                    arrival_quantity_tons=float(rec.get("arrival_quantity") or 50.0),
+                                    date=arrival_date,
+                                    forecast_7d_modal_kg=forecast_7d_kg
+                                )
+                                session.add(new_price)
+                            synced_count += 1
+
+                    session.commit()
+                    return {
+                        "status": "SUCCESS",
+                        "source": "DATA_GOV_IN_LIVE",
+                        "synced_records": synced_count,
+                        "message": f"Successfully synced {synced_count} real-time mandi prices from Agmarknet API."
+                    }
+
+        except urllib.error.HTTPError as he:
+            logger.warning(f"Agmarknet API HTTP {he.code}: Using cached DB benchmark prices.")
+            return {
+                "status": "RATE_LIMITED_OR_CACHED",
+                "source": "LOCAL_DATABASE_BENCHMARK",
+                "http_code": he.code,
+                "message": f"Data.gov.in returned HTTP {he.code}. Platform automatically serving cached official benchmarks."
+            }
+        except Exception as e:
+            logger.warning(f"Agmarknet Sync error: {e}. Using cached DB benchmark prices.")
+            return {
+                "status": "FALLBACK",
+                "source": "LOCAL_DATABASE_BENCHMARK",
+                "error": str(e),
+                "message": "Live API unreachable. Serving cached DB benchmark records."
+            }
+
 
 class APMCDecisionEngine:
     # Commodity Perishability & Decay Profiles (% weight loss / day at ambient farmgate)
