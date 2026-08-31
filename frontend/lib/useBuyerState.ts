@@ -16,7 +16,6 @@ import {
   getTestTokenContract, 
   ESCROW_MANAGER_ADDRESS 
 } from '@/lib/web3';
-import { ethers } from 'ethers';
 
 export type BuyerTabType = 'marketplace' | 'active_deals' | 'ledger';
 
