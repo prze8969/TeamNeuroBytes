@@ -605,7 +605,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Boxes size={15} className={activeTab === 'overview' ? 'text-white' : 'text-slate-500'} />
-            <span>{tDash('overview')}</span>
+            <span>My Farm Overview</span>
           </button>
           
           <button
@@ -618,7 +618,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Users size={15} className={activeTab === 'fpo-pooling' ? 'text-white' : 'text-slate-500'} />
-            <span>{tDash('joinFpoPool')}</span>
+            <span>Group Transport (Save 35%)</span>
             {pooledCount > 0 && (
               <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
                 activeTab === 'fpo-pooling' ? 'bg-purple-800 text-purple-100' : 'bg-purple-100 text-purple-900'
@@ -638,7 +638,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <Microscope size={15} className={activeTab === 'ai-grading' ? 'text-white' : 'text-slate-500'} />
-            <span>{tDash('aiQualityInspection')}</span>
+            <span>Crop Quality Photo Check</span>
           </button>
 
           <button
@@ -651,7 +651,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <TrendingUp size={15} className={activeTab === 'decision-engine' ? 'text-white' : 'text-slate-500'} />
-            <span>{tDash('marketIntelligence')}</span>
+            <span>Market Rates &amp; Price Forecast</span>
           </button>
 
           <button
@@ -664,7 +664,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <ShieldCheck size={15} className={activeTab === 'escrow' ? 'text-white' : 'text-slate-500'} />
-            <span>{tDash('escrowRails')}</span>
+            <span>Safe Payment Tracker</span>
           </button>
 
           <button
@@ -677,7 +677,7 @@ export function FarmerDashboardLayout() {
             }`}
           >
             <MessageSquare size={15} className={activeTab === 'whatsapp-bot' ? 'text-white' : 'text-slate-500'} />
-            <span>{tDash('whatsappBot')}</span>
+            <span>WhatsApp Assistant</span>
           </button>
         </div>
 
