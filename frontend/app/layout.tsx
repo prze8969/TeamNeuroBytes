@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { 
-  Public_Sans, 
-  Merriweather,
+  Mukta,
+  Noto_Sans,
   Noto_Sans_Devanagari,
   Noto_Sans_Tamil,
   Noto_Sans_Telugu,
@@ -14,15 +14,18 @@ import { LocaleProvider } from "@/lib/LocaleContext";
 import { AuthProvider } from "@/lib/AuthContext";
 import { Toaster } from "sonner";
 
-const publicSans = Public_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
+const mukta = Mukta({
+  variable: "--font-mukta",
+  subsets: ["devanagari", "latin"],
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
 });
 
-const merriweather = Merriweather({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["300", "400", "700", "900"],
+const notoSans = Noto_Sans({
+  variable: "--font-noto-sans",
+  subsets: ["devanagari", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const notoDevanagari = Noto_Sans_Devanagari({
@@ -85,15 +88,23 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${publicSans.variable} ${merriweather.variable} ${notoDevanagari.variable} ${notoTamil.variable} ${notoTelugu.variable} ${notoGujarati.variable} ${notoKannada.variable} ${notoGurmukhi.variable} h-full antialiased`}
+      className={`${mukta.variable} ${notoSans.variable} ${notoDevanagari.variable} ${notoTamil.variable} ${notoTelugu.variable} ${notoGujarati.variable} ${notoKannada.variable} ${notoGurmukhi.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Mukta:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white font-sans">
         <AuthProvider>
           <LocaleProvider>
             {children}
           </LocaleProvider>
         </AuthProvider>
-        <Toaster position="top-right" richColors closeButton expand={false} />
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );
