@@ -51,6 +51,16 @@ export function FarmerDashboardLayout() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isListModalOpen, setIsListModalOpen] = useState<boolean>(false);
   const [lotToDelete, setLotToDelete] = useState<{ id: string; cropName: string } | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | undefined>(undefined);
+
+  const handleTrackOrder = (bidIdStr: string) => {
+    const numericId = parseInt(bidIdStr.replace(/\D/g, ''), 10) || 101;
+    setSelectedOrderId(numericId);
+    setActiveTab('overview');
+    setTimeout(() => {
+      document.getElementById('payment-tracker')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
 
   const triggerToast = (msg: string) => {
     setToastMsg(msg);
@@ -965,10 +975,17 @@ export function FarmerDashboardLayout() {
               isFarmerView={true}
               onAcceptBid={handleAcceptBid}
               onRejectBid={handleRejectBid}
+              onTrackOrder={handleTrackOrder}
             />
 
-            {/* Milestone Escrow Rails */}
-            <EscrowTracker activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} />
+            {/* Multi-Order Milestone Escrow Rails Tracker */}
+            <EscrowTracker 
+              activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} 
+              acceptedBids={bids.filter(b => b.escrowStatus === 'LOCKED')}
+              lots={myLots}
+              selectedOrderId={selectedOrderId}
+              onSelectOrder={setSelectedOrderId}
+            />
 
           </div>
         )}
@@ -1021,7 +1038,13 @@ export function FarmerDashboardLayout() {
         {/* ========================================================================= */}
         {activeTab === 'escrow' && (
           <div className="space-y-6">
-            <EscrowTracker activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} />
+            <EscrowTracker 
+              activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} 
+              acceptedBids={bids.filter(b => b.escrowStatus === 'LOCKED')}
+              lots={myLots}
+              selectedOrderId={selectedOrderId}
+              onSelectOrder={setSelectedOrderId}
+            />
           </div>
         )}
 

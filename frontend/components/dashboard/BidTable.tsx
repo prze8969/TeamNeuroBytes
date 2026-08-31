@@ -10,10 +10,11 @@ interface BidTableProps {
   bids: Bid[];
   onAcceptBid?: (bidId: string) => void;
   onRejectBid?: (bidId: string) => void;
+  onTrackOrder?: (bidId: string) => void;
   isFarmerView?: boolean;
 }
 
-export function BidTable({ bids, onAcceptBid, onRejectBid, isFarmerView = false }: BidTableProps) {
+export function BidTable({ bids, onAcceptBid, onRejectBid, onTrackOrder, isFarmerView = false }: BidTableProps) {
   const t = useTranslations('bidTable');
 
   return (
@@ -113,10 +114,20 @@ export function BidTable({ bids, onAcceptBid, onRejectBid, isFarmerView = false 
                   {isFarmerView && (
                     <td className="py-4 px-4 text-right">
                       {isLocked ? (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-black shadow-2xs font-mono">
-                          <CheckCircle2 size={13} className="text-emerald-700" />
-                          Accepted &amp; Vault Locked
-                        </span>
+                        <div className="flex items-center justify-end gap-2">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-black shadow-2xs font-mono">
+                            <CheckCircle2 size={13} className="text-emerald-700" />
+                            Accepted
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-300 font-bold text-xs h-8 px-3 rounded-xl cursor-pointer"
+                            onClick={() => onTrackOrder && onTrackOrder(bid.id)}
+                          >
+                            🔍 Track Order
+                          </Button>
+                        </div>
                       ) : isRejected ? (
                         <span className="text-xs text-slate-400 font-bold">Rejected</span>
                       ) : (
