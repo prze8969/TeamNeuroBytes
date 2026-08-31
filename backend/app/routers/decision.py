@@ -36,7 +36,8 @@ class SellVsWaitRequest(BaseModel):
 class AgmarknetSyncRequest(BaseModel):
     api_key: Optional[str] = None
     state: str = "Maharashtra"
-    limit: int = 50
+    commodity: Optional[str] = None
+    limit: int = 100
 
 @router.post("/net-realisation")
 def calculate_net_realisation(req: NetRealisationRequest):
@@ -95,19 +96,24 @@ def get_agmarknet_price_feed(
     )
     return prices
 
+@router.get("/sync-status")
+def get_sync_status(session: Session = Depends(get_session)):
+    """Returns the live sync health, last ingestion timestamp, and next scheduled run."""
+    return AgmarknetSyncService.get_sync_metadata(session)
+
 @router.post("/sync-agmarknet")
 def sync_agmarknet_feed(
     req: AgmarknetSyncRequest = AgmarknetSyncRequest(),
     session: Session = Depends(get_session)
 ):
     """
-    Fetches real-time commodity modal rates from data.gov.in AGMARKNET API (Resource: 9ef84268-d588-465a-a308-a864a43d0070).
-    Falls back to cached benchmarks if rate-limited (HTTP 429) or offline.
+    Manually triggers real-time commodity rate ingestion from data.gov.in AGMARKNET API.
     """
     result = AgmarknetSyncService.sync_prices(
         session=session,
         api_key=req.api_key,
         state=req.state,
+        commodity=req.commodity,
         limit=req.limit
     )
     return result

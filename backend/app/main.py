@@ -1,18 +1,43 @@
+import asyncio
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.db.engine import create_db_and_tables
+from app.db.engine import create_db_and_tables, get_session
+from app.services.apmc_data import AgmarknetSyncService
 
 # Import all API Routers
 from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo
+
+logger = logging.getLogger(__name__)
+
+async def scheduled_agmarknet_sync_loop():
+    """
+    Background worker that runs on startup and every 6 hours
+    to pull live mandi rates from Data.gov.in AGMARKNET feed into the database.
+    """
+    await asyncio.sleep(3) # Allow DB engine to finish initialization
+    while True:
+        try:
+            logger.info("⏰ Executing scheduled AGMARKNET price sync worker...")
+            session = next(get_session())
+            AgmarknetSyncService.sync_all_active_commodities(session)
+        except Exception as e:
+            logger.warning(f"Background AGMARKNET sync worker caught error: {e}")
+        
+        # Sleep for 6 hours (21,600 seconds)
+        await asyncio.sleep(6 * 3600)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize SQLModel DB and auto-seed initial demo dataset
     create_db_and_tables()
+    # Spawn background recurring 6-hour AGMARKNET sync worker
+    sync_task = asyncio.create_task(scheduled_agmarknet_sync_loop())
     yield
+    sync_task.cancel()
 
 app = FastAPI(
     title="KisanSetu & AgMarknet Core API",
@@ -60,6 +85,7 @@ def root():
             "YOLOv8 AI Quality Grading",
             "Geospatial Freight Pooling (PostGIS)",
             "APMC Price Intelligence & Loss Estimation",
-            "Milestone Escrow Rails (4-digit OTP Handshake)"
+            "Milestone Escrow Rails (4-digit OTP Handshake)",
+            "Automated 6-Hour AGMARKNET Live Feed Synchronization"
         ]
     }

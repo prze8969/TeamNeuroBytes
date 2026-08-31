@@ -83,6 +83,8 @@ export function ListNewCropModal({
   // Section D: Price & Valuation
   const [askingPricePerKg, setAskingPricePerKg] = useState<number>(25.50);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [liveMandiBenchmark, setLiveMandiBenchmark] = useState<number | null>(null);
+  const [liveMandiSource, setLiveMandiSource] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -97,9 +99,43 @@ export function ListNewCropModal({
   const totalQuantityKg = quantityUnit === 'MT' ? quantityValue * 1000 : quantityValue * 100;
   const totalEstimatedRevenue = totalQuantityKg * askingPricePerKg;
 
+  // Live AGMARKNET Rate Integration: Override static catalog benchmark when live database rate is available
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const cropKeyword = currentCrop.name.toLowerCase().includes('tomato') ? 'Tomato'
+      : currentCrop.name.toLowerCase().includes('onion') ? 'Onion'
+      : currentCrop.name.toLowerCase().includes('potato') ? 'Potato'
+      : currentCrop.name.toLowerCase().includes('wheat') ? 'Wheat'
+      : currentCrop.name.toLowerCase().includes('soy') ? 'Soyabean'
+      : currentCrop.name.toLowerCase().includes('gram') || currentCrop.name.toLowerCase().includes('chana') ? 'Bengal Gram'
+      : currentCrop.name.split(' ')[0];
+
+    async function fetchLiveMandiRate() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/decision/agmarknet-feed?commodity=${encodeURIComponent(cropKeyword)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const matched = data[0];
+            if (matched.modal_price_kg && matched.modal_price_kg > 0) {
+              setLiveMandiBenchmark(matched.modal_price_kg);
+              setLiveMandiSource(`${matched.mandi_name}`);
+              setAskingPricePerKg(matched.modal_price_kg + 1.00);
+            }
+          }
+        }
+      } catch {
+        // Retain catalog default benchmark on network fallback
+      }
+    }
+
+    fetchLiveMandiRate();
+  }, [selectedCropId, isOpen, currentCrop]);
+
   // Statutory MSP / Market benchmark safety check (85% Anti-Distress Rule)
   const mspFloor = currentCrop.mspFloorPerKg;
-  const mandiBenchmark = currentCrop.mandiBenchmarkPerKg;
+  const mandiBenchmark = liveMandiBenchmark ?? currentCrop.mandiBenchmarkPerKg;
   const min85PercentFloor = Number((mandiBenchmark * 0.85).toFixed(2));
   const minPermissibleFloor = Number(Math.max(mspFloor * 0.90, min85PercentFloor).toFixed(2));
   const isBelow85PercentFloor = askingPricePerKg < minPermissibleFloor;
@@ -115,9 +151,9 @@ export function ListNewCropModal({
       setInferredMoisture(currentCrop.typicalMoisturePct);
       setInferredScore(95.8);
       setIsLiveGraded(false);
-      setAskingPricePerKg(currentCrop.mandiBenchmarkPerKg + 1.00);
+      setAskingPricePerKg((liveMandiBenchmark ?? currentCrop.mandiBenchmarkPerKg) + 1.00);
     }
-  }, [selectedCropId, uploadedImage, useSampleImage, currentCrop]);
+  }, [selectedCropId, uploadedImage, useSampleImage, currentCrop, liveMandiBenchmark]);
 
   // Trigger simulated 1.2s laser scanning animation when crop or image changes
   useEffect(() => {
@@ -138,11 +174,6 @@ export function ListNewCropModal({
 
     return () => clearInterval(interval);
   }, [selectedCropId, uploadedImage, isOpen]);
-
-  // Sync asking price floor when crop changes
-  useEffect(() => {
-    setAskingPricePerKg(currentCrop.mandiBenchmarkPerKg + 1.00);
-  }, [selectedCropId]);
 
   if (!isOpen) return null;
 
@@ -1119,10 +1150,11 @@ export function ListNewCropModal({
               
               {/* Benchmark Reference Card */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-slate-500 text-[10px] uppercase font-bold font-mono">Statutory e-NAM Benchmarks</span>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full font-mono">
-                    Real-Time APMC Feed
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full font-mono flex items-center gap-1.5 truncate max-w-[200px]" title={liveMandiSource || 'Real-Time APMC Mandi Feed'}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span className="truncate">{liveMandiSource ? `Live: ${liveMandiSource}` : 'Real-Time APMC Feed'}</span>
                   </span>
                 </div>
 
