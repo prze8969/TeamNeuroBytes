@@ -18,11 +18,11 @@ export function KrishiNitiLogo({
   badge
 }: KrishiNitiLogoProps) {
   const sizeMap = {
-    xs: { iconSize: 28, textClass: 'text-lg', badgeClass: 'text-[8px] px-1.5 py-0.2' },
-    sm: { iconSize: 34, textClass: 'text-xl', badgeClass: 'text-[9px] px-2 py-0.5' },
-    md: { iconSize: 42, textClass: 'text-2xl', badgeClass: 'text-[10px] px-2 py-0.5' },
-    lg: { iconSize: 52, textClass: 'text-3xl', badgeClass: 'text-[11px] px-2.5 py-0.5' },
-    xl: { iconSize: 68, textClass: 'text-4xl', badgeClass: 'text-xs px-3 py-1' },
+    xs: { iconSize: 28, textClass: 'text-[20px]', badgeClass: 'text-[8px] px-1.5 py-0.2' },
+    sm: { iconSize: 34, textClass: 'text-2xl', badgeClass: 'text-[9px] px-2 py-0.5' },
+    md: { iconSize: 42, textClass: 'text-[28px]', badgeClass: 'text-[10px] px-2 py-0.5' },
+    lg: { iconSize: 52, textClass: 'text-4xl', badgeClass: 'text-[11px] px-2.5 py-0.5' },
+    xl: { iconSize: 68, textClass: 'text-5xl', badgeClass: 'text-xs px-3 py-1' },
   };
 
   const currentSize = sizeMap[size] || sizeMap.lg;
@@ -37,7 +37,7 @@ export function KrishiNitiLogo({
         <img
           src="/logo.png"
           alt="Krishi Niti Official Logo"
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain scale-[1.35]"
           loading="eager"
         />
       </div>
@@ -46,7 +46,7 @@ export function KrishiNitiLogo({
       <div className="flex flex-col text-left">
         <div className="flex items-center gap-2.5">
           <span 
-            className={`font-heading font-black tracking-tight leading-none text-white ${currentSize.textClass}`}
+            className={`font-heading font-black tracking-tight leading-none ${variant === 'dark' ? 'text-slate-900' : 'text-white'} ${currentSize.textClass}`}
           >
             <span>Krishi</span>
             <span className="ml-1 text-amber-400 font-black">Niti</span>
