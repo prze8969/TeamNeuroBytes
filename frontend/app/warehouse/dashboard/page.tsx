@@ -4,37 +4,33 @@ import React, { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { 
-  Warehouse, 
-  Thermometer, 
-  Droplets, 
-  QrCode, 
-  FileText, 
-  CheckCircle2, 
-  AlertCircle, 
-  Sparkles, 
-  ArrowUpRight, 
-  Boxes, 
-  ShieldCheck, 
+import {
+  Warehouse,
+  Thermometer,
+  Droplets,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
   Search,
-  Activity,
-  Layers,
+  Boxes,
+  ShieldCheck,
   X,
   Plus,
   Truck,
-  DollarSign,
-  Calendar,
-  Clock,
   MapPin,
-  KeyRound,
-  FileCheck2,
-  Wind,
-  Percent,
-  Receipt
+  Receipt,
+  Clock3,
+  ArrowRight,
+  RefreshCw,
+  IndianRupee,
+  PackageCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { resolveCropImageUrl } from '@/lib/assayData';
+
+
+/* =========================================================
+   TYPES
+========================================================= */
 
 export interface WarehouseStoredLot {
   id: string;
@@ -47,7 +43,10 @@ export interface WarehouseStoredLot {
   weightTons: number;
   weightKg: number;
   bayLocation: string;
-  bayType: 'COLD_STORAGE' | 'DRY_GRAIN' | 'CONTROLLED_ATMOSPHERE';
+  bayType:
+  | 'COLD_STORAGE'
+  | 'DRY_GRAIN'
+  | 'CONTROLLED_ATMOSPHERE';
   temperatureCelcius: number;
   humidityPercent: number;
   entryDate: string;
@@ -57,7 +56,10 @@ export interface WarehouseStoredLot {
   enwrNumber: string;
   storageRatePerKgPerMonth: number;
   accruedStorageFeeInr: number;
-  tradeStatus: 'ACTIVE_STORAGE' | 'RELEASE_AUTHORIZED' | 'DISPATCHED';
+  tradeStatus:
+  | 'ACTIVE_STORAGE'
+  | 'RELEASE_AUTHORIZED'
+  | 'DISPATCHED';
   buyerName?: string;
   transporterVehicle?: string;
   pickupOtp?: string;
@@ -66,7 +68,10 @@ export interface WarehouseStoredLot {
 export interface ClimateBayData {
   id: string;
   name: string;
-  type: 'COLD_STORAGE' | 'DRY_GRAIN' | 'CONTROLLED_ATMOSPHERE';
+  type:
+  | 'COLD_STORAGE'
+  | 'DRY_GRAIN'
+  | 'CONTROLLED_ATMOSPHERE';
   temp: number;
   targetTemp: number;
   humidity: number;
@@ -77,12 +82,28 @@ export interface ClimateBayData {
   status: 'OPTIMAL' | 'VENTILATING' | 'ALERT';
 }
 
-export default function WarehouseDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'inventory' | 'inward' | 'outward' | 'telemetry' | 'ledger'>('inventory');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE_STORAGE' | 'RELEASE_AUTHORIZED' | 'DISPATCHED'>('ALL');
 
-  // Stored Produce Lots State
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+export default function WarehouseDashboardPage() {
+
+  const [activeTab, setActiveTab] = useState<
+    'inventory' | 'inward' | 'outward' | 'telemetry' | 'ledger'
+  >('inventory');
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [statusFilter, setStatusFilter] = useState<
+    'ALL' | 'ACTIVE_STORAGE' | 'RELEASE_AUTHORIZED' | 'DISPATCHED'
+  >('ALL');
+
+
+  /* =======================================================
+     STORED PRODUCE
+  ======================================================= */
+
   const [lots, setLots] = useState<WarehouseStoredLot[]>([
     {
       id: 'WH-LOT-01',
@@ -90,11 +111,11 @@ export default function WarehouseDashboardPage() {
       farmerName: 'Ramesh Patil',
       farmerPhone: '+91 98231 44210',
       fpoAffiliation: 'Nashik East Farmers Collective',
-      commodity: 'Grand Naine / Robusta Banana',
-      variety: 'Table & Processing Grade',
-      weightTons: 5.0,
+      commodity: 'Banana',
+      variety: 'Grand Naine',
+      weightTons: 5,
       weightKg: 5000,
-      bayLocation: 'Cold Bay A-1 (Zone 1)',
+      bayLocation: 'Cold Bay A-1',
       bayType: 'COLD_STORAGE',
       temperatureCelcius: 12.4,
       humidityPercent: 88,
@@ -104,25 +125,26 @@ export default function WarehouseDashboardPage() {
       qualityScore: 95.8,
       enwrNumber: 'eNWR-WDRA-2026-8891',
       storageRatePerKgPerMonth: 0.18,
-      accruedStorageFeeInr: 120.0,
+      accruedStorageFeeInr: 120,
       tradeStatus: 'RELEASE_AUTHORIZED',
       buyerName: 'AgroProcure Private Ltd',
-      transporterVehicle: 'MH-15-EG-4421 (Kisan Express)',
-      pickupOtp: '4821'
+      transporterVehicle: 'MH-15-EG-4421',
+      pickupOtp: '4821',
     },
+
     {
       id: 'WH-LOT-02',
       lotNumber: 'LOT-102',
       farmerName: 'Suresh Patil',
       farmerPhone: '+91 94220 89123',
       fpoAffiliation: 'Nashik East Farmers Collective',
-      commodity: 'Sharbati Wheat (Lok-1)',
-      variety: 'Clean Export Grain',
-      weightTons: 10.0,
+      commodity: 'Wheat',
+      variety: 'Sharbati',
+      weightTons: 10,
       weightKg: 10000,
       bayLocation: 'Dry Grain Silo B-1',
       bayType: 'DRY_GRAIN',
-      temperatureCelcius: 24.0,
+      temperatureCelcius: 24,
       humidityPercent: 42,
       entryDate: '2026-08-18',
       daysStored: 7,
@@ -130,20 +152,21 @@ export default function WarehouseDashboardPage() {
       qualityScore: 98.2,
       enwrNumber: 'eNWR-WDRA-2026-8892',
       storageRatePerKgPerMonth: 0.12,
-      accruedStorageFeeInr: 280.0,
+      accruedStorageFeeInr: 280,
       tradeStatus: 'ACTIVE_STORAGE',
     },
+
     {
       id: 'WH-LOT-03',
       lotNumber: 'LOT-103',
       farmerName: 'Kailash Jadhav',
       farmerPhone: '+91 98901 23456',
       fpoAffiliation: 'Niphad Onion Producers Co-Op',
-      commodity: 'Nashik Red Onion (Garva)',
-      variety: 'Late Kharif High Dry Matter',
-      weightTons: 15.0,
+      commodity: 'Nashik Red Onion',
+      variety: 'Garva',
+      weightTons: 15,
       weightKg: 15000,
-      bayLocation: 'Cold Bay A-2 (Zone 2)',
+      bayLocation: 'Cold Bay A-2',
       bayType: 'COLD_STORAGE',
       temperatureCelcius: 14.5,
       humidityPercent: 65,
@@ -153,23 +176,24 @@ export default function WarehouseDashboardPage() {
       qualityScore: 94.5,
       enwrNumber: 'eNWR-WDRA-2026-8893',
       storageRatePerKgPerMonth: 0.16,
-      accruedStorageFeeInr: 400.0,
+      accruedStorageFeeInr: 400,
       tradeStatus: 'RELEASE_AUTHORIZED',
       buyerName: 'FreshDirect APMC Traders',
-      transporterVehicle: 'MH-12-RN-9082 (Maharashtra Fleet)',
-      pickupOtp: '6219'
+      transporterVehicle: 'MH-12-RN-9082',
+      pickupOtp: '6219',
     },
+
     {
       id: 'WH-LOT-04',
       lotNumber: 'LOT-104',
       farmerName: 'Anil Deshmukh',
       farmerPhone: '+91 97654 32109',
       fpoAffiliation: 'Sahyadri FPC',
-      commodity: 'Hybrid Tomato (Vaishali)',
-      variety: 'Table Grade Firm Flesh',
+      commodity: 'Tomato',
+      variety: 'Vaishali',
       weightTons: 4.5,
       weightKg: 4500,
-      bayLocation: 'Cold Bay A-1 (Zone 1)',
+      bayLocation: 'Cold Bay A-1',
       bayType: 'COLD_STORAGE',
       temperatureCelcius: 12.4,
       humidityPercent: 88,
@@ -179,1149 +203,2484 @@ export default function WarehouseDashboardPage() {
       qualityScore: 96.8,
       enwrNumber: 'eNWR-WDRA-2026-8894',
       storageRatePerKgPerMonth: 0.20,
-      accruedStorageFeeInr: 90.0,
+      accruedStorageFeeInr: 90,
       tradeStatus: 'ACTIVE_STORAGE',
-    }
+    },
   ]);
 
-  // Climate Bays State
-  const [climateBays, setClimateBays] = useState<ClimateBayData[]>([
+
+  /* =======================================================
+     STORAGE BAYS
+  ======================================================= */
+
+  const [climateBays] = useState<ClimateBayData[]>([
     {
       id: 'BAY-A1',
-      name: 'Cold Bay A-1 (Perishables: Tomatoes & Bananas)',
+      name: 'Cold Bay A-1',
       type: 'COLD_STORAGE',
       temp: 12.4,
-      targetTemp: 12.0,
+      targetTemp: 12,
       humidity: 88,
       targetHumidity: 90,
       ethylenePpm: 0.08,
       capacityTons: 120,
       occupiedTons: 84.5,
-      status: 'OPTIMAL'
+      status: 'OPTIMAL',
     },
+
     {
       id: 'BAY-A2',
-      name: 'Cold Bay A-2 (Nashik Onions & Root Vegetables)',
+      name: 'Cold Bay A-2',
       type: 'COLD_STORAGE',
       temp: 14.5,
-      targetTemp: 14.0,
+      targetTemp: 14,
       humidity: 65,
       targetHumidity: 65,
       ethylenePpm: 0.04,
       capacityTons: 150,
-      occupiedTons: 135.0,
-      status: 'OPTIMAL'
+      occupiedTons: 135,
+      status: 'OPTIMAL',
     },
+
     {
       id: 'BAY-B1',
-      name: 'Dry Grain Silo B-1 (Sharbati Wheat)',
+      name: 'Dry Grain Silo B-1',
       type: 'DRY_GRAIN',
-      temp: 24.0,
-      targetTemp: 25.0,
+      temp: 24,
+      targetTemp: 25,
       humidity: 42,
       targetHumidity: 45,
       ethylenePpm: 0.01,
       capacityTons: 250,
-      occupiedTons: 160.0,
-      status: 'OPTIMAL'
+      occupiedTons: 160,
+      status: 'OPTIMAL',
     },
+
     {
       id: 'BAY-C1',
-      name: 'Controlled Atmosphere Silo C-1 (Pulses & Oilseeds)',
+      name: 'Controlled Storage C-1',
       type: 'CONTROLLED_ATMOSPHERE',
-      temp: 18.0,
-      targetTemp: 18.0,
+      temp: 18,
+      targetTemp: 18,
       humidity: 48,
       targetHumidity: 50,
       ethylenePpm: 0.02,
       capacityTons: 100,
-      occupiedTons: 42.0,
-      status: 'OPTIMAL'
-    }
+      occupiedTons: 42,
+      status: 'OPTIMAL',
+    },
   ]);
 
-  // Modals State
-  const [selectedLotForENWR, setSelectedLotForENWR] = useState<WarehouseStoredLot | null>(null);
-  const [selectedLotForOutward, setSelectedLotForOutward] = useState<WarehouseStoredLot | null>(null);
+
+  /* =======================================================
+     MODAL STATE
+  ======================================================= */
+
+  const [selectedLotForReceipt, setSelectedLotForReceipt] =
+    useState<WarehouseStoredLot | null>(null);
+
+  const [selectedLotForOutward, setSelectedLotForOutward] =
+    useState<WarehouseStoredLot | null>(null);
+
   const [outwardOtpInput, setOutwardOtpInput] = useState('');
-  const [outwardDriverName, setOutwardDriverName] = useState('Rahul Shinde');
-  const [outwardVehicleInput, setOutwardVehicleInput] = useState('MH-15-EG-4421');
 
-  // Inward Intake Form State
-  const [inwardFarmerName, setInwardFarmerName] = useState('Ramesh Patil');
-  const [inwardPhone, setInwardPhone] = useState('+91 98231 44210');
-  const [inwardFpo, setInwardFpo] = useState('Nashik East Farmers Collective');
-  const [inwardCommodity, setInwardCommodity] = useState('Grand Naine / Robusta Banana');
-  const [inwardVariety, setInwardVariety] = useState('Table & Export Grade');
-  const [inwardWeightTons, setInwardWeightTons] = useState(5.0);
-  const [inwardBay, setInwardBay] = useState('Cold Bay A-1 (Zone 1)');
-  const [inwardRatePerKg, setInwardRatePerKg] = useState(0.18);
+  const [outwardDriverName, setOutwardDriverName] =
+    useState('Rahul Shinde');
 
-  // Sync with localStorage lots
+  const [outwardVehicleInput, setOutwardVehicleInput] =
+    useState('MH-15-EG-4421');
+
+
+  /* =======================================================
+     INWARD FORM
+  ======================================================= */
+
+  const [inwardFarmerName, setInwardFarmerName] =
+    useState('');
+
+  const [inwardPhone, setInwardPhone] =
+    useState('');
+
+  const [inwardFpo, setInwardFpo] =
+    useState('');
+
+  const [inwardCommodity, setInwardCommodity] =
+    useState('Banana');
+
+  const [inwardVariety, setInwardVariety] =
+    useState('Grand Naine');
+
+  const [inwardWeightTons, setInwardWeightTons] =
+    useState(5);
+
+  const [inwardBay, setInwardBay] =
+    useState('Cold Bay A-1');
+
+  const [inwardRatePerKg, setInwardRatePerKg] =
+    useState(0.18);
+
+
+  /* =======================================================
+     LOCAL STORAGE SYNC
+  ======================================================= */
+
   useEffect(() => {
+
     try {
-      const saved = localStorage.getItem('kisansetu_crop_lots');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // If farmer created a new lot, make sure warehouse knows about it
-          const firstLot = parsed[0];
-          if (firstLot && !lots.some(l => l.lotNumber === firstLot.id)) {
-            const injectedLot: WarehouseStoredLot = {
-              id: `WH-${firstLot.id}`,
-              lotNumber: firstLot.id,
-              farmerName: firstLot.farmerName || 'Ramesh Patil',
-              farmerPhone: '+91 98231 44210',
-              fpoAffiliation: 'Nashik East Farmers Collective',
-              commodity: firstLot.cropName || 'Produce',
-              variety: firstLot.variety || 'Certified Grade',
-              weightTons: firstLot.quantityTons || ((firstLot.quantityKg || 5000) / 1000),
-              weightKg: firstLot.quantityKg || 5000,
-              bayLocation: 'Cold Bay A-1 (Zone 1)',
-              bayType: 'COLD_STORAGE',
-              temperatureCelcius: 12.4,
-              humidityPercent: 88,
-              entryDate: firstLot.harvestDate || new Date().toISOString().split('T')[0],
-              daysStored: 2,
-              qualityGrade: firstLot.qualityGrade || 'Grade A',
-              qualityScore: firstLot.qualityScore || 95.8,
-              enwrNumber: `eNWR-WDRA-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-              storageRatePerKgPerMonth: 0.18,
-              accruedStorageFeeInr: 60.0,
-              tradeStatus: firstLot.status === 'BID_ACCEPTED' || firstLot.status === 'IN_TRANSIT' ? 'RELEASE_AUTHORIZED' : 'ACTIVE_STORAGE',
-              buyerName: 'AgroProcure Private Ltd',
-              transporterVehicle: 'MH-15-EG-4421 (Kisan Express)',
-              pickupOtp: '4821'
-            };
-            setLots(prev => [injectedLot, ...prev]);
-          }
-        }
+
+      const saved =
+        localStorage.getItem('kisansetu_crop_lots');
+
+      if (!saved) return;
+
+      const parsed = JSON.parse(saved);
+
+      if (!Array.isArray(parsed) || parsed.length === 0)
+        return;
+
+      const firstLot = parsed[0];
+
+      if (!firstLot) return;
+
+      if (
+        lots.some(
+          l => l.lotNumber === firstLot.id
+        )
+      ) {
+        return;
       }
-    } catch {}
+
+      const injectedLot: WarehouseStoredLot = {
+
+        id: `WH-${firstLot.id}`,
+
+        lotNumber: firstLot.id,
+
+        farmerName:
+          firstLot.farmerName || 'Farmer',
+
+        farmerPhone:
+          firstLot.farmerPhone || '',
+
+        fpoAffiliation:
+          firstLot.fpoAffiliation ||
+          'FPO Member',
+
+        commodity:
+          firstLot.cropName || 'Produce',
+
+        variety:
+          firstLot.variety ||
+          'Standard Grade',
+
+        weightTons:
+          firstLot.quantityTons ||
+          ((firstLot.quantityKg || 5000) / 1000),
+
+        weightKg:
+          firstLot.quantityKg || 5000,
+
+        bayLocation:
+          'Cold Bay A-1',
+
+        bayType:
+          'COLD_STORAGE',
+
+        temperatureCelcius:
+          12.4,
+
+        humidityPercent:
+          88,
+
+        entryDate:
+          firstLot.harvestDate ||
+          new Date()
+            .toISOString()
+            .split('T')[0],
+
+        daysStored: 1,
+
+        qualityGrade:
+          firstLot.qualityGrade ||
+          'Grade A',
+
+        qualityScore:
+          firstLot.qualityScore ||
+          95,
+
+        enwrNumber:
+          `eNWR-WDRA-2026-${Math.floor(
+            1000 + Math.random() * 9000
+          )}`,
+
+        storageRatePerKgPerMonth:
+          0.18,
+
+        accruedStorageFeeInr:
+          0,
+
+        tradeStatus:
+          firstLot.status === 'BID_ACCEPTED' ||
+            firstLot.status === 'IN_TRANSIT'
+            ? 'RELEASE_AUTHORIZED'
+            : 'ACTIVE_STORAGE',
+      };
+
+      setLots(prev => [
+        injectedLot,
+        ...prev,
+      ]);
+
+    } catch {
+      // Ignore invalid local storage data
+    }
+
   }, []);
 
-  // Handle New Inward Intake Submission
-  const handleCreateInwardLot = (e: React.FormEvent) => {
+
+  /* =======================================================
+     RECEIVE PRODUCE
+  ======================================================= */
+
+  const handleCreateInwardLot = (
+    e: React.FormEvent
+  ) => {
+
     e.preventDefault();
-    const newLotNumber = `LOT-${Math.floor(100 + Math.random() * 900)}`;
-    const newEnwr = `eNWR-WDRA-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const isCold = inwardBay.toLowerCase().includes('cold');
+
+    const newLotNumber =
+      `LOT-${Math.floor(
+        100 + Math.random() * 900
+      )}`;
+
+    const newEnwr =
+      `eNWR-WDRA-2026-${Math.floor(
+        1000 + Math.random() * 9000
+      )}`;
+
+    const isCold =
+      inwardBay
+        .toLowerCase()
+        .includes('cold');
 
     const createdLot: WarehouseStoredLot = {
+
       id: `WH-${newLotNumber}`,
+
       lotNumber: newLotNumber,
-      farmerName: inwardFarmerName,
-      farmerPhone: inwardPhone,
-      fpoAffiliation: inwardFpo,
-      commodity: inwardCommodity,
-      variety: inwardVariety,
-      weightTons: Number(inwardWeightTons),
-      weightKg: Number(inwardWeightTons) * 1000,
-      bayLocation: inwardBay,
-      bayType: isCold ? 'COLD_STORAGE' : 'DRY_GRAIN',
-      temperatureCelcius: isCold ? 12.4 : 24.0,
-      humidityPercent: isCold ? 85 : 45,
-      entryDate: new Date().toISOString().split('T')[0],
+
+      farmerName:
+        inwardFarmerName,
+
+      farmerPhone:
+        inwardPhone,
+
+      fpoAffiliation:
+        inwardFpo,
+
+      commodity:
+        inwardCommodity,
+
+      variety:
+        inwardVariety,
+
+      weightTons:
+        Number(inwardWeightTons),
+
+      weightKg:
+        Number(inwardWeightTons) * 1000,
+
+      bayLocation:
+        inwardBay,
+
+      bayType:
+        isCold
+          ? 'COLD_STORAGE'
+          : 'DRY_GRAIN',
+
+      temperatureCelcius:
+        isCold ? 12.4 : 24,
+
+      humidityPercent:
+        isCold ? 85 : 45,
+
+      entryDate:
+        new Date()
+          .toISOString()
+          .split('T')[0],
+
       daysStored: 0,
-      qualityGrade: 'Grade A',
-      qualityScore: 96.0,
-      enwrNumber: newEnwr,
-      storageRatePerKgPerMonth: Number(inwardRatePerKg),
-      accruedStorageFeeInr: 0.0,
-      tradeStatus: 'ACTIVE_STORAGE',
+
+      qualityGrade:
+        'Grade A',
+
+      qualityScore:
+        96,
+
+      enwrNumber:
+        newEnwr,
+
+      storageRatePerKgPerMonth:
+        Number(inwardRatePerKg),
+
+      accruedStorageFeeInr:
+        0,
+
+      tradeStatus:
+        'ACTIVE_STORAGE',
     };
 
-    setLots([createdLot, ...lots]);
+    setLots(prev => [
+      createdLot,
+      ...prev,
+    ]);
+
     setActiveTab('inventory');
-    toast.success('📥 Farmer Crop Deposit Completed & e-NWR Minted!', {
-      description: `${createdLot.commodity} (${createdLot.weightTons} MT) stored in ${createdLot.bayLocation}. Certificate ${createdLot.enwrNumber} generated with 70% bank loan pledge capability.`
-    });
+
+    toast.success(
+      'Produce received successfully',
+      {
+        description:
+          `${createdLot.weightTons} MT of ${createdLot.commodity} stored in ${createdLot.bayLocation}.`,
+      }
+    );
+
+    setInwardFarmerName('');
+    setInwardPhone('');
+    setInwardFpo('');
   };
 
-  // Handle Transporter Outward Handshake OTP Verification
-  const handleVerifyOutwardHandshake = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedLotForOutward) return;
 
-    if (outwardOtpInput !== (selectedLotForOutward.pickupOtp || '4821')) {
-      toast.error('❌ Invalid Transporter OTP', {
-        description: 'The 4-digit pickup code does not match the buyer escrow authorization.'
-      });
+  /* =======================================================
+     DISPATCH PRODUCE
+  ======================================================= */
+
+  const handleVerifyOutwardHandshake = (
+    e: React.FormEvent
+  ) => {
+
+    e.preventDefault();
+
+    if (!selectedLotForOutward)
+      return;
+
+    const correctOtp =
+      selectedLotForOutward.pickupOtp ||
+      '4821';
+
+    if (
+      outwardOtpInput !== correctOtp
+    ) {
+
+      toast.error(
+        'Pickup code is incorrect',
+        {
+          description:
+            'Please check the 4-digit code provided for this pickup.',
+        }
+      );
+
       return;
     }
 
-    setLots(prev => prev.map(l => {
-      if (l.id === selectedLotForOutward.id) {
-        return {
-          ...l,
-          tradeStatus: 'DISPATCHED',
-          transporterVehicle: outwardVehicleInput
-        };
-      }
-      return l;
-    }));
+    setLots(prev =>
+      prev.map(lot => {
 
-    toast.success('🚚 Transporter Dispatch Authorized!', {
-      description: `Gate Pass generated for Truck ${outwardVehicleInput}. Storage fee (₹${selectedLotForOutward.accruedStorageFeeInr}) auto-settled from Buyer Escrow Vault.`
-    });
+        if (
+          lot.id ===
+          selectedLotForOutward.id
+        ) {
+
+          return {
+            ...lot,
+
+            tradeStatus:
+              'DISPATCHED',
+
+            transporterVehicle:
+              outwardVehicleInput,
+          };
+        }
+
+        return lot;
+      })
+    );
+
+    toast.success(
+      'Produce dispatched successfully',
+      {
+        description:
+          `Gate release completed for ${outwardVehicleInput}.`,
+      }
+    );
 
     setSelectedLotForOutward(null);
+
     setOutwardOtpInput('');
   };
 
-  // Computed Capacity Metrics
-  const totalStorageCapacityTons = climateBays.reduce((sum, b) => sum + b.capacityTons, 0);
-  const totalOccupiedCapacityTons = climateBays.reduce((sum, b) => sum + b.occupiedTons, 0);
-  const totalOccupancyPercent = Math.round((totalOccupiedCapacityTons / totalStorageCapacityTons) * 100);
 
-  const activeBillingLotsCount = lots.filter(l => l.tradeStatus === 'ACTIVE_STORAGE').length;
-  const releaseReadyLotsCount = lots.filter(l => l.tradeStatus === 'RELEASE_AUTHORIZED').length;
-  const totalAccruedStorageRevenue = lots.reduce((sum, l) => sum + l.accruedStorageFeeInr, 0);
+  /* =======================================================
+     METRICS
+  ======================================================= */
 
-  const filteredLots = lots.filter(l => {
-    const matchesSearch = 
-      l.lotNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.commodity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.farmerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.enwrNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.bayLocation.toLowerCase().includes(searchQuery.toLowerCase());
+  const totalStorageCapacityTons =
+    climateBays.reduce(
+      (sum, bay) =>
+        sum + bay.capacityTons,
+      0
+    );
 
-    if (statusFilter === 'ALL') return matchesSearch;
-    return matchesSearch && l.tradeStatus === statusFilter;
-  });
+  const totalOccupiedCapacityTons =
+    climateBays.reduce(
+      (sum, bay) =>
+        sum + bay.occupiedTons,
+      0
+    );
+
+  const totalOccupancyPercent =
+    Math.round(
+      (
+        totalOccupiedCapacityTons /
+        totalStorageCapacityTons
+      ) * 100
+    );
+
+  const activeStorageLots =
+    lots.filter(
+      lot =>
+        lot.tradeStatus ===
+        'ACTIVE_STORAGE'
+    ).length;
+
+  const readyForPickupLots =
+    lots.filter(
+      lot =>
+        lot.tradeStatus ===
+        'RELEASE_AUTHORIZED'
+    ).length;
+
+  const dispatchedLots =
+    lots.filter(
+      lot =>
+        lot.tradeStatus ===
+        'DISPATCHED'
+    ).length;
+
+  const totalStorageRevenue =
+    lots.reduce(
+      (sum, lot) =>
+        sum +
+        lot.accruedStorageFeeInr,
+      0
+    );
+
+
+  /* =======================================================
+     FILTER
+  ======================================================= */
+
+  const filteredLots =
+    lots.filter(lot => {
+
+      const query =
+        searchQuery
+          .toLowerCase()
+          .trim();
+
+      const matchesSearch =
+        lot.lotNumber
+          .toLowerCase()
+          .includes(query) ||
+
+        lot.commodity
+          .toLowerCase()
+          .includes(query) ||
+
+        lot.farmerName
+          .toLowerCase()
+          .includes(query) ||
+
+        lot.bayLocation
+          .toLowerCase()
+          .includes(query);
+
+      if (
+        statusFilter === 'ALL'
+      ) {
+        return matchesSearch;
+      }
+
+      return (
+        matchesSearch &&
+        lot.tradeStatus ===
+        statusFilter
+      );
+    });
+
+
+  /* =======================================================
+     TABS
+  ======================================================= */
+
+  const tabs = [
+
+    {
+      key: 'inventory',
+      label: 'Stored Produce',
+      icon: <Boxes size={16} />,
+      count: lots.length,
+    },
+
+    {
+      key: 'inward',
+      label: 'Receive Produce',
+      icon: <Plus size={16} />,
+    },
+
+    {
+      key: 'outward',
+      label: 'Dispatch',
+      icon: <Truck size={16} />,
+      count:
+        readyForPickupLots,
+    },
+
+    {
+      key: 'telemetry',
+      label: 'Storage Conditions',
+      icon: <Thermometer size={16} />,
+    },
+
+    {
+      key: 'ledger',
+      label: 'Payments',
+      icon: <Receipt size={16} />,
+    },
+
+  ];
+
 
   return (
-    <ProtectedRoute allowedRoles={['WAREHOUSE', 'ADMIN']}>
-      <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+
+    <ProtectedRoute
+      allowedRoles={[
+        'WAREHOUSE',
+        'ADMIN',
+      ]}
+    >
+
+      <div className="min-h-screen bg-[#F7F5EF] text-slate-900 flex flex-col font-sans">
+
         <Navbar activeRole="WAREHOUSE" />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
-        
-        {/* ========================================================================= */}
-        {/* 1. WAREHOUSE OPERATOR COMMAND BANNER */}
-        {/* ========================================================================= */}
-        <header className="flex flex-col md:flex-row justify-between md:items-center gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-blue-700 text-white flex items-center justify-center font-black text-2xl shadow-md shadow-blue-700/20 shrink-0">
-                🏭
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    Sahyadri Agri-Logistics &amp; Cold Storage Terminal
-                  </h1>
-                  <span className="rounded-full bg-blue-100 text-blue-900 border border-blue-300 px-2.5 py-0.5 text-[10px] font-black font-mono uppercase">
-                    WDRA Lic #WD-MH-4401
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
-                  <MapPin size={13} className="text-blue-600 shrink-0" />
-                  <span>Niphad Central Aggregation Yard, Nashik, MH</span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-emerald-700 font-bold">Operator: Vikram Shinde (Terminal Manager)</span>
-                </p>
-              </div>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <Button
-              className="bg-blue-700 hover:bg-blue-800 text-white text-xs font-black h-11 px-5 rounded-2xl shadow-md shadow-blue-700/20 ring-2 ring-blue-400/30 transition-all flex items-center gap-2 cursor-pointer"
-              onClick={() => setActiveTab('inward')}
-            >
-              <Plus size={16} />
-              <span>+ Inward Farmer Deposit</span>
-            </Button>
-            <Button
-              variant="outline"
-              className="border-slate-200 hover:bg-blue-50 text-blue-950 text-xs font-bold h-11 px-4 rounded-2xl shadow-xs cursor-pointer flex items-center gap-2"
-              onClick={() => setActiveTab('outward')}
-            >
-              <Truck size={16} className="text-blue-700" />
-              <span>🚚 Transporter Gate Release ({releaseReadyLotsCount})</span>
-            </Button>
-          </div>
-        </header>
+        <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
 
-        {/* ========================================================================= */}
-        {/* 2. OPERATIONAL KPI METRIC TILES */}
-        {/* ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Total Storage Capacity
-              </span>
-              <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-sm font-bold">
-                <Warehouse size={16} />
-              </div>
-            </div>
-            <p className="text-2xl font-black text-slate-900 font-mono">
-              {totalStorageCapacityTons} MT
-            </p>
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] font-mono font-bold text-slate-500">
-                <span>Occupied ({totalOccupancyPercent}%)</span>
-                <span className="text-blue-700">{totalOccupiedCapacityTons} MT Stored</span>
-              </div>
-              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                  style={{ width: `${totalOccupancyPercent}%` }}
-                />
-              </div>
-            </div>
-          </div>
 
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Cold Chain Telemetry
-              </span>
-              <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center text-sm font-bold">
-                <Thermometer size={16} />
-              </div>
-            </div>
-            <p className="text-2xl font-black text-teal-700 font-mono">
-              12.4°C / 88% RH
-            </p>
-            <p className="text-[11px] text-teal-800 font-bold flex items-center gap-1">
-              <CheckCircle2 size={13} className="text-teal-600" />
-              <span>4 IoT Sensors Active • Backup Power Normal</span>
-            </p>
-          </div>
+          {/* ==================================================
+              HEADER
+          ================================================== */}
 
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Release Authorized Lots
-              </span>
-              <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-sm font-bold">
-                <Truck size={16} />
-              </div>
-            </div>
-            <p className="text-2xl font-black text-amber-700 font-mono">
-              {releaseReadyLotsCount} Lots Ready
-            </p>
-            <p className="text-[11px] text-amber-800 font-bold">
-              Farmer Sold • Awaiting Milk-Run Pickup
-            </p>
-          </div>
+          <header className="bg-white border border-slate-200 p-5 sm:p-6 rounded-3xl shadow-sm">
 
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Accrued Storage Revenue
-              </span>
-              <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">
-                <DollarSign size={16} />
-              </div>
-            </div>
-            <p className="text-2xl font-black text-emerald-900 font-mono">
-              ₹{(totalAccruedStorageRevenue + 48200).toLocaleString('en-IN')}
-            </p>
-            <p className="text-[11px] text-emerald-700 font-bold">
-              Auto-settled from Buyer Escrow on Dispatch
-            </p>
-          </div>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
 
-        </div>
+              <div className="flex items-center gap-4">
 
-        {/* ========================================================================= */}
-        {/* 3. SEGMENTED OPERATIONAL TAB NAVIGATION */}
-        {/* ========================================================================= */}
-        <div className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60 inline-flex flex-wrap gap-1 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => setActiveTab('inventory')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'inventory'
-                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Boxes size={14} className={activeTab === 'inventory' ? 'text-blue-700' : 'text-slate-500'} />
-            <span>📦 Stored Lots &amp; Inventory</span>
-            <span className="text-[10px] bg-blue-100 text-blue-900 font-mono font-black px-1.5 py-0.2 rounded-full">
-              {lots.length}
-            </span>
-          </button>
+                <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 flex items-center justify-center shrink-0">
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('inward')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'inward'
-                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <QrCode size={14} className={activeTab === 'inward' ? 'text-blue-700' : 'text-slate-500'} />
-            <span>📥 Farmer Inward &amp; e-NWR Minting</span>
-          </button>
+                  <Warehouse size={27} />
 
-          <button
-            type="button"
-            onClick={() => setActiveTab('outward')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'outward'
-                ? 'bg-white text-amber-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Truck size={14} className={activeTab === 'outward' ? 'text-amber-700' : 'text-slate-500'} />
-            <span>🚚 Transporter Outward Handshake</span>
-            {releaseReadyLotsCount > 0 && (
-              <span className="text-[10px] bg-amber-200 text-amber-950 font-mono font-black px-1.5 py-0.2 rounded-full animate-pulse">
-                {releaseReadyLotsCount} Pending
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('telemetry')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'telemetry'
-                ? 'bg-white text-teal-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Thermometer size={14} className={activeTab === 'telemetry' ? 'text-teal-700' : 'text-slate-500'} />
-            <span>❄️ IoT Sensor Telemetry &amp; Climate</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('ledger')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'ledger'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Receipt size={14} className={activeTab === 'ledger' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>💳 Storage Invoicing &amp; Escrow Ledger</span>
-          </button>
-        </div>
-
-        {/* ========================================================================= */}
-        {/* TAB 1: ACTIVE STORED LOTS & INVENTORY */}
-        {/* ========================================================================= */}
-        {activeTab === 'inventory' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-              
-              {/* Filter & Search Bar */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    onClick={() => setStatusFilter('ALL')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                      statusFilter === 'ALL'
-                        ? 'bg-blue-700 text-white border-blue-700 shadow-xs'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    All Stored Lots ({lots.length})
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter('ACTIVE_STORAGE')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                      statusFilter === 'ACTIVE_STORAGE'
-                        ? 'bg-blue-700 text-white border-blue-700 shadow-xs'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    Active Storage ({activeBillingLotsCount})
-                  </button>
-                  <button
-                    onClick={() => setStatusFilter('RELEASE_AUTHORIZED')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
-                      statusFilter === 'RELEASE_AUTHORIZED'
-                        ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    Release Authorized ({releaseReadyLotsCount})
-                  </button>
                 </div>
 
-                <div className="relative w-full md:w-80">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Search by lot, farmer, e-NWR, bay..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium"
+
+                <div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+
+                    <h1 className="text-xl sm:text-2xl font-black tracking-tight">
+
+                      Sahyadri Agri Storage
+
+                    </h1>
+
+                    <span className="bg-blue-100 text-blue-800 border border-blue-200 px-2.5 py-1 rounded-full text-[10px] font-black">
+
+                      WDRA Registered
+
+                    </span>
+
+                  </div>
+
+
+                  <p className="text-sm text-slate-500 flex items-center gap-1.5 mt-1">
+
+                    <MapPin
+                      size={14}
+                      className="text-blue-600"
+                    />
+
+                    Niphad Central Yard,
+                    Nashik
+
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div className="flex flex-wrap gap-2">
+
+                <Button
+                  onClick={() =>
+                    setActiveTab('inward')
+                  }
+                  className="bg-blue-700 hover:bg-blue-800 text-white font-black rounded-xl h-11 px-5"
+                >
+
+                  <Plus size={17} />
+
+                  Receive Produce
+
+                </Button>
+
+
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setActiveTab('outward')
+                  }
+                  className="border-slate-300 text-slate-800 hover:bg-slate-50 font-bold rounded-xl h-11 px-4"
+                >
+
+                  <Truck
+                    size={16}
+                    className="text-amber-600"
                   />
-                </div>
+
+                  Pickup
+                  {readyForPickupLots > 0 && (
+                    <span className="ml-1 bg-amber-100 text-amber-800 px-1.5 rounded-full text-[10px]">
+                      {readyForPickupLots}
+                    </span>
+                  )}
+
+                </Button>
+
               </div>
 
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-slate-50/80 text-[10px] uppercase font-black text-slate-500 border-b border-slate-200">
-                      <TableHead>Lot &amp; e-NWR Certificate</TableHead>
-                      <TableHead>Farmer &amp; Affiliation</TableHead>
-                      <TableHead>Commodity &amp; Grade</TableHead>
-                      <TableHead>Net Volume</TableHead>
-                      <TableHead>Bay &amp; Climate</TableHead>
-                      <TableHead>Storage Fee</TableHead>
-                      <TableHead>Trade Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="text-xs">
-                    {filteredLots.map((lot) => (
-                      <TableRow key={lot.id} className="hover:bg-blue-50/30 transition-colors">
-                        
-                        {/* Lot & e-NWR */}
-                        <TableCell>
-                          <span className="font-mono font-black text-slate-900 block text-xs">{lot.lotNumber}</span>
-                          <span className="font-mono text-[10px] text-blue-700 font-bold block">{lot.enwrNumber}</span>
-                          <span className="text-[10px] text-slate-400 font-medium">Inward: {lot.entryDate}</span>
-                        </TableCell>
+            </div>
 
-                        {/* Farmer */}
-                        <TableCell>
-                          <strong className="text-slate-900 block font-bold">{lot.farmerName}</strong>
-                          <span className="text-[10px] text-purple-700 font-medium block">{lot.fpoAffiliation || 'Independent Smallholder'}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">{lot.farmerPhone}</span>
-                        </TableCell>
 
-                        {/* Commodity & Grade */}
-                        <TableCell>
-                          <strong className="text-slate-900 block font-black">{lot.commodity}</strong>
-                          <span className="text-[10px] text-slate-500 block">{lot.variety}</span>
-                          <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 inline-block mt-0.5">
-                            {lot.qualityGrade} ({lot.qualityScore}%)
-                          </span>
-                        </TableCell>
+            <p className="text-sm text-slate-600 mt-4 max-w-2xl">
 
-                        {/* Weight */}
-                        <TableCell>
-                          <span className="font-mono font-black text-slate-900 text-sm block">{lot.weightTons} MT</span>
-                          <span className="text-[10px] text-slate-400 font-mono">({lot.weightKg.toLocaleString('en-IN')} kg)</span>
-                        </TableCell>
+              Keep farmer produce safe, track storage
+              space and release sold produce when the
+              transporter arrives.
 
-                        {/* Bay & Climate */}
-                        <TableCell>
-                          <span className="font-bold text-slate-800 block text-xs">{lot.bayLocation}</span>
-                          <span className="text-[11px] font-mono text-teal-700 font-bold block">
-                            {lot.temperatureCelcius}°C • {lot.humidityPercent}% RH
-                          </span>
-                        </TableCell>
+            </p>
 
-                        {/* Storage Fee */}
-                        <TableCell>
-                          <span className="font-mono font-black text-slate-900 block text-xs">₹{lot.accruedStorageFeeInr.toFixed(2)}</span>
-                          <span className="text-[10px] text-slate-500 font-medium block">
-                            {lot.daysStored} days @ ₹{lot.storageRatePerKgPerMonth}/kg/mo
-                          </span>
-                          <span className="text-[10px] text-emerald-700 font-bold">NABARD 33% Subsidized</span>
-                        </TableCell>
+          </header>
 
-                        {/* Trade Status */}
-                        <TableCell>
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-black uppercase font-mono ${
-                            lot.tradeStatus === 'RELEASE_AUTHORIZED'
-                              ? 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse'
-                              : lot.tradeStatus === 'DISPATCHED'
-                              ? 'bg-slate-100 text-slate-700 border border-slate-300'
-                              : 'bg-blue-100 text-blue-900 border border-blue-300'
-                          }`}>
-                            {lot.tradeStatus === 'RELEASE_AUTHORIZED' ? '🚚 Release Authorized' : lot.tradeStatus === 'DISPATCHED' ? '✅ Dispatched' : '📦 In Storage'}
-                          </span>
-                          {lot.tradeStatus === 'RELEASE_AUTHORIZED' && (
-                            <span className="text-[10px] text-amber-800 font-bold block mt-0.5">
-                              Buyer: {lot.buyerName}
-                            </span>
-                          )}
-                        </TableCell>
 
-                        {/* Actions */}
-                        <TableCell className="text-right space-x-1.5">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-8 text-xs font-bold rounded-xl border-slate-200 hover:bg-blue-50 text-blue-900 cursor-pointer"
-                            onClick={() => setSelectedLotForENWR(lot)}
-                          >
-                            <FileText size={13} className="mr-1" />
-                            e-NWR
-                          </Button>
+          {/* ==================================================
+              NEEDS ATTENTION
+          ================================================== */}
 
-                          {lot.tradeStatus === 'RELEASE_AUTHORIZED' && (
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+
+            <button
+              onClick={() =>
+                setActiveTab('outward')
+              }
+              className="text-left bg-amber-50 border border-amber-200 rounded-2xl p-4 hover:bg-amber-100 transition"
+            >
+
+              <div className="flex justify-between">
+
+                <div>
+
+                  <div className="flex items-center gap-2 text-amber-700 text-xs font-black uppercase">
+
+                    <Truck size={14} />
+
+                    Pickup Today
+
+                  </div>
+
+                  <p className="text-2xl font-black mt-2 text-slate-900">
+
+                    {readyForPickupLots}
+
+                  </p>
+
+                  <p className="text-xs text-amber-800 mt-1">
+
+                    Lots ready to leave
+
+                  </p>
+
+                </div>
+
+                <ArrowRight
+                  size={18}
+                  className="text-amber-600"
+                />
+
+              </div>
+
+            </button>
+
+
+            <button
+              onClick={() =>
+                setActiveTab('telemetry')
+              }
+              className="text-left bg-emerald-50 border border-emerald-200 rounded-2xl p-4 hover:bg-emerald-100 transition"
+            >
+
+              <div className="flex justify-between">
+
+                <div>
+
+                  <div className="flex items-center gap-2 text-emerald-700 text-xs font-black uppercase">
+
+                    <CheckCircle2 size={14} />
+
+                    Storage Health
+
+                  </div>
+
+                  <p className="text-2xl font-black mt-2">
+
+                    Good
+
+                  </p>
+
+                  <p className="text-xs text-emerald-800 mt-1">
+
+                    All storage areas normal
+
+                  </p>
+
+                </div>
+
+                <CheckCircle2
+                  size={19}
+                  className="text-emerald-600"
+                />
+
+              </div>
+
+            </button>
+
+
+            <button
+              onClick={() =>
+                setActiveTab('inventory')
+              }
+              className="text-left bg-blue-50 border border-blue-200 rounded-2xl p-4 hover:bg-blue-100 transition"
+            >
+
+              <div className="flex justify-between">
+
+                <div>
+
+                  <div className="flex items-center gap-2 text-blue-700 text-xs font-black uppercase">
+
+                    <Warehouse size={14} />
+
+                    Space Used
+
+                  </div>
+
+                  <p className="text-2xl font-black mt-2">
+
+                    {totalOccupancyPercent}%
+
+                  </p>
+
+                  <p className="text-xs text-blue-800 mt-1">
+
+                    {totalOccupiedCapacityTons} MT
+                    currently stored
+
+                  </p>
+
+                </div>
+
+                <ArrowRight
+                  size={18}
+                  className="text-blue-600"
+                />
+
+              </div>
+
+            </button>
+
+          </section>
+
+
+          {/* ==================================================
+              SIMPLE SUMMARY
+          ================================================== */}
+
+          <section className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-4">
+
+              <div className="flex items-center gap-2 text-slate-500 text-xs font-bold">
+
+                <Boxes size={15} />
+
+                STORED LOTS
+
+              </div>
+
+              <p className="text-2xl font-black mt-2">
+
+                {lots.length}
+
+              </p>
+
+              <p className="text-xs text-slate-400 mt-1">
+
+                {activeStorageLots} currently in storage
+
+              </p>
+
+            </div>
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-4">
+
+              <div className="flex items-center gap-2 text-blue-600 text-xs font-bold">
+
+                <Warehouse size={15} />
+
+                STORAGE SPACE
+
+              </div>
+
+              <p className="text-2xl font-black mt-2">
+
+                {totalOccupancyPercent}%
+
+              </p>
+
+              <p className="text-xs text-slate-400 mt-1">
+
+                {totalOccupiedCapacityTons} /
+                {totalStorageCapacityTons} MT
+
+              </p>
+
+            </div>
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-4">
+
+              <div className="flex items-center gap-2 text-amber-600 text-xs font-bold">
+
+                <Truck size={15} />
+
+                READY FOR PICKUP
+
+              </div>
+
+              <p className="text-2xl font-black mt-2">
+
+                {readyForPickupLots}
+
+              </p>
+
+              <p className="text-xs text-slate-400 mt-1">
+
+                Waiting for transporter
+
+              </p>
+
+            </div>
+
+
+            <div className="bg-white border border-slate-200 rounded-2xl p-4">
+
+              <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold">
+
+                <IndianRupee size={15} />
+
+                STORAGE EARNINGS
+
+              </div>
+
+              <p className="text-2xl font-black mt-2">
+
+                ₹
+                {(
+                  totalStorageRevenue +
+                  48200
+                ).toLocaleString('en-IN')}
+
+              </p>
+
+              <p className="text-xs text-slate-400 mt-1">
+
+                Storage charges collected
+
+              </p>
+
+            </div>
+
+          </section>
+
+
+          {/* ==================================================
+              NAVIGATION
+          ================================================== */}
+
+          <div className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200 flex flex-wrap gap-1">
+
+            {tabs.map((tab: any) => (
+
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() =>
+                  setActiveTab(tab.key)
+                }
+                className={`flex-1 min-w-[140px] px-4 py-3 text-xs transition-all flex items-center justify-center gap-2 rounded-xl font-black ${activeTab === tab.key
+                  ? 'bg-white text-blue-950 shadow-sm'
+                  : 'text-slate-600 hover:bg-white/60'
+                  }`}
+              >
+
+                {tab.icon}
+
+                <span>
+                  {tab.label}
+                </span>
+
+                {tab.count !== undefined && (
+
+                  <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-full text-[10px]">
+
+                    {tab.count}
+
+                  </span>
+
+                )}
+
+              </button>
+
+            ))}
+
+          </div>
+
+
+          {/* ==================================================
+              STORED PRODUCE
+          ================================================== */}
+
+          {activeTab === 'inventory' && (
+
+            <section className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 shadow-sm space-y-5">
+
+
+              <div>
+
+                <h2 className="text-lg font-black">
+
+                  Stored Produce
+
+                </h2>
+
+                <p className="text-sm text-slate-500 mt-1">
+
+                  See what is stored, where it is stored
+                  and what needs to leave.
+
+                </p>
+
+              </div>
+
+
+              {/* FILTERS */}
+
+              <div className="flex flex-col md:flex-row gap-3">
+
+                <div className="flex-1 relative">
+
+                  <Search
+                    size={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <input
+                    value={searchQuery}
+                    onChange={(e) =>
+                      setSearchQuery(
+                        e.target.value
+                      )
+                    }
+                    placeholder="Search farmer, crop or lot..."
+                    className="w-full h-11 pl-9 pr-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+
+                </div>
+
+
+                <div className="flex gap-2 flex-wrap">
+
+                  {[
+                    ['ALL', 'All'],
+                    [
+                      'ACTIVE_STORAGE',
+                      'In Storage',
+                    ],
+                    [
+                      'RELEASE_AUTHORIZED',
+                      'Ready for Pickup',
+                    ],
+                    [
+                      'DISPATCHED',
+                      'Dispatched',
+                    ],
+                  ].map(
+                    ([value, label]) => (
+
+                      <button
+                        key={value}
+                        onClick={() =>
+                          setStatusFilter(
+                            value as any
+                          )
+                        }
+                        className={`px-3 py-2 rounded-xl text-xs font-bold border ${statusFilter === value
+                          ? 'bg-blue-700 text-white border-blue-700'
+                          : 'bg-white text-slate-600 border-slate-200'
+                          }`}
+                      >
+
+                        {label}
+
+                      </button>
+
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
+
+              {/* LOT CARDS */}
+
+              {filteredLots.length === 0 ? (
+
+                <div className="border border-dashed border-slate-300 rounded-2xl p-10 text-center">
+
+                  <Boxes
+                    size={38}
+                    className="mx-auto text-slate-400"
+                  />
+
+                  <h3 className="font-black mt-3">
+
+                    No produce found
+
+                  </h3>
+
+                  <p className="text-sm text-slate-500 mt-1">
+
+                    Try another search or receive
+                    a new produce lot.
+
+                  </p>
+
+                </div>
+
+              ) : (
+
+                <div className="space-y-3">
+
+                  {filteredLots.map(
+                    (lot) => (
+
+                      <div
+                        key={lot.id}
+                        className="border border-slate-200 rounded-2xl p-4 hover:border-blue-300 transition"
+                      >
+
+                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+
+
+                          {/* BASIC INFO */}
+
+                          <div className="flex-1">
+
+                            <div className="flex flex-wrap items-center gap-2">
+
+                              <span className="font-mono font-black text-sm">
+
+                                {lot.lotNumber}
+
+                              </span>
+
+                              <span
+                                className={`px-2.5 py-1 rounded-full text-[10px] font-black ${lot.tradeStatus ===
+                                  'RELEASE_AUTHORIZED'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : lot.tradeStatus ===
+                                    'DISPATCHED'
+                                    ? 'bg-slate-100 text-slate-700'
+                                    : 'bg-blue-100 text-blue-800'
+                                  }`}
+                              >
+
+                                {lot.tradeStatus ===
+                                  'RELEASE_AUTHORIZED'
+                                  ? 'READY FOR PICKUP'
+                                  : lot.tradeStatus ===
+                                    'DISPATCHED'
+                                    ? 'DISPATCHED'
+                                    : 'IN STORAGE'}
+
+                              </span>
+
+                            </div>
+
+
+                            <h3 className="font-black text-base mt-1">
+
+                              {lot.commodity}
+
+                            </h3>
+
+
+                            <p className="text-xs text-slate-500">
+
+                              {lot.variety} •
+                              {lot.weightTons} MT
+
+                            </p>
+
+
+                            <p className="text-xs text-slate-500 mt-1">
+
+                              Farmer:
+                              <strong className="text-slate-800 ml-1">
+
+                                {lot.farmerName}
+
+                              </strong>
+
+                            </p>
+
+                          </div>
+
+
+                          {/* LOCATION */}
+
+                          <div className="min-w-[170px]">
+
+                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+
+                              Storage
+
+                            </p>
+
+                            <p className="text-sm font-bold mt-1">
+
+                              {lot.bayLocation}
+
+                            </p>
+
+                            <p className="text-xs text-slate-500">
+
+                              {lot.temperatureCelcius}°C •
+                              {lot.humidityPercent}% humidity
+
+                            </p>
+
+                          </div>
+
+
+                          {/* DAYS */}
+
+                          <div>
+
+                            <p className="text-[10px] font-bold text-slate-400 uppercase">
+
+                              Stored For
+
+                            </p>
+
+                            <p className="text-sm font-black mt-1">
+
+                              {lot.daysStored} days
+
+                            </p>
+
+                            <p className="text-xs text-slate-500">
+
+                              ₹
+                              {lot.accruedStorageFeeInr.toFixed(
+                                2
+                              )}{' '}
+                              storage fee
+
+                            </p>
+
+                          </div>
+
+
+                          {/* ACTIONS */}
+
+                          <div className="flex flex-col items-stretch gap-2">
+
                             <Button
                               size="sm"
-                              className="h-8 text-xs font-bold rounded-xl bg-amber-600 hover:bg-amber-700 text-white cursor-pointer shadow-xs"
-                              onClick={() => {
-                                setSelectedLotForOutward(lot);
-                                setOutwardVehicleInput(lot.transporterVehicle || 'MH-15-EG-4421');
-                              }}
+                              variant="outline"
+                              onClick={() =>
+                                setSelectedLotForReceipt(
+                                  lot
+                                )
+                              }
+                              className="rounded-xl text-xs font-bold"
                             >
-                              Gate Outward 🚚
+
+                              <FileText
+                                size={13}
+                              />
+
+                              Receipt
+
                             </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
 
-            </div>
-          </div>
-        )}
 
-        {/* ========================================================================= */}
-        {/* TAB 2: INWARD INTAKE TERMINAL (FARMER DEPOSIT) */}
-        {/* ========================================================================= */}
-        {activeTab === 'inward' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs max-w-3xl mx-auto space-y-6">
-              
-              <div className="border-b border-slate-100 pb-4">
-                <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>📥 Farmer Crop Deposit &amp; WDRA e-NWR Minting Terminal</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Deposit smallholder harvested crops into certified temperature-controlled bays with immediate electronic warehouse receipt issuance
-                </p>
-              </div>
+                            {lot.tradeStatus ===
+                              'RELEASE_AUTHORIZED' && (
 
-              <form onSubmit={handleCreateInwardLot} className="space-y-5 text-xs">
-                
-                {/* Farmer Details */}
-                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-3">
-                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                    <span>1. Depositor &amp; Farmer Information</span>
-                  </h4>
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Farmer Name</label>
-                      <input
-                        type="text"
-                        value={inwardFarmerName}
-                        onChange={(e) => setInwardFarmerName(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-slate-900 bg-white"
-                        required
-                      />
-                    </div>
+                                    setSelectedLotForOutward(
+                                      lot
+                                    );
 
-                    <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Farmer Mobile (Aadhaar Linked)</label>
-                      <input
-                        type="text"
-                        value={inwardPhone}
-                        onChange={(e) => setInwardPhone(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 bg-white"
-                        required
-                      />
-                    </div>
-                  </div>
+                                    setOutwardVehicleInput(
+                                      lot.transporterVehicle ||
+                                      ''
+                                    );
 
-                  <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">FPO Co-Operative Affiliation</label>
-                    <input
-                      type="text"
-                      value={inwardFpo}
-                      onChange={(e) => setInwardFpo(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 font-medium text-slate-800 bg-white"
-                    />
-                  </div>
+                                  }}
+                                  className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold"
+                                >
+
+                                  <Truck
+                                    size={13}
+                                  />
+
+                                  Dispatch
+
+                                </Button>
+
+                              )}
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    )
+                  )}
+
                 </div>
 
-                {/* Crop & Quality Details */}
-                <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-3">
-                  <h4 className="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                    <span>2. Produce Harvest &amp; Quality Specifications</span>
-                  </h4>
+              )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Commodity</label>
-                      <select
-                        value={inwardCommodity}
-                        onChange={(e) => setInwardCommodity(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-slate-900 bg-white"
-                      >
-                        <option value="Grand Naine / Robusta Banana">🍌 Grand Naine / Robusta Banana</option>
-                        <option value="Nashik Red Onion (Garva)">🧅 Nashik Red Onion (Garva)</option>
-                        <option value="Hybrid Tomato (Vaishali)">🍅 Hybrid Tomato (Vaishali)</option>
-                        <option value="Sharbati Wheat (Lok-1)">🌾 Sharbati Wheat (Lok-1)</option>
-                        <option value="Pusa 1121 Basmati Rice">🌾 Pusa 1121 Basmati Rice</option>
-                      </select>
-                    </div>
+            </section>
+
+          )}
+
+
+          {/* ==================================================
+              RECEIVE PRODUCE
+          ================================================== */}
+
+          {activeTab === 'inward' && (
+
+            <section className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7 max-w-3xl mx-auto">
+
+              <div className="border-b border-slate-100 pb-5 mb-5">
+
+                <h2 className="text-xl font-black">
+
+                  Receive Farmer Produce
+
+                </h2>
+
+                <p className="text-sm text-slate-500 mt-1">
+
+                  Record the farmer, crop, quantity and
+                  storage location.
+
+                </p>
+
+              </div>
+
+
+              <form
+                onSubmit={
+                  handleCreateInwardLot
+                }
+                className="space-y-5"
+              >
+
+
+                {/* FARMER */}
+
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+
+                  <h3 className="text-xs font-black uppercase text-slate-600 mb-3">
+
+                    1. Farmer Details
+
+                  </h3>
+
+
+                  <div className="grid sm:grid-cols-2 gap-3">
 
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Certified Variety</label>
+
+                      <label className="text-xs font-bold text-slate-500">
+
+                        Farmer Name
+
+                      </label>
+
                       <input
-                        type="text"
-                        value={inwardVariety}
-                        onChange={(e) => setInwardVariety(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 font-medium text-slate-800 bg-white"
                         required
+                        value={
+                          inwardFarmerName
+                        }
+                        onChange={(e) =>
+                          setInwardFarmerName(
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200"
+                        placeholder="Enter farmer name"
                       />
+
                     </div>
+
+
+                    <div>
+
+                      <label className="text-xs font-bold text-slate-500">
+
+                        Mobile Number
+
+                      </label>
+
+                      <input
+                        required
+                        value={inwardPhone}
+                        onChange={(e) =>
+                          setInwardPhone(
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200"
+                        placeholder="Enter mobile number"
+                      />
+
+                    </div>
+
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                  <div className="mt-3">
+
+                    <label className="text-xs font-bold text-slate-500">
+
+                      FPO Name
+
+                    </label>
+
+                    <input
+                      value={inwardFpo}
+                      onChange={(e) =>
+                        setInwardFpo(
+                          e.target.value
+                        )
+                      }
+                      className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200"
+                      placeholder="Enter FPO name"
+                    />
+
+                  </div>
+
+                </div>
+
+
+                {/* PRODUCE */}
+
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+
+                  <h3 className="text-xs font-black uppercase text-slate-600 mb-3">
+
+                    2. Produce Details
+
+                  </h3>
+
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Harvest Net Volume (Metric Tons)</label>
+
+                      <label className="text-xs font-bold text-slate-500">
+
+                        Crop
+
+                      </label>
+
+                      <select
+                        value={
+                          inwardCommodity
+                        }
+                        onChange={(e) =>
+                          setInwardCommodity(
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-white"
+                      >
+
+                        <option value="Banana">
+                          🍌 Banana
+                        </option>
+
+                        <option value="Nashik Red Onion">
+                          🧅 Onion
+                        </option>
+
+                        <option value="Tomato">
+                          🍅 Tomato
+                        </option>
+
+                        <option value="Wheat">
+                          🌾 Wheat
+                        </option>
+
+                        <option value="Rice">
+                          🌾 Rice
+                        </option>
+
+                      </select>
+
+                    </div>
+
+
+                    <div>
+
+                      <label className="text-xs font-bold text-slate-500">
+
+                        Variety
+
+                      </label>
+
+                      <input
+                        required
+                        value={
+                          inwardVariety
+                        }
+                        onChange={(e) =>
+                          setInwardVariety(
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200"
+                      />
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="grid sm:grid-cols-2 gap-3 mt-3">
+
+                    <div>
+
+                      <label className="text-xs font-bold text-slate-500">
+
+                        Quantity (MT)
+
+                      </label>
+
                       <input
                         type="number"
                         step="0.1"
-                        value={inwardWeightTons}
-                        onChange={(e) => setInwardWeightTons(parseFloat(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-black text-slate-900 bg-white text-sm"
+                        min="0.1"
                         required
+                        value={
+                          inwardWeightTons
+                        }
+                        onChange={(e) =>
+                          setInwardWeightTons(
+                            Number(
+                              e.target.value
+                            )
+                          )
+                        }
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200 font-mono font-bold"
                       />
+
                     </div>
+
 
                     <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Storage Bay &amp; Climate Zone</label>
+
+                      <label className="text-xs font-bold text-slate-500">
+
+                        Storage Area
+
+                      </label>
+
                       <select
                         value={inwardBay}
-                        onChange={(e) => setInwardBay(e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-slate-900 bg-white"
+                        onChange={(e) =>
+                          setInwardBay(
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-white"
                       >
-                        <option value="Cold Bay A-1 (Zone 1)">Cold Bay A-1 (12.4°C • Perishables)</option>
-                        <option value="Cold Bay A-2 (Zone 2)">Cold Bay A-2 (14.5°C • Onions/Roots)</option>
-                        <option value="Dry Grain Silo B-1">Dry Grain Silo B-1 (24°C • Wheat/Grains)</option>
-                        <option value="Controlled Atmosphere Silo C-1">Controlled Atmosphere Silo C-1 (18°C)</option>
+
+                        <option>
+                          Cold Bay A-1
+                        </option>
+
+                        <option>
+                          Cold Bay A-2
+                        </option>
+
+                        <option>
+                          Dry Grain Silo B-1
+                        </option>
+
+                        <option>
+                          Controlled Storage C-1
+                        </option>
+
                       </select>
+
                     </div>
+
                   </div>
+
                 </div>
 
-                {/* Storage Fee & NABARD Subsidy */}
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-blue-950 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold flex items-center gap-1.5">
-                      <ShieldCheck size={16} className="text-blue-700" />
-                      NABARD Subsidized Smallholder Storage Rate
-                    </span>
-                    <span className="font-mono font-black text-sm text-blue-950">₹0.12 / kg / month</span>
+
+                {/* CONFIRM */}
+
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4">
+
+                  <div className="flex gap-3">
+
+                    <ShieldCheck
+                      className="text-blue-700 shrink-0"
+                      size={20}
+                    />
+
+                    <div>
+
+                      <p className="text-sm font-black text-blue-950">
+
+                        Digital warehouse receipt
+
+                      </p>
+
+                      <p className="text-xs text-blue-800 mt-1">
+
+                        A digital receipt will be created
+                        after the produce is received.
+
+                      </p>
+
+                    </div>
+
                   </div>
-                  <p className="text-[11px] text-blue-900 leading-relaxed">
-                    Under PMKSY Cold Chain scheme, 33.3% of warehouse holding fees are covered by NABARD. Farmer pays only when the crop is sold and collected by the buyer.
-                  </p>
+
                 </div>
+
 
                 <Button
                   type="submit"
-                  className="w-full bg-blue-700 hover:bg-blue-800 text-white font-black text-xs h-12 rounded-2xl shadow-md shadow-blue-700/20 cursor-pointer"
+                  className="w-full bg-blue-700 hover:bg-blue-800 text-white font-black h-12 rounded-xl"
                 >
-                  Confirm Inward Deposit &amp; Mint Digital e-NWR 📄
+
+                  <PackageCheck size={17} />
+
+                  Confirm & Receive Produce
+
                 </Button>
+
               </form>
 
-            </div>
-          </div>
-        )}
+            </section>
 
-        {/* ========================================================================= */}
-        {/* TAB 3: TRANSPORTER OUTWARD HANDSHAKE (PICKUP / ESCROW RELEASE) */}
-        {/* ========================================================================= */}
-        {activeTab === 'outward' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-              
-              <div className="border-b border-slate-100 pb-4">
-                <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>🚚 Transporter Dispatch &amp; Milk-Run Outward Handshake</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  When a farmer accepts a bid (solo or FPO pooled), transporter collects produce directly from the warehouse loading dock with digital OTP verification
+          )}
+
+
+          {/* ==================================================
+              DISPATCH
+          ================================================== */}
+
+          {activeTab === 'outward' && (
+
+            <section className="space-y-5">
+
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7">
+
+                <h2 className="text-xl font-black">
+
+                  Produce Ready for Pickup
+
+                </h2>
+
+                <p className="text-sm text-slate-500 mt-1">
+
+                  Verify the transporter before allowing
+                  produce to leave the warehouse.
+
                 </p>
+
               </div>
 
-              {lots.filter(l => l.tradeStatus === 'RELEASE_AUTHORIZED').length === 0 ? (
-                <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-2xl space-y-2">
-                  <Truck className="w-10 h-10 text-slate-400 mx-auto" />
-                  <p className="text-xs text-slate-500 font-mono">No lots currently waiting for transporter pickup.</p>
+
+              {readyForPickupLots === 0 ? (
+
+                <div className="bg-white border border-dashed border-slate-300 rounded-3xl p-12 text-center">
+
+                  <Truck
+                    size={40}
+                    className="mx-auto text-slate-400"
+                  />
+
+                  <h3 className="font-black mt-3">
+
+                    No pickups waiting
+
+                  </h3>
+
+                  <p className="text-sm text-slate-500 mt-1">
+
+                    Sold produce will appear here when
+                    the buyer authorizes pickup.
+
+                  </p>
+
                 </div>
+
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {lots.filter(l => l.tradeStatus === 'RELEASE_AUTHORIZED').map((lot) => (
-                    <div
-                      key={`outward-${lot.id}`}
-                      className="rounded-2xl border-2 border-amber-300 bg-amber-50/40 p-5 space-y-4 shadow-xs"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono font-black text-amber-900 bg-amber-200 px-2 py-0.5 rounded-md">
-                              {lot.lotNumber}
-                            </span>
-                            <span className="text-[10px] font-mono font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                              {lot.enwrNumber}
-                            </span>
-                          </div>
-                          <h4 className="text-sm font-black text-slate-900 mt-1">
-                            {lot.commodity} ({lot.weightTons} MT)
-                          </h4>
-                          <p className="text-xs text-slate-600">
-                            Farmer: <strong className="text-slate-800">{lot.farmerName}</strong>
-                          </p>
-                        </div>
 
-                        <span className="text-[10px] font-mono font-black px-2.5 py-1 rounded-full bg-amber-200 text-amber-950 border border-amber-300 uppercase">
-                          Pickup Scheduled
-                        </span>
-                      </div>
+                <div className="grid md:grid-cols-2 gap-4">
 
-                      <div className="bg-white p-3.5 rounded-xl border border-amber-200/80 space-y-2 text-xs">
-                        <div className="flex justify-between">
-                          <span className="text-slate-500 font-medium">Buyer:</span>
-                          <strong className="text-slate-900">{lot.buyerName || 'AgroProcure Private Ltd'}</strong>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-500 font-medium">Assigned Carrier:</span>
-                          <strong className="text-slate-900 font-mono">{lot.transporterVehicle || 'MH-15-EG-4421'}</strong>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-500 font-medium">Storage Bay Dock:</span>
-                          <strong className="text-blue-900 font-bold">{lot.bayLocation}</strong>
-                        </div>
-                        <div className="flex justify-between pt-1 border-t border-slate-100">
-                          <span className="text-slate-500 font-medium">Accrued Warehouse Charges:</span>
-                          <strong className="text-emerald-800 font-mono font-black">₹{lot.accruedStorageFeeInr.toFixed(2)} (Escrow Deductible)</strong>
-                        </div>
-                      </div>
+                  {lots
+                    .filter(
+                      lot =>
+                        lot.tradeStatus ===
+                        'RELEASE_AUTHORIZED'
+                    )
+                    .map(lot => (
 
-                      <Button
-                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black text-xs h-10 rounded-xl cursor-pointer shadow-xs"
-                        onClick={() => {
-                          setSelectedLotForOutward(lot);
-                          setOutwardVehicleInput(lot.transporterVehicle || 'MH-15-EG-4421');
-                        }}
+                      <div
+                        key={lot.id}
+                        className="bg-white border-2 border-amber-200 rounded-2xl p-5"
                       >
-                        🚚 Verify Driver Handshake OTP &amp; Dispatch
-                      </Button>
-                    </div>
-                  ))}
+
+                        <div className="flex justify-between gap-3">
+
+                          <div>
+
+                            <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-lg font-black">
+
+                              {lot.lotNumber}
+
+                            </span>
+
+                            <h3 className="font-black mt-2">
+
+                              {lot.commodity}
+
+                            </h3>
+
+                            <p className="text-sm text-slate-500">
+
+                              {lot.weightTons} MT •
+                              {lot.farmerName}
+
+                            </p>
+
+                          </div>
+
+                          <Clock3
+                            size={20}
+                            className="text-amber-600"
+                          />
+
+                        </div>
+
+
+                        <div className="bg-slate-50 rounded-xl p-3 mt-4 text-xs space-y-2">
+
+                          <div className="flex justify-between">
+
+                            <span className="text-slate-500">
+                              Buyer
+                            </span>
+
+                            <strong>
+                              {lot.buyerName}
+                            </strong>
+
+                          </div>
+
+
+                          <div className="flex justify-between">
+
+                            <span className="text-slate-500">
+                              Vehicle
+                            </span>
+
+                            <strong className="font-mono">
+                              {lot.transporterVehicle}
+                            </strong>
+
+                          </div>
+
+
+                          <div className="flex justify-between">
+
+                            <span className="text-slate-500">
+                              Storage
+                            </span>
+
+                            <strong>
+                              {lot.bayLocation}
+                            </strong>
+
+                          </div>
+
+                        </div>
+
+
+                        <Button
+                          onClick={() => {
+
+                            setSelectedLotForOutward(
+                              lot
+                            );
+
+                            setOutwardVehicleInput(
+                              lot.transporterVehicle ||
+                              ''
+                            );
+
+                          }}
+                          className="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white font-black rounded-xl"
+                        >
+
+                          <Truck size={15} />
+
+                          Verify Pickup & Dispatch
+
+                        </Button>
+
+                      </div>
+
+                    ))}
+
                 </div>
+
               )}
 
-            </div>
-          </div>
-        )}
+            </section>
 
-        {/* ========================================================================= */}
-        {/* TAB 4: IOT SENSOR TELEMETRY & CLIMATE */}
-        {/* ========================================================================= */}
-        {activeTab === 'telemetry' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-              
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          )}
+
+
+          {/* ==================================================
+              STORAGE CONDITIONS
+          ================================================== */}
+
+          {activeTab === 'telemetry' && (
+
+            <section className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7">
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+
                 <div>
-                  <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                    <span>❄️ IoT Sensor Climate Telemetry &amp; Ripening Gas Control</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Live temperature, relative humidity, and ethylene gas concentration monitoring across all 4 terminal bays
+
+                  <h2 className="text-xl font-black">
+
+                    Storage Conditions
+
+                  </h2>
+
+                  <p className="text-sm text-slate-500 mt-1">
+
+                    Check temperature, humidity and
+                    available space.
+
                   </p>
+
                 </div>
-                <span className="text-xs font-mono font-bold bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full border border-emerald-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  IoT Grid: Online (4/4 Sensors)
+
+
+                <span className="flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-xs font-black">
+
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+
+                  All Areas Normal
+
                 </span>
+
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {climateBays.map((bay) => (
-                  <div 
-                    key={bay.id}
-                    className="rounded-2xl border border-slate-200 p-5 space-y-4 bg-slate-50/50 hover:border-blue-300 transition-all"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono font-black text-blue-900 bg-blue-100 px-2 py-0.5 rounded-md">
-                            {bay.id}
-                          </span>
-                          <span className="text-[10px] font-bold font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
-                            {bay.type.replace('_', ' ')}
-                          </span>
+
+              <div className="grid md:grid-cols-2 gap-4">
+
+                {climateBays.map(
+                  bay => {
+
+                    const occupancy =
+                      Math.round(
+                        (
+                          bay.occupiedTons /
+                          bay.capacityTons
+                        ) * 100
+                      );
+
+                    return (
+
+                      <div
+                        key={bay.id}
+                        className="border border-slate-200 rounded-2xl p-5"
+                      >
+
+                        <div className="flex justify-between gap-3">
+
+                          <div>
+
+                            <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-1 rounded-lg font-black">
+
+                              {bay.id}
+
+                            </span>
+
+                            <h3 className="font-black mt-2">
+
+                              {bay.name}
+
+                            </h3>
+
+                          </div>
+
+
+                          <CheckCircle2
+                            size={19}
+                            className="text-emerald-500"
+                          />
+
                         </div>
-                        <h4 className="text-sm font-black text-slate-900 mt-1">
-                          {bay.name}
-                        </h4>
+
+
+                        <div className="grid grid-cols-2 gap-3 mt-4">
+
+                          <div className="bg-blue-50 rounded-xl p-3">
+
+                            <div className="flex items-center gap-1 text-xs text-blue-700 font-bold">
+
+                              <Thermometer
+                                size={13}
+                              />
+
+                              Temperature
+
+                            </div>
+
+                            <p className="text-xl font-black mt-1">
+
+                              {bay.temp}°C
+
+                            </p>
+
+                            <p className="text-[10px] text-slate-500">
+
+                              Target {bay.targetTemp}°C
+
+                            </p>
+
+                          </div>
+
+
+                          <div className="bg-teal-50 rounded-xl p-3">
+
+                            <div className="flex items-center gap-1 text-xs text-teal-700 font-bold">
+
+                              <Droplets
+                                size={13}
+                              />
+
+                              Humidity
+
+                            </div>
+
+                            <p className="text-xl font-black mt-1">
+
+                              {bay.humidity}%
+
+                            </p>
+
+                            <p className="text-[10px] text-slate-500">
+
+                              Target {bay.targetHumidity}%
+
+                            </p>
+
+                          </div>
+
+                        </div>
+
+
+                        <div className="mt-4">
+
+                          <div className="flex justify-between text-xs font-bold">
+
+                            <span className="text-slate-500">
+                              Space used
+                            </span>
+
+                            <span>
+                              {bay.occupiedTons} /
+                              {bay.capacityTons} MT
+                            </span>
+
+                          </div>
+
+
+                          <div className="h-2 bg-slate-100 rounded-full mt-2 overflow-hidden">
+
+                            <div
+                              className="h-full bg-blue-600 rounded-full"
+                              style={{
+                                width:
+                                  `${occupancy}%`,
+                              }}
+                            />
+
+                          </div>
+
+                        </div>
+
                       </div>
 
-                      <span className="text-[10px] font-mono font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
-                        {bay.status}
-                      </span>
+                    );
+
+                  }
+                )}
+
+              </div>
+
+            </section>
+
+          )}
+
+
+          {/* ==================================================
+              PAYMENTS
+          ================================================== */}
+
+          {activeTab === 'ledger' && (
+
+            <section className="space-y-5">
+
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-7">
+
+                <div className="flex items-center gap-3">
+
+                  <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+
+                    <IndianRupee size={21} />
+
+                  </div>
+
+                  <div>
+
+                    <h2 className="text-xl font-black">
+
+                      Storage Payments
+
+                    </h2>
+
+                    <p className="text-sm text-slate-500">
+
+                      Track storage charges and payments.
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div className="grid sm:grid-cols-3 gap-3 mt-5">
+
+                  <div className="bg-slate-50 rounded-2xl p-4">
+
+                    <p className="text-xs font-bold text-slate-500">
+
+                      TOTAL EARNED
+
+                    </p>
+
+                    <p className="text-2xl font-black mt-1">
+
+                      ₹1,48,650
+
+                    </p>
+
+                    <p className="text-xs text-emerald-600 mt-1 font-bold">
+
+                      Payments received
+
+                    </p>
+
+                  </div>
+
+
+                  <div className="bg-slate-50 rounded-2xl p-4">
+
+                    <p className="text-xs font-bold text-slate-500">
+
+                      PENDING
+
+                    </p>
+
+                    <p className="text-2xl font-black mt-1">
+
+                      ₹
+                      {totalStorageRevenue.toFixed(
+                        0
+                      )}
+
+                    </p>
+
+                    <p className="text-xs text-blue-600 mt-1 font-bold">
+
+                      Waiting for dispatch
+
+                    </p>
+
+                  </div>
+
+
+                  <div className="bg-slate-50 rounded-2xl p-4">
+
+                    <p className="text-xs font-bold text-slate-500">
+
+                      DISPATCHED
+
+                    </p>
+
+                    <p className="text-2xl font-black mt-1">
+
+                      {dispatchedLots}
+
+                    </p>
+
+                    <p className="text-xs text-slate-500 mt-1">
+
+                      Lots completed
+
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </section>
+
+          )}
+
+
+          {/* ==================================================
+              RECEIPT MODAL
+          ================================================== */}
+
+          {selectedLotForReceipt && (
+
+            <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+
+              <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+
+                <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+
+                  <div className="flex items-center gap-3">
+
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+
+                      <FileText size={20} />
+
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 bg-white p-3 rounded-xl border border-slate-200 text-center">
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase block">Temperature</span>
-                        <strong className="text-blue-700 font-mono text-base font-black">{bay.temp}°C</strong>
-                        <span className="text-[9px] text-slate-400 block font-mono">Target: {bay.targetTemp}°C</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase block">Humidity</span>
-                        <strong className="text-teal-700 font-mono text-base font-black">{bay.humidity}%</strong>
-                        <span className="text-[9px] text-slate-400 block font-mono">Target: {bay.targetHumidity}%</span>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase block">Ethylene</span>
-                        <strong className="text-purple-700 font-mono text-base font-black">{bay.ethylenePpm} ppm</strong>
-                        <span className="text-[9px] text-emerald-700 font-bold block font-mono">Safe</span>
-                      </div>
+                    <div>
+
+                      <h3 className="font-black">
+
+                        Warehouse Receipt
+
+                      </h3>
+
+                      <p className="text-[10px] text-slate-500 font-mono">
+
+                        {selectedLotForReceipt.enwrNumber}
+
+                      </p>
+
                     </div>
 
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-xs font-mono font-bold">
-                        <span className="text-slate-500">Bay Occupancy ({Math.round((bay.occupiedTons / bay.capacityTons) * 100)}%)</span>
-                        <span className="text-blue-900">{bay.occupiedTons} / {bay.capacityTons} MT</span>
-                      </div>
-                      <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-600 rounded-full"
-                          style={{ width: `${(bay.occupiedTons / bay.capacityTons) * 100}%` }}
-                        />
-                      </div>
+                  </div>
+
+
+                  <button
+                    onClick={() =>
+                      setSelectedLotForReceipt(
+                        null
+                      )
+                    }
+                    className="text-slate-400 hover:text-slate-800"
+                  >
+
+                    <X size={18} />
+
+                  </button>
+
+                </div>
+
+
+                <div className="bg-slate-50 rounded-2xl p-4 mt-5 space-y-4 text-sm">
+
+                  <div className="grid grid-cols-2 gap-4">
+
+                    <div>
+
+                      <p className="text-xs text-slate-400">
+                        Farmer
+                      </p>
+
+                      <p className="font-bold">
+                        {
+                          selectedLotForReceipt
+                            .farmerName
+                        }
+                      </p>
+
                     </div>
+
+
+                    <div>
+
+                      <p className="text-xs text-slate-400">
+                        Lot
+                      </p>
+
+                      <p className="font-bold">
+                        {
+                          selectedLotForReceipt
+                            .lotNumber
+                        }
+                      </p>
+
+                    </div>
+
                   </div>
-                ))}
-              </div>
 
-            </div>
-          </div>
-        )}
 
-        {/* ========================================================================= */}
-        {/* TAB 5: FINANCIAL STORAGE REVENUE & ESCROW LEDGER */}
-        {/* ========================================================================= */}
-        {activeTab === 'ledger' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-              
-              <div className="border-b border-slate-100 pb-4">
-                <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>💳 Terminal Storage Revenue &amp; Escrow Deductions Ledger</span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Automated holding fee collection deducted directly from institutional buyer escrow vaults on produce dispatch
-                </p>
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Storage Revenue Collected</span>
-                  <p className="text-3xl font-black text-emerald-900 font-mono">₹1,48,650</p>
-                  <p className="text-[11px] text-emerald-700 font-bold">100% Cleared via ICICI Bank DBT</p>
+                    <div>
+
+                      <p className="text-xs text-slate-400">
+                        Produce
+                      </p>
+
+                      <p className="font-bold">
+                        {
+                          selectedLotForReceipt
+                            .commodity
+                        }
+                      </p>
+
+                    </div>
+
+
+                    <div>
+
+                      <p className="text-xs text-slate-400">
+                        Quantity
+                      </p>
+
+                      <p className="font-bold">
+                        {
+                          selectedLotForReceipt
+                            .weightTons
+                        }{' '}
+                        MT
+                      </p>
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="grid grid-cols-2 gap-4">
+
+                    <div>
+
+                      <p className="text-xs text-slate-400">
+                        Storage Area
+                      </p>
+
+                      <p className="font-bold">
+                        {
+                          selectedLotForReceipt
+                            .bayLocation
+                        }
+                      </p>
+
+                    </div>
+
+
+                    <div>
+
+                      <p className="text-xs text-slate-400">
+                        Quality
+                      </p>
+
+                      <p className="font-bold text-emerald-700">
+                        {
+                          selectedLotForReceipt
+                            .qualityGrade
+                        }
+                      </p>
+
+                    </div>
+
+                  </div>
+
                 </div>
 
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pending Escrow Deductions</span>
-                  <p className="text-3xl font-black text-blue-900 font-mono">₹{totalAccruedStorageRevenue.toFixed(2)}</p>
-                  <p className="text-[11px] text-blue-700 font-bold">Locked in active trade deals</p>
-                </div>
 
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">NABARD Subsidy Reimbursed</span>
-                  <p className="text-3xl font-black text-purple-900 font-mono">₹49,550</p>
-                  <p className="text-[11px] text-purple-700 font-bold">PMKSY Central Government Grant</p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* MODAL 1: ELECTRONIC NEGOTIABLE WAREHOUSE RECEIPT (e-NWR) */}
-        {/* ========================================================================= */}
-        {selectedLotForENWR && (
-          <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 border border-slate-200 shadow-2xl animate-in zoom-in-95">
-              
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-800 flex items-center justify-center font-bold text-lg">
-                    📄
-                  </div>
-                  <div>
-                    <h3 className="font-black text-slate-900 text-sm">Electronic Negotiable Warehouse Receipt (e-NWR)</h3>
-                    <p className="text-[10px] font-mono text-slate-500">WDRA Regd. • {selectedLotForENWR.enwrNumber}</p>
-                  </div>
-                </div>
-                <button onClick={() => setSelectedLotForENWR(null)} className="text-slate-400 hover:text-slate-700 font-black cursor-pointer">
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3 text-xs">
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-[10px] text-slate-400 font-bold block">Depositor / Farmer</span>
-                    <strong className="text-slate-900">{selectedLotForENWR.farmerName}</strong>
-                    <p className="text-[10px] text-slate-500 font-mono">{selectedLotForENWR.farmerPhone}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 font-bold block">Terminal Operator</span>
-                    <strong className="text-slate-900">Sahyadri Agri-Logistics Hub</strong>
-                    <p className="text-[10px] text-slate-500">Niphad Yard, Nashik</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
-                  <div>
-                    <span className="text-[10px] text-slate-400 font-bold block">Commodity &amp; Certified Grade</span>
-                    <strong className="text-slate-900">{selectedLotForENWR.commodity}</strong>
-                    <p className="text-[10px] text-emerald-700 font-bold">{selectedLotForENWR.qualityGrade} ({selectedLotForENWR.qualityScore}%)</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 font-bold block">Net Stored Weight</span>
-                    <strong className="text-slate-900 font-mono text-sm">{selectedLotForENWR.weightTons} Metric Tons</strong>
-                    <p className="text-[10px] text-slate-500 font-mono">{selectedLotForENWR.weightKg.toLocaleString('en-IN')} kg</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
-                  <div>
-                    <span className="text-[10px] text-slate-400 font-bold block">Storage Bay Allocation</span>
-                    <strong className="text-blue-900">{selectedLotForENWR.bayLocation}</strong>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 font-bold block">Deposit Telemetry</span>
-                    <strong className="text-teal-900 font-mono">{selectedLotForENWR.temperatureCelcius}°C / {selectedLotForENWR.humidityPercent}% RH</strong>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-slate-600">
-                  <span>Accrued Storage Holding Charges:</span>
-                  <strong className="text-slate-900 font-mono text-xs">₹{selectedLotForENWR.accruedStorageFeeInr.toFixed(2)}</strong>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
                 <Button
-                  className="w-full bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold h-11 rounded-xl cursor-pointer shadow-xs"
-                  onClick={() => {
-                    toast.success('Pledged for Instant Post-Harvest Credit', {
-                      description: `Pledged ${selectedLotForENWR.enwrNumber} with SBI / NABARD for ₹${(selectedLotForENWR.weightTons * 22000 * 0.7).toLocaleString('en-IN')} credit at 4% p.a.`
-                    });
-                    setSelectedLotForENWR(null);
-                  }}
+                  onClick={() =>
+                    setSelectedLotForReceipt(
+                      null
+                    )
+                  }
+                  className="w-full mt-5 bg-blue-700 hover:bg-blue-800 rounded-xl"
                 >
-                  Pledge for 70% Bank Credit 🏦
+
+                  Close Receipt
+
                 </Button>
-                <Button
-                  variant="outline"
-                  className="w-full text-xs font-bold h-11 rounded-xl border-slate-200"
-                  onClick={() => setSelectedLotForENWR(null)}
-                >
-                  Close
-                </Button>
+
               </div>
 
             </div>
-          </div>
-        )}
 
-        {/* ========================================================================= */}
-        {/* MODAL 2: TRANSPORTER OUTWARD HANDSHAKE OTP MODAL */}
-        {/* ========================================================================= */}
-        {selectedLotForOutward && (
-          <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-200 shadow-2xl animate-in zoom-in-95">
-              
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
-                    🚚
-                  </div>
+          )}
+
+
+          {/* ==================================================
+              DISPATCH MODAL
+          ================================================== */}
+
+          {selectedLotForOutward && (
+
+            <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+
+              <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
+
+                <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+
                   <div>
-                    <h3 className="font-black text-slate-900 text-sm">Transporter Pickup Handshake</h3>
-                    <p className="text-[10px] font-mono text-slate-500">Lot: {selectedLotForOutward.lotNumber}</p>
+
+                    <h3 className="font-black">
+
+                      Confirm Pickup
+
+                    </h3>
+
+                    <p className="text-xs text-slate-500 mt-1">
+
+                      {selectedLotForOutward.lotNumber}
+                      {' • '}
+                      {selectedLotForOutward.commodity}
+
+                    </p>
+
                   </div>
-                </div>
-                <button onClick={() => setSelectedLotForOutward(null)} className="text-slate-400 hover:text-slate-700 font-black cursor-pointer">
-                  <X size={18} />
-                </button>
-              </div>
 
-              <form onSubmit={handleVerifyOutwardHandshake} className="space-y-3 text-xs">
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Assigned Transporter Vehicle</label>
-                  <input
-                    type="text"
-                    value={outwardVehicleInput}
-                    onChange={(e) => setOutwardVehicleInput(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono font-bold text-slate-900 bg-white"
-                    required
-                  />
-                </div>
 
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Driver Name / Carrier</label>
-                  <input
-                    type="text"
-                    value={outwardDriverName}
-                    onChange={(e) => setOutwardDriverName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-slate-900 bg-white"
-                    required
-                  />
+                  <button
+                    onClick={() =>
+                      setSelectedLotForOutward(
+                        null
+                      )
+                    }
+                    className="text-slate-400 hover:text-slate-800"
+                  >
+
+                    <X size={18} />
+
+                  </button>
+
                 </div>
 
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                    Enter Transporter 4-Digit Pickup Handshake OTP
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={4}
-                    placeholder="e.g. 4821"
-                    value={outwardOtpInput}
-                    onChange={(e) => setOutwardOtpInput(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-400 font-mono font-black text-center text-lg tracking-widest text-slate-900 bg-amber-50/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                    required
-                  />
-                  <p className="text-[10px] text-slate-500 mt-1">
-                    Demo OTP for this trade: <strong className="font-mono text-amber-800">{selectedLotForOutward.pickupOtp || '4821'}</strong>
-                  </p>
-                </div>
 
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-slate-700">
-                  <div className="flex justify-between font-bold">
-                    <span>Accrued Warehouse Holding Fee:</span>
-                    <span className="font-mono text-slate-900">₹{selectedLotForOutward.accruedStorageFeeInr.toFixed(2)}</span>
+                <form
+                  onSubmit={
+                    handleVerifyOutwardHandshake
+                  }
+                  className="space-y-4 mt-5"
+                >
+
+
+                  <div>
+
+                    <label className="text-xs font-bold text-slate-500">
+
+                      Vehicle Number
+
+                    </label>
+
+                    <input
+                      required
+                      value={
+                        outwardVehicleInput
+                      }
+                      onChange={(e) =>
+                        setOutwardVehicleInput(
+                          e.target.value
+                        )
+                      }
+                      className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200 font-mono font-bold"
+                    />
+
                   </div>
-                  <p className="text-[10px] text-emerald-700 font-bold">
-                    Auto-settled directly from Buyer Escrow Vault to Terminal Account.
-                  </p>
-                </div>
 
-                <div className="flex gap-2 pt-2">
+
+                  <div>
+
+                    <label className="text-xs font-bold text-slate-500">
+
+                      Driver Name
+
+                    </label>
+
+                    <input
+                      required
+                      value={
+                        outwardDriverName
+                      }
+                      onChange={(e) =>
+                        setOutwardDriverName(
+                          e.target.value
+                        )
+                      }
+                      className="w-full mt-1 px-3 py-2.5 rounded-xl border border-slate-200"
+                    />
+
+                  </div>
+
+
+                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+
+                    <label className="text-xs font-black text-amber-900">
+
+                      Pickup Code
+
+                    </label>
+
+                    <input
+                      required
+                      maxLength={4}
+                      value={
+                        outwardOtpInput
+                      }
+                      onChange={(e) =>
+                        setOutwardOtpInput(
+                          e.target.value
+                        )
+                      }
+                      placeholder="Enter 4-digit code"
+                      className="w-full mt-2 px-4 py-3 rounded-xl border-2 border-amber-300 text-center text-xl font-mono font-black tracking-[0.4em]"
+                    />
+
+                    <p className="text-[10px] text-amber-800 mt-2">
+
+                      Demo code:
+                      {' '}
+                      <strong>
+                        {
+                          selectedLotForOutward
+                            .pickupOtp ||
+                          '4821'
+                        }
+                      </strong>
+
+                    </p>
+
+                  </div>
+
+
                   <Button
                     type="submit"
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black text-xs h-11 rounded-xl cursor-pointer shadow-xs"
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black h-11 rounded-xl"
                   >
-                    Confirm OTP &amp; Issue Gate Pass 📄
+
+                    <CheckCircle2 size={16} />
+
+                    Confirm & Dispatch
+
                   </Button>
-                </div>
-              </form>
+
+                </form>
+
+              </div>
 
             </div>
-          </div>
-        )}
 
-      </main>
+          )}
+
+        </main>
+
       </div>
+
     </ProtectedRoute>
+
   );
 }
+
