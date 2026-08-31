@@ -594,33 +594,35 @@ export function FarmerDashboardLayout() {
         {/* ========================================================================= */}
         {/* 2. CLEAN SEGMENTED NAVIGATION BAR */}
         {/* ========================================================================= */}
-        <div className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60 inline-flex flex-wrap gap-1 w-full sm:w-auto">
+        <div className="bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80 inline-flex flex-wrap gap-1.5 w-full sm:w-auto shadow-2xs">
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'overview'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
+                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
             }`}
           >
-            <Boxes size={14} className={activeTab === 'overview' ? 'text-emerald-700' : 'text-slate-500'} />
+            <Boxes size={15} className={activeTab === 'overview' ? 'text-white' : 'text-slate-500'} />
             <span>{tDash('overview')}</span>
           </button>
           
           <button
             type="button"
             onClick={() => setActiveTab('fpo-pooling')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'fpo-pooling'
-                ? 'bg-white text-purple-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
+                ? 'bg-purple-600 text-white shadow-sm font-black rounded-xl'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
             }`}
           >
-            <Users size={14} className={activeTab === 'fpo-pooling' ? 'text-purple-700' : 'text-slate-500'} />
+            <Users size={15} className={activeTab === 'fpo-pooling' ? 'text-white' : 'text-slate-500'} />
             <span>{tDash('joinFpoPool')}</span>
             {pooledCount > 0 && (
-              <span className="text-[10px] bg-purple-100 text-purple-900 font-mono font-black px-1.5 py-0.2 rounded-full">
+              <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
+                activeTab === 'fpo-pooling' ? 'bg-purple-800 text-purple-100' : 'bg-purple-100 text-purple-900'
+              }`}>
                 {pooledCount}
               </span>
             )}
@@ -629,52 +631,52 @@ export function FarmerDashboardLayout() {
           <button
             type="button"
             onClick={() => setActiveTab('ai-grading')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'ai-grading'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
+                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
             }`}
           >
-            <Microscope size={14} className={activeTab === 'ai-grading' ? 'text-emerald-700' : 'text-slate-500'} />
+            <Microscope size={15} className={activeTab === 'ai-grading' ? 'text-white' : 'text-slate-500'} />
             <span>{tDash('aiQualityInspection')}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('decision-engine')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'decision-engine'
-                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
+                ? 'bg-blue-600 text-white shadow-sm font-black rounded-xl'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
             }`}
           >
-            <TrendingUp size={14} className={activeTab === 'decision-engine' ? 'text-blue-700' : 'text-slate-500'} />
+            <TrendingUp size={15} className={activeTab === 'decision-engine' ? 'text-white' : 'text-slate-500'} />
             <span>{tDash('marketIntelligence')}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('escrow')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'escrow'
-                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
+                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
             }`}
           >
-            <ShieldCheck size={14} className={activeTab === 'escrow' ? 'text-blue-700' : 'text-slate-500'} />
+            <ShieldCheck size={15} className={activeTab === 'escrow' ? 'text-white' : 'text-slate-500'} />
             <span>{tDash('escrowRails')}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('whatsapp-bot')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'whatsapp-bot'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
+                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
             }`}
           >
-            <MessageSquare size={14} className={activeTab === 'whatsapp-bot' ? 'text-emerald-700' : 'text-slate-500'} />
+            <MessageSquare size={15} className={activeTab === 'whatsapp-bot' ? 'text-white' : 'text-slate-500'} />
             <span>{tDash('whatsappBot')}</span>
           </button>
         </div>
@@ -848,16 +850,6 @@ export function FarmerDashboardLayout() {
                     {tList('listingsSubtitle')}
                   </p>
                 </div>
-                {totalLots > 0 && (
-                  <Button
-                    size="sm"
-                    onClick={() => setIsListModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-9 px-4 shadow-xs cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
-                  >
-                    <Plus size={14} className="stroke-[2.5]" />
-                    <span>{tList('listNewCropProduce')}</span>
-                  </Button>
-                )}
               </div>
 
               {loading ? (
@@ -899,7 +891,7 @@ export function FarmerDashboardLayout() {
             </div>
 
             {/* Price Chart & Live Market Feed */}
-            <PriceChart commodity="Sharbati Wheat" mandiPrices={mockPrices} />
+            <PriceChart commodity={myLots[0]?.cropName || 'Sharbati Wheat'} mandiPrices={mockPrices} />
 
             {/* Live Bids Table from Institutional Buyers */}
             <BidTable
@@ -909,7 +901,7 @@ export function FarmerDashboardLayout() {
             />
 
             {/* Milestone Escrow Rails */}
-            <EscrowTracker />
+            <EscrowTracker activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} />
 
           </div>
         )}
@@ -953,7 +945,7 @@ export function FarmerDashboardLayout() {
         {activeTab === 'decision-engine' && (
           <div className="space-y-6">
             <SellVsWaitCard />
-            <PriceChart commodity="Sharbati Wheat" mandiPrices={mockPrices} />
+            <PriceChart commodity={myLots[0]?.cropName || 'Sharbati Wheat'} mandiPrices={mockPrices} />
           </div>
         )}
 
@@ -962,7 +954,7 @@ export function FarmerDashboardLayout() {
         {/* ========================================================================= */}
         {activeTab === 'escrow' && (
           <div className="space-y-6">
-            <EscrowTracker />
+            <EscrowTracker activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} />
           </div>
         )}
 

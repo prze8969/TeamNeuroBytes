@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslations } from '@/lib/LocaleContext';
 import { API_BASE_URL } from '@/lib/api';
+import { FarmgateOtpModal } from '@/components/farmer/FarmgateOtpModal';
 
 export interface EscrowMilestoneState {
   escrowId: number;
@@ -34,13 +35,13 @@ export interface EscrowMilestoneState {
   transporterName: string;
 }
 
-export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMilestoneState> }) {
+export function EscrowTracker({ initialData, activeCropName }: { initialData?: Partial<EscrowMilestoneState>; activeCropName?: string }) {
   const t = useTranslations('escrow');
 
   const [escrow, setEscrow] = useState<EscrowMilestoneState>({
     escrowId: 101,
     lotId: 1,
-    cropName: 'Sharbati Wheat (5.0 Tons)',
+    cropName: activeCropName || 'Sharbati Wheat (5.0 Tons)',
     totalDeposit: 139250,
     farmerPayout: 132500,
     freightCost: 4750,
@@ -57,6 +58,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
   const [inputDeliveryOtp, setInputDeliveryOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
 
   const triggerToast = (msg: string) => {
     setToastMsg(msg);
@@ -273,6 +275,18 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
           <p className="text-[11px] text-slate-500 mt-0.5">
             Status: {escrow.isPickupVerified ? <strong className="text-emerald-700">IN_TRANSIT</strong> : 'Awaiting Driver OTP'}
           </p>
+
+          {escrow.status === 'LOCKED' && (
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => setIsOtpModalOpen(true)}
+              className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-[11px] rounded-xl h-8 shadow-xs cursor-pointer flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02]"
+            >
+              <KeyRound size={12} />
+              <span>Enter 4-Digit OTP</span>
+            </Button>
+          )}
         </div>
 
         {/* Step 4: Final Settlement & 100% Payout */}
@@ -331,22 +345,14 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
                 </span>
               </div>
 
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  maxLength={4}
-                  placeholder="Enter 4-digit code from driver"
-                  className="bg-white border-slate-300 text-slate-900 font-mono text-center text-xs h-10 font-bold rounded-xl placeholder:text-slate-400"
-                  value={inputPickupOtp}
-                  onChange={(e) => setInputPickupOtp(e.target.value)}
-                />
+              <div className="flex items-center gap-2">
                 <Button
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 h-10 rounded-xl shadow-xs whitespace-nowrap cursor-pointer"
-                  onClick={handleVerifyPickupHandshake}
-                  disabled={loading}
+                  type="button"
+                  onClick={() => setIsOtpModalOpen(true)}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black text-xs h-10 rounded-xl shadow-xs cursor-pointer flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
                 >
-                  {loading ? 'Verifying...' : '🤝 Confirm Handover'}
+                  <KeyRound size={14} />
+                  <span>🔑 Open 4-Digit Handshake Modal</span>
                 </Button>
               </div>
             </div>
@@ -378,18 +384,18 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
               </span>
             </div>
             <p className="text-xs text-slate-500 leading-relaxed">
-              Upon truck arrival at destination APMC terminal, gross weight and quality assays are verified against the YOLOv8 certificate before full payout disbursement.
+              Upon final delivery at the buyer's terminal weighbridge and optical sampling pass, enter the destination settlement code to trigger the 100% instant DBT payout.
             </p>
           </div>
 
-          {escrow.status === 'IN_TRANSIT' ? (
+          {escrow.status !== 'SETTLED' && (
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200">
                 <div className="space-y-0.5">
-                  <span className="text-xs font-bold text-slate-700 block">Mandi Inward Authorization Code:</span>
-                  <span className="text-[11px] text-slate-500">Generated for terminal weighbridge receipt</span>
+                  <span className="text-xs font-bold text-slate-700 block">Expected Inward Code:</span>
+                  <span className="text-[11px] text-slate-500">Provided by buyer upon weighbridge acceptance</span>
                 </div>
-                <span className="text-xl font-black font-mono text-emerald-900 bg-emerald-100/90 px-3.5 py-1.5 rounded-xl border border-emerald-300 shadow-xs tracking-widest">
+                <span className="text-xl font-black font-mono text-blue-900 bg-blue-100/90 px-3.5 py-1.5 rounded-xl border border-blue-300 shadow-xs tracking-widest">
                   {escrow.deliveryOtp}
                 </span>
               </div>
@@ -398,7 +404,7 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
                 <Input
                   type="text"
                   maxLength={4}
-                  placeholder="Enter 4-digit inward code"
+                  placeholder="Enter inward code"
                   className="bg-white border-slate-300 text-slate-900 font-mono text-center text-xs h-10 font-bold rounded-xl placeholder:text-slate-400"
                   value={inputDeliveryOtp}
                   onChange={(e) => setInputDeliveryOtp(e.target.value)}
@@ -409,30 +415,48 @@ export function EscrowTracker({ initialData }: { initialData?: Partial<EscrowMil
                   onClick={handleSettleDelivery}
                   disabled={loading}
                 >
-                  {loading ? 'Settling...' : '⚖️ Confirm & Release Payout'}
+                  {loading ? 'Processing...' : '💰 Final Settlement'}
                 </Button>
               </div>
             </div>
-          ) : escrow.status === 'SETTLED' ? (
-            <div className="p-3.5 bg-emerald-100/90 border border-emerald-300 rounded-xl text-xs text-emerald-950 space-y-1.5">
+          )}
+
+          {escrow.status === 'SETTLED' && (
+            <div className="p-3.5 bg-emerald-100/90 border border-emerald-300 rounded-xl text-xs text-emerald-950 font-medium space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <CheckCircle2 size={15} className="text-emerald-700 shrink-0" />
-                <span>Escrow Successfully Settled via DBT</span>
+                <span>Trade 100% Settled &amp; Paid</span>
               </div>
               <p className="text-[11px] text-emerald-800">
-                ₹{escrow.farmerPayout.toLocaleString('en-IN')} credited to Farmer Bank A/C. Tax Invoice generated.
-              </p>
-            </div>
-          ) : (
-            <div className="py-4 text-center">
-              <p className="text-xs text-slate-400 italic">
-                Awaiting farmgate pickup verification to activate destination inward controls.
+                Full payment of ₹{escrow.farmerPayout.toLocaleString('en-IN')} has been transferred to your registered bank account via RBI DBT rails.
               </p>
             </div>
           )}
         </div>
 
       </div>
+
+      {/* Interactive 4-Digit OTP Farmgate Handshake Modal */}
+      <FarmgateOtpModal
+        isOpen={isOtpModalOpen}
+        onClose={() => setIsOtpModalOpen(false)}
+        escrowId={escrow.escrowId}
+        expectedOtp={escrow.pickupOtp}
+        transporterName={escrow.transporterName}
+        vehicleNumber="MH-15-EG-4421"
+        driverName="Vikram Shinde"
+        driverPhone="+91 98234-56789"
+        fuelAdvanceAmount={fuelAdvanceAmount}
+        cropTitle={escrow.cropName}
+        onSuccess={() => {
+          setEscrow(prev => ({
+            ...prev,
+            status: 'IN_TRANSIT',
+            isPickupVerified: true
+          }));
+          triggerToast('🚚 Farm Gate Pickup Verified! Escrow Smart Contract automatically released 30% Fuel Advance (₹1,425) to Transporter. Live GPS tracking active.');
+        }}
+      />
 
     </div>
   );
