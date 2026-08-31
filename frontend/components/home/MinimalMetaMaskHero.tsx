@@ -33,7 +33,7 @@ export function MinimalMetaMaskHero() {
       {/* Center Group: Tagline + Single Dominant CTA */}
       <div className="max-w-5xl mx-auto space-y-10 sm:space-y-14 relative z-10 my-auto">
         
-        {/* Tagline: Large, Bold, Clean */}
+        {/* Tagline: Large, Bold, Clean for all 8 languages */}
         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display font-heading tracking-tight text-white leading-[1.08] max-w-4xl mx-auto">
           {currentLocale === 'hi' ? (
             <>
@@ -50,6 +50,46 @@ export function MinimalMetaMaskHero() {
                 योग्य भाव मिळवा.
               </span> <br />
               सुरक्षित पैसे मिळवा.
+            </>
+          ) : currentLocale === 'pa' ? (
+            <>
+              ਫ਼ਸਲ ਵੇਚੋ। <br />
+              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
+                ਸਹੀ ਮੁੱਲ ਪਾਓ।
+              </span> <br />
+              ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਲਓ।
+            </>
+          ) : currentLocale === 'gu' ? (
+            <>
+              પાક વેચો. <br />
+              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
+                સાચો ભાવ મેળવો.
+              </span> <br />
+              સુરક્ષિત ચુકવણી મેળવો.
+            </>
+          ) : currentLocale === 'ta' ? (
+            <>
+              பயிரை விற்கவும். <br />
+              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
+                சரியான விலை பெறுங்கள்.
+              </span> <br />
+              பாதுகாப்பாக பணம் பெறுங்கள்.
+            </>
+          ) : currentLocale === 'te' ? (
+            <>
+              పంటను అమ్మండి. <br />
+              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
+                సరైన ధర పొందండి.
+              </span> <br />
+              సురక్షితంగా చెల్లింపు పొందండి.
+            </>
+          ) : currentLocale === 'kn' ? (
+            <>
+              ಬೆಳೆ ಮಾರಾಟ ಮಾಡಿ. <br />
+              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
+                ಸರಿಯಾದ ಬೆಲೆ ಪಡೆಯಿರಿ.
+              </span> <br />
+              ಸುರಕ್ಷಿತವಾಗಿ ಹಣ ಪಡೆಯಿರಿ.
             </>
           ) : (
             <>
