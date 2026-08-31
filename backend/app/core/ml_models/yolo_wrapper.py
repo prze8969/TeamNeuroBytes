@@ -179,12 +179,15 @@ class YOLOCropGradingModel:
                 # 3. Purplish/Red Bulb crops: Onion (magenta/red-violet tones)
                 elif (260 <= hue < 345) or ((hue >= 320 or hue <= 18) and mean_b > 60 and mean_r > 105 and mean_b > mean_g * 0.65):
                     detected_commodity = "Onion"
-                # 4. Yellow Fruit: Banana (distinct yellow peel with R & G high, B low, hue 28° to 72°, G/R >= 0.72, R > B + 30, G > B + 18)
-                elif (28 <= hue <= 72) and (mean_r > 140 and mean_g > 120 and (mean_g / (mean_r + 0.001)) >= 0.72 and (mean_r - mean_b) >= 30 and (mean_g - mean_b) >= 18):
-                    detected_commodity = "Banana"
-                # 5. Earthy Tuber crops: Potato (warm khaki / tan / earthy ochre skin, R is noticeably > G, sat between 0.15 and 0.42, hue 16° to 52°)
-                elif (16 <= hue <= 52) and (mean_r > 110 and mean_g > 80 and (mean_r - mean_g) >= 16 and (mean_g / (mean_r + 0.001)) < 0.82 and (mean_r - mean_b) >= 28 and sat <= 0.42):
+                # 4. Earthy Tuber crops: Potato (warm khaki / tan / earthy ochre skin, sat <= 0.46, hue 14° to 58°, R > G)
+                elif (
+                    (14 <= hue <= 58 and sat <= 0.46 and mean_r > 95 and mean_g > 75 and (mean_r - mean_b) >= 12) or
+                    (mean_r > 120 and mean_g > 95 and (mean_r - mean_g) >= 8 and (mean_g - mean_b) >= 8 and sat <= 0.44)
+                ):
                     detected_commodity = "Potato"
+                # 5. Yellow Fruit: Banana (distinct vivid lemon yellow peel with high saturation > 0.48, hue 42° to 78°, very low blue < 85)
+                elif (42 <= hue <= 78 and sat > 0.48 and mean_r > 160 and mean_g > 145 and mean_b < 85):
+                    detected_commodity = "Banana"
                 # 6. Grains: Wheat (golden amber grain kernels, moderate brightness, sat < 0.35)
                 elif (mean_r > 135 and mean_g > 115 and abs(mean_r - mean_g) <= 35 and sat < 0.35 and mean_b < 145):
                     detected_commodity = "Wheat"
@@ -199,10 +202,10 @@ class YOLOCropGradingModel:
                     detected_commodity = "Desi Chana (Chickpeas)"
                 # 10. Fallback heuristics for organic produce
                 elif mean_r > mean_g and mean_g > mean_b:
-                    if (mean_g / (mean_r + 0.001)) >= 0.75 and (mean_g - mean_b) >= 18:
-                        detected_commodity = "Banana"
-                    elif (mean_r - mean_g) >= 18:
+                    if sat <= 0.42 and (mean_r - mean_g) >= 10:
                         detected_commodity = "Potato"
+                    elif sat > 0.50:
+                        detected_commodity = "Banana"
                     else:
                         detected_commodity = "Wheat"
                 else:
