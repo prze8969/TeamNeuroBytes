@@ -314,41 +314,36 @@ export function ListNewCropModal({
           let detected = 'Chandramukhi Potato';
 
           // 1. Green crops: Chilli / Capsicum
-          if ((hue >= 65 && hue <= 170) || (meanG > meanR * 1.15 && meanG > 80)) {
+          if ((hue >= 65 && hue <= 165) || (meanG > meanR * 1.15 && meanG > 80)) {
             detected = 'Green Chilli';
           }
           // 2. Red crops: Tomato (bright crimson/red, high R/G ratio)
-          else if ((hue >= 340 || hue <= 22) && meanR > 130 && meanR > meanG * 1.25 && sat > 0.28) {
+          else if ((hue >= 345 || hue <= 20) && meanR > 120 && meanR > meanG * 1.25) {
             detected = 'Hybrid Tomato (Abhinav)';
           }
           // 3. Purplish / Red Bulb crops: Onion (magenta/red-violet tones)
-          else if ((hue >= 260 && hue < 345) || ((hue >= 320 || hue <= 18) && meanB > 60 && meanR > 105 && meanB > meanG * 0.65)) {
+          else if ((hue >= 260 && hue < 345) || ((hue >= 320 || hue <= 18) && meanB > 50 && meanR > 100)) {
             detected = 'Nashik Red Onion (Garva)';
           }
-          // 4. Earthy Tuber crops: Potato (warm khaki / tan / beige / ochre skin, low-to-medium sat <= 0.46, hue 14° to 58°, R > G)
-          else if (
-            (hue >= 14 && hue <= 58 && sat <= 0.46 && meanR > 95 && meanG > 75 && (meanR - meanB) >= 12) ||
-            (meanR > 120 && meanG > 95 && (meanR - meanG) >= 8 && (meanG - meanB) >= 8 && sat <= 0.44)
-          ) {
+          // 4. Earthy Tuber crops: Potato (warm ochre/khaki/tan, Hue 18°-48°, Red distinctly higher than Green R/G >= 1.20)
+          else if ((hue >= 18 && hue <= 48) && (meanR / (meanG + 0.001) >= 1.20) && (meanG - meanB >= 15)) {
             detected = 'Chandramukhi Potato';
           }
-          // 5. Yellow Fruit: Banana (distinct vivid lemon yellow with HIGH saturation > 0.48, hue 42° to 78°, very low blue < 85)
-          else if (
-            (hue >= 42 && hue <= 78 && sat > 0.48 && meanR > 160 && meanG > 145 && meanB < 85)
-          ) {
+          // 5. Yellow Fruit: Banana (distinct vivid lemon yellow with HIGH saturation > 0.45, Hue 46°-75°, Green close to Red)
+          else if ((hue >= 46 && hue <= 75) && (meanG / (meanR + 0.001) >= 0.80) && sat > 0.45) {
             detected = 'Grand Naine / Robusta Banana';
           }
-          // 6. Grains: Wheat (golden amber grain kernels, moderate brightness, sat < 0.35)
-          else if (meanR > 135 && meanG > 115 && Math.abs(meanR - meanG) <= 35 && sat < 0.35 && meanB < 145) {
+          // 6. Oilseeds: Soybean (golden yellow spherical seed, moderate sat, R and G close)
+          else if (hue >= 40 && hue <= 62 && sat >= 0.40 && Math.abs(meanR - meanG) < 18 && meanR > 140) {
+            detected = 'Yellow Soybean (JS-335)';
+          }
+          // 7. Grains: Wheat (golden amber grain kernels, low saturation < 0.35)
+          else if (hue >= 20 && hue <= 50 && sat < 0.35) {
             detected = 'Sharbati Wheat (Lokwan)';
           }
-          // 7. Grains: Rice (light white/cream slender grain)
+          // 8. Grains: Rice (light white/cream slender grain)
           else if (meanR > 165 && meanG > 165 && meanB > 140 && sat < 0.20) {
             detected = 'Basmati Rice (Pusa 1121)';
-          }
-          // 8. Oilseeds: Soybean (yellow spherical seed)
-          else if (hue >= 25 && hue <= 65 && sat > 0.38 && meanR > 150 && meanG > 135) {
-            detected = 'Yellow Soybean (JS-335)';
           }
           // 9. Pulses: Chana / Chickpeas
           else if (hue >= 18 && hue <= 48 && meanR > 135 && meanG > 105 && (meanR - meanG) >= 20) {
@@ -356,7 +351,7 @@ export function ListNewCropModal({
           }
           // 10. Fallback: Default to Potato if earthy/tuber tones, else Wheat
           else if (meanR > meanG && meanG > meanB) {
-            if (sat <= 0.42 && (meanR - meanG) >= 10) {
+            if (meanR / (meanG + 0.001) >= 1.20) {
               detected = 'Chandramukhi Potato';
             } else if (sat > 0.50) {
               detected = 'Grand Naine / Robusta Banana';
