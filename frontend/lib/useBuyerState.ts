@@ -785,7 +785,7 @@ export function useBuyerState() {
 
     // 4. Post bid statistics to backend database
     try {
-      await fetch(`${API_BASE_URL}/api/marketplace/bids`, {
+      const res = await fetch(`${API_BASE_URL}/api/marketplace/bids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -798,6 +798,19 @@ export function useBuyerState() {
           note: `Escrow Locked via ${bidData.paymentMethod} with ${chosenCarrier}. On-Chain Hash: ${transactionHash || 'Local-Sim'}`
         })
       });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.id) {
+          try {
+            const saved = localStorage.getItem('kisansetu_bids');
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              const updated = parsed.map((b: any) => b.id === `BID-${uniqueVaultId}` ? { ...b, id: `BID-${data.id}` } : b);
+              localStorage.setItem('kisansetu_bids', JSON.stringify(updated));
+            }
+          } catch {}
+        }
+      }
     } catch {}
 
     setLoadingBidLotId(null);

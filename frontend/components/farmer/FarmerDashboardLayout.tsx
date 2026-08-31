@@ -408,13 +408,25 @@ export function FarmerDashboardLayout() {
       }
 
       const allMergedBids = [...localBids, ...backendBids];
-      const seenBidIds = new Set<string>();
+      const seenKeys = new Set<string>();
       const finalBids: Bid[] = [];
+
       for (const b of allMergedBids) {
-        if (!seenBidIds.has(b.id)) {
-          seenBidIds.add(b.id);
-          finalBids.push(b);
+        const normLotId = String(b.lotId || '').replace(/\D/g, '') || '1';
+        const normRate = Number(b.amountPerKg || 0).toFixed(2);
+        const normBuyer = String(b.buyerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        // Unique signature: buyer + lot + rate (e.g. "agroprocureprivateltd_1_30.00")
+        const compositeKey = `${normBuyer}_${normLotId}_${normRate}`;
+        const idKey = String(b.id || '');
+
+        if (seenKeys.has(compositeKey) || (idKey && seenKeys.has(idKey))) {
+          continue;
         }
+
+        if (compositeKey) seenKeys.add(compositeKey);
+        if (idKey) seenKeys.add(idKey);
+        finalBids.push(b);
       }
 
       if (finalBids.length > 0) {
@@ -440,7 +452,19 @@ export function FarmerDashboardLayout() {
       }
 
       if (fallbackLocalBids.length > 0) {
-        setBids(fallbackLocalBids);
+        const seenFallbackKeys = new Set<string>();
+        const uniqueFallback: Bid[] = [];
+        for (const b of fallbackLocalBids) {
+          const normLotId = String(b.lotId || '').replace(/\D/g, '') || '1';
+          const normRate = Number(b.amountPerKg || 0).toFixed(2);
+          const normBuyer = String(b.buyerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const compositeKey = `${normBuyer}_${normLotId}_${normRate}`;
+          if (!seenFallbackKeys.has(compositeKey)) {
+            seenFallbackKeys.add(compositeKey);
+            uniqueFallback.push(b);
+          }
+        }
+        setBids(uniqueFallback);
       } else if (isDemoFarmer) {
         setBids(defaultBids);
       } else {
