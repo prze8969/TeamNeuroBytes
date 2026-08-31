@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { API_BASE_URL } from '@/lib/api';
-import { TrendingUp, ArrowUpRight, ArrowDownRight, Scale, ShieldCheck, Sparkles, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, ArrowDownRight, Sparkles, CheckCircle2, DollarSign, Calendar, Warehouse } from 'lucide-react';
 import { useAppTheme } from '@/lib/ThemeContext';
 
 interface MandiPriceFeed {
@@ -93,12 +93,12 @@ const DEFAULT_PRICE_FEED: MandiPriceFeed[] = [
   }
 ];
 
-const COMMODITY_FILTERS = ['All Featured', 'Wheat', 'Onion', 'Tomato', 'Potato', 'Soybean'];
+const COMMODITY_FILTERS = ['All Crops', 'Wheat', 'Onion', 'Tomato', 'Potato', 'Soybean'];
 
 export function LivePriceEngine() {
   const { config } = useAppTheme();
   const [prices, setPrices] = useState<MandiPriceFeed[]>(DEFAULT_PRICE_FEED);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All Featured');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All Crops');
   const [selectedCommodityIndex, setSelectedCommodityIndex] = useState<number>(0);
   const [lotWeightKg, setLotWeightKg] = useState<number>(5000);
 
@@ -112,17 +112,14 @@ export function LivePriceEngine() {
             setPrices(data);
           }
         }
-      } catch {
-        // Fallback to rich default benchmark data
-      }
+      } catch {}
     }
     loadPrices();
   }, []);
 
   // Filtered prices based on selected category (capped at 4 key cards max for clean UX)
   const displayPrices = useMemo(() => {
-    if (selectedCategory === 'All Featured') {
-      // Pick unique top commodities to prevent clutter
+    if (selectedCategory === 'All Crops') {
       const uniqueCommodities = new Set<string>();
       const featured: MandiPriceFeed[] = [];
       for (const p of prices) {
@@ -144,34 +141,33 @@ export function LivePriceEngine() {
   const storageCostEstimate = lotWeightKg * 0.40;
   const netForecastVal = forecast7dVal - storageCostEstimate;
   const profitDelta = netForecastVal - currentTotalVal;
-  const fpoFreightSavings = currentTotalVal * 0.12;
 
   return (
-    <div className="bg-slate-900/95 rounded-3xl border border-slate-700/80 p-6 sm:p-8 space-y-6 text-left font-sans text-white shadow-2xl backdrop-blur-xl">
+    <div className="rounded-3xl border border-white/15 bg-black/35 backdrop-blur-2xl p-6 sm:p-8 space-y-6 text-left font-sans text-white shadow-2xl transition-all duration-300">
       
-      {/* Engine Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-xs font-mono font-extrabold uppercase text-amber-400 tracking-wider">
-              AGMARKNET Live Mandi Intelligence
+            <span className="text-xs font-mono font-black uppercase text-amber-300 tracking-wider">
+              Today's Live Mandi Market Prices
             </span>
           </div>
           <h3 className="text-xl sm:text-2xl font-bold font-heading text-white mt-1">
-            Real-Time Mandi Rates &amp; Sell vs. Wait Profit Engine
+            Check Today's Crop Prices &amp; Should You Sell or Wait?
           </h3>
         </div>
 
         <div className="flex items-center gap-2 shrink-0 bg-amber-400 text-slate-950 px-3.5 py-1.5 rounded-2xl text-xs font-black shadow-md">
           <Sparkles size={15} />
-          <span>Real-time APMC Mandi Feed</span>
+          <span>Live Market Rates</span>
         </div>
       </div>
 
       {/* Filter Category Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-        <span className="text-slate-400 font-mono text-[11px] uppercase tracking-wider shrink-0 mr-1">Filter Crop:</span>
+        <span className="text-emerald-200/80 font-bold text-xs shrink-0 mr-1">Choose Crop:</span>
         {COMMODITY_FILTERS.map((cat) => (
           <button
             key={cat}
@@ -179,10 +175,10 @@ export function LivePriceEngine() {
               setSelectedCategory(cat);
               setSelectedCommodityIndex(0);
             }}
-            className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer whitespace-nowrap ${
               selectedCategory === cat
-                ? 'bg-amber-400 text-slate-950 shadow-xs scale-[1.02]'
-                : 'bg-slate-800/80 hover:bg-slate-750 text-slate-300 border border-slate-700/60'
+                ? 'bg-amber-400 text-slate-950 shadow-md scale-[1.02]'
+                : 'bg-white/10 hover:bg-white/15 text-white/90 border border-white/10'
             }`}
           >
             {cat}
@@ -190,7 +186,7 @@ export function LivePriceEngine() {
         ))}
       </div>
 
-      {/* Compact 4-Card Ticker Strip */}
+      {/* 4 Clean Mandi Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {displayPrices.map((item, idx) => {
           const isSelected = selectedCommodityIndex === idx;
@@ -199,29 +195,29 @@ export function LivePriceEngine() {
             <button
               key={`${item.commodity}-${item.mandi_name}-${idx}`}
               onClick={() => setSelectedCommodityIndex(idx)}
-              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 backdrop-blur-md ${
                 isSelected
-                  ? 'bg-amber-400/15 border-amber-400 text-white ring-2 ring-amber-400/60 shadow-lg scale-[1.01]'
-                  : 'bg-slate-800/60 border-slate-700/60 hover:bg-slate-800 text-slate-300 shadow-2xs'
+                  ? 'bg-amber-400/20 border-amber-400 text-white ring-2 ring-amber-400/70 shadow-lg scale-[1.01]'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/90'
               }`}
             >
               <div className="flex items-center justify-between gap-1">
-                <span className="text-xs font-bold text-slate-200 truncate">{item.mandi_name.split(' ')[0]}</span>
-                <span className={`text-[10px] font-bold font-mono px-1.5 py-0.5 rounded flex items-center gap-0.5 shrink-0 ${
+                <span className="text-xs font-bold text-white/90 truncate">{item.mandi_name.split(' ')[0]}</span>
+                <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full flex items-center gap-0.5 shrink-0 ${
                   priceDiff >= 0 ? 'bg-emerald-400 text-slate-950' : 'bg-rose-400 text-slate-950'
                 }`}>
-                  {priceDiff >= 0 ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
+                  {priceDiff >= 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
                   +₹{Math.abs(priceDiff).toFixed(2)}
                 </span>
               </div>
 
               <div>
                 <div className="font-extrabold text-sm text-white truncate">
-                  {item.commodity} <span className="font-normal text-xs text-slate-400">({(item.variety || '').split(' ')[0] || 'Std'})</span>
+                  {item.commodity} <span className="font-normal text-xs text-white/70">({(item.variety || '').split(' ')[0] || 'Good'})</span>
                 </div>
 
                 <div className="text-sm font-mono font-black text-amber-300 mt-0.5">
-                  ₹{item.modal_price_kg.toFixed(2)}<span className="text-[10px] font-normal text-slate-400">/kg</span>
+                  ₹{item.modal_price_kg.toFixed(2)}<span className="text-[10px] font-normal text-white/70">/kg</span>
                 </div>
               </div>
             </button>
@@ -229,16 +225,16 @@ export function LivePriceEngine() {
         })}
       </div>
 
-      {/* Calculator Grid */}
+      {/* Sell vs Wait Decision Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-1">
         
-        {/* Left Column: Lot Input Controls */}
-        <div className="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-4 flex flex-col justify-between">
+        {/* Left: Crop Weight Slider */}
+        <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4 flex flex-col justify-between backdrop-blur-md">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-slate-200">Harvest Lot Quantity:</label>
+              <label className="text-xs font-bold text-white/90">Your Crop Weight:</label>
               <span className="font-mono font-black text-xs text-slate-950 bg-amber-400 px-2.5 py-0.5 rounded-lg shadow-sm">
-                {(lotWeightKg / 1000).toFixed(1)} Metric Tons ({lotWeightKg.toLocaleString('en-IN')} kg)
+                {(lotWeightKg / 1000).toFixed(1)} Tons ({lotWeightKg.toLocaleString('en-IN')} kg)
               </span>
             </div>
             <input
@@ -250,64 +246,67 @@ export function LivePriceEngine() {
               onChange={(e) => setLotWeightKg(Number(e.target.value))}
               className="w-full accent-amber-400 cursor-pointer"
             />
+            <p className="text-[11px] text-white/60">Slide to change your total crop quantity</p>
           </div>
 
-          <div className="pt-3 space-y-2 text-xs border-t border-slate-700/80">
-            <div className="flex justify-between text-slate-300">
-              <span>Selected APMC:</span>
+          <div className="pt-3 space-y-2 text-xs border-t border-white/10">
+            <div className="flex justify-between text-white/80">
+              <span>Selected Mandi:</span>
               <strong className="text-white truncate max-w-[150px]">{activeItem?.mandi_name}</strong>
             </div>
-            <div className="flex justify-between text-slate-300">
-              <span>Current Spot Price:</span>
+            <div className="flex justify-between text-white/80">
+              <span>Today's Rate:</span>
               <strong className="text-white font-mono">₹{activeItem?.modal_price_kg?.toFixed(2)}/kg</strong>
             </div>
-            <div className="flex justify-between text-slate-300">
-              <span>7-Day Price Forecast:</span>
-              <strong className="text-amber-400 font-mono">₹{activeItem?.forecast_7d_modal_kg?.toFixed(2)}/kg</strong>
+            <div className="flex justify-between text-white/80">
+              <span>Expected Rate Next Week:</span>
+              <strong className="text-amber-300 font-mono">₹{activeItem?.forecast_7d_modal_kg?.toFixed(2)}/kg</strong>
             </div>
           </div>
         </div>
 
-        {/* Middle: Decision 1 - Sell Today */}
-        <div className="p-5 rounded-2xl bg-slate-800/60 border border-slate-700/80 space-y-3 flex flex-col justify-between">
-          <div className="space-y-1">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">
-              Option A: Immediate Sale
-            </span>
-            <h4 className="font-bold text-sm text-white">Sell Today at Farmgate</h4>
-            <p className="text-xs text-slate-400">
-              Instant payout with 100% RBI Escrow vault guarantee. Zero storage cost.
+        {/* Middle: Option 1 - Sell Today */}
+        <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3 flex flex-col justify-between backdrop-blur-md">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-white/70">
+              <DollarSign size={14} className="text-emerald-400" />
+              <span>Option 1: Sell Today</span>
+            </div>
+            <h4 className="font-bold text-sm text-white">Sell Now at Your Farm</h4>
+            <p className="text-xs text-white/70 leading-relaxed">
+              Get 100% money safely deposited directly into your bank account today. Zero waiting, zero storage costs.
             </p>
           </div>
 
-          <div className="p-3.5 bg-slate-900/80 rounded-xl border border-slate-700 space-y-1">
-            <span className="text-[11px] text-slate-400 block">Guaranteed Net Payout:</span>
-            <strong className="text-xl font-black font-mono text-white block">
+          <div className="p-3.5 bg-black/40 rounded-xl border border-white/10 space-y-1">
+            <span className="text-[11px] text-white/70 block">Your Total Money Today:</span>
+            <strong className="text-2xl font-black font-mono text-white block">
               ₹{Math.round(currentTotalVal).toLocaleString('en-IN')}
             </strong>
           </div>
         </div>
 
-        {/* Right: Decision 2 - Hold in e-NWR Cold Storage */}
-        <div className="p-5 rounded-2xl bg-amber-400/10 border border-amber-400/60 space-y-3 flex flex-col justify-between">
-          <div className="space-y-1">
+        {/* Right: Option 2 - Wait 7 Days in Warehouse */}
+        <div className="p-5 rounded-2xl bg-amber-400/10 border border-amber-400/60 space-y-3 flex flex-col justify-between backdrop-blur-md">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 block">
-                Option B: AI Hold Recommendation
-              </span>
-              <span className="text-[9px] font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full">
-                +₹{Math.round(profitDelta > 0 ? profitDelta : 0).toLocaleString('en-IN')} More
+              <div className="flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                <Warehouse size={14} className="text-amber-400" />
+                <span>Option 2: Wait 7 Days</span>
+              </div>
+              <span className="text-[10px] font-black bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full shadow-xs">
+                Earn ₹{Math.round(profitDelta > 0 ? profitDelta : 0).toLocaleString('en-IN')} More
               </span>
             </div>
-            <h4 className="font-bold text-sm text-white">Store in e-NWR Warehouse for 7 Days</h4>
-            <p className="text-xs text-slate-300">
-              Higher projected price after deducting ₹0.40/kg cold storage fee.
+            <h4 className="font-bold text-sm text-white">Keep in Safe Cold Storage for 1 Week</h4>
+            <p className="text-xs text-white/80 leading-relaxed">
+              Mandi prices are expected to rise. Even after paying small warehouse rent, you earn more profit.
             </p>
           </div>
 
-          <div className="p-3.5 bg-slate-900/90 rounded-xl border border-amber-400/40 space-y-1">
-            <span className="text-[11px] text-slate-400 block">Net Expected Earnings (After Storage):</span>
-            <strong className="text-xl font-black font-mono text-amber-300 block">
+          <div className="p-3.5 bg-black/50 rounded-xl border border-amber-400/40 space-y-1">
+            <span className="text-[11px] text-amber-200/90 block">Your Total Money After 1 Week:</span>
+            <strong className="text-2xl font-black font-mono text-amber-300 block">
               ₹{Math.round(netForecastVal).toLocaleString('en-IN')}
             </strong>
           </div>
