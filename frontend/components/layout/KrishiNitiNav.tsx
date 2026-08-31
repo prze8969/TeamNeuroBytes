@@ -8,6 +8,8 @@ import { useAuth } from '@/lib/AuthContext';
 import { useLocaleContext } from '@/lib/LocaleContext';
 import { LANDING_TRANSLATIONS } from '@/lib/landingTranslations';
 import { Locale } from '@/i18n/routing';
+import { ThemeSwitcher } from '@/components/layout/ThemeSwitcher';
+import { useAppTheme } from '@/lib/ThemeContext';
 import { 
   HelpCircle, 
   Globe, 
@@ -34,6 +36,7 @@ const LANGUAGES: Array<{ code: Locale; name: string; native: string }> = [
 export function KrishiNitiNav() {
   const { role, isAuthenticated } = useAuth();
   const { currentLocale, setLocale } = useLocaleContext();
+  const { config } = useAppTheme();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,7 +51,7 @@ export function KrishiNitiNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-emerald-800/70 bg-emerald-950/95 backdrop-blur-xl transition-all">
+      <header className={`sticky top-0 z-50 w-full border-b ${config.navBorder} ${config.navBg} backdrop-blur-xl transition-all duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between">
           
           {/* Left: Clean Branding with compact SIH badge */}
@@ -88,22 +91,25 @@ export function KrishiNitiNav() {
           </nav>
 
           {/* Right Action Group */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-2.5">
             
+            {/* Live Theme Palette Switcher */}
+            <ThemeSwitcher />
+
             {/* Language Selector Dropdown (Prominent for farmers) */}
             <div className="relative">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="text-xs sm:text-sm font-bold px-3 py-2 rounded-xl border border-emerald-700/80 bg-emerald-900/70 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                className="text-xs sm:text-sm font-bold px-3 py-2 rounded-xl border border-white/20 bg-black/20 text-white hover:bg-black/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm backdrop-blur-md"
                 title="Change Language"
               >
-                <Globe size={15} className="text-amber-400" />
+                <Globe size={14} className="text-amber-300" />
                 <span>{activeLangObj.native}</span>
-                <ChevronDown size={13} className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={12} className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 rounded-2xl bg-emerald-950/98 border border-emerald-700/90 shadow-2xl p-1.5 z-50 backdrop-blur-2xl">
+                <div className="absolute right-0 mt-2 w-44 rounded-2xl bg-slate-950/98 border border-slate-700/90 text-white shadow-2xl p-1.5 z-50 backdrop-blur-2xl">
                   {LANGUAGES.map((lang) => (
                     <button
                       key={lang.code}
@@ -111,10 +117,10 @@ export function KrishiNitiNav() {
                       className={`w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm flex items-center justify-between cursor-pointer transition-colors ${
                         currentLocale === lang.code
                           ? 'bg-amber-400/20 text-amber-300 font-bold'
-                          : 'text-emerald-100 hover:bg-emerald-900/70 hover:text-white'
+                          : 'text-slate-200 hover:bg-slate-800/80 hover:text-white'
                       }`}
                     >
-                      <span>{lang.native} <span className="text-[10px] text-emerald-400">({lang.name})</span></span>
+                      <span>{lang.native} <span className="text-[10px] text-slate-400">({lang.name})</span></span>
                       {currentLocale === lang.code && <Check size={14} className="text-amber-300" />}
                     </button>
                   ))}

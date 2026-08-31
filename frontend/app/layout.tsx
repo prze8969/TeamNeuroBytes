@@ -12,6 +12,7 @@ import {
 import "./globals.css";
 import { LocaleProvider } from "@/lib/LocaleContext";
 import { AuthProvider } from "@/lib/AuthContext";
+import { ThemeProvider } from "@/lib/ThemeContext";
 import { Toaster } from "sonner";
 
 const mukta = Mukta({
@@ -99,12 +100,14 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white font-sans">
-        <AuthProvider>
-          <LocaleProvider>
-            {children}
-          </LocaleProvider>
-        </AuthProvider>
-        <Toaster position="top-right" richColors />
+        <ThemeProvider>
+          <AuthProvider>
+            <LocaleProvider>
+              {children}
+            </LocaleProvider>
+          </AuthProvider>
+          <Toaster position="top-right" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );
