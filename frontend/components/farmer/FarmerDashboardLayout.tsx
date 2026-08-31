@@ -378,11 +378,23 @@ export function FarmerDashboardLayout() {
         setMyLots([]);
       }
 
+      let localBids: Bid[] = [];
+      try {
+        const savedBids = localStorage.getItem('kisansetu_bids');
+        if (savedBids) {
+          const parsed = JSON.parse(savedBids);
+          if (Array.isArray(parsed)) {
+            localBids = parsed;
+          }
+        }
+      } catch {}
+
+      let backendBids: Bid[] = [];
       if (bidsRes.ok) {
         const rawBids = await bidsRes.json();
         if (Array.isArray(rawBids) && rawBids.length > 0) {
           const buyerNames = ['Sahyadri Farms Trading Co.', 'AgroProcure Private Ltd', 'Vashi Fresh Distributors', 'Nashik Agro Exports'];
-          const mappedBids: Bid[] = rawBids.map((b: any, idx: number) => ({
+          backendBids = rawBids.map((b: any, idx: number) => ({
             id: `BID-${b.id || idx + 101}`,
             lotId: `LOT-${b.lot_id || 101}`,
             buyerId: String(b.buyer_id || idx + 2),
@@ -392,29 +404,46 @@ export function FarmerDashboardLayout() {
             escrowStatus: b.status === 'ACCEPTED' ? 'LOCKED' : b.status === 'REJECTED' ? 'RELEASED' : 'INITIATED',
             createdAt: b.created_at ? b.created_at.replace('T', ' ').slice(0, 16) : '2026-08-25 15:10'
           }));
-          if (finalLots.length > 0 || isDemoFarmer) {
-            setBids(mappedBids);
-          } else {
-            setBids([]);
-          }
-        } else if (isDemoFarmer) {
-          setBids(defaultBids);
-        } else {
-          setBids([]);
         }
+      }
+
+      const allMergedBids = [...localBids, ...backendBids];
+      const seenBidIds = new Set<string>();
+      const finalBids: Bid[] = [];
+      for (const b of allMergedBids) {
+        if (!seenBidIds.has(b.id)) {
+          seenBidIds.add(b.id);
+          finalBids.push(b);
+        }
+      }
+
+      if (finalBids.length > 0) {
+        setBids(finalBids);
       } else if (isDemoFarmer) {
         setBids(defaultBids);
       } else {
         setBids([]);
       }
     } catch {
+      let fallbackLocalBids: Bid[] = [];
+      try {
+        const savedBids = localStorage.getItem('kisansetu_bids');
+        if (savedBids) fallbackLocalBids = JSON.parse(savedBids);
+      } catch {}
+
       if (localLots.length > 0) {
         setMyLots(localLots);
       } else if (isDemoFarmer) {
         setMyLots(defaultLots);
-        setBids(defaultBids);
       } else {
         setMyLots([]);
+      }
+
+      if (fallbackLocalBids.length > 0) {
+        setBids(fallbackLocalBids);
+      } else if (isDemoFarmer) {
+        setBids(defaultBids);
+      } else {
         setBids([]);
       }
     } finally {
@@ -439,24 +468,37 @@ export function FarmerDashboardLayout() {
     const numericBidId = parseInt(bidIdStr.replace(/\D/g, ''), 10) || 1;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/escrow/accept-bid/${numericBidId}`, {
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      if (savedBids) {
+        const parsed = JSON.parse(savedBids);
+        const updated = parsed.map((b: any) => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b);
+        localStorage.setItem('kisansetu_bids', JSON.stringify(updated));
+      }
+    } catch {}
+
+    setBids(prev => prev.map(b => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b));
+    triggerToast(`🎉 Bid accepted! 100% buyer funds locked in RBI Escrow Vault. Transporter Kisan Express assigned for pickup.`);
+
+    try {
+      await fetch(`${API_BASE_URL}/api/escrow/accept-bid/${numericBidId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transporter_id: 4 })
-      });
+      }).catch(() => {});
+    } catch {}
+  };
 
-      if (res.ok) {
-        const data = await res.json();
-        triggerToast(`🎉 Bid accepted! 100% buyer funds (₹${data.total_locked_amount?.toLocaleString('en-IN') || '1,32,500'}) locked in RBI Escrow Vault #${data.id}. Transporter Kisan Express assigned.`);
-        await fetchLiveBidsAndLots();
-      } else {
-        triggerToast(`🎉 Bid accepted! 100% buyer funds locked in RBI Escrow Vault #101. Transporter assigned.`);
-        setBids(prev => prev.map(b => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b));
+  const handleRejectBid = (bidIdStr: string) => {
+    try {
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      if (savedBids) {
+        const parsed = JSON.parse(savedBids);
+        const filtered = parsed.filter((b: any) => b.id !== bidIdStr);
+        localStorage.setItem('kisansetu_bids', JSON.stringify(filtered));
       }
-    } catch {
-      triggerToast(`🎉 Bid accepted! 100% buyer funds locked in RBI Escrow Vault #101. Transporter assigned.`);
-      setBids(prev => prev.map(b => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b));
-    }
+    } catch {}
+    setBids(prev => prev.filter(b => b.id !== bidIdStr));
+    triggerToast(`Bid rejected.`);
   };
 
   const mockPrices: MandiPrice[] = [
@@ -898,6 +940,7 @@ export function FarmerDashboardLayout() {
               bids={bids}
               isFarmerView={true}
               onAcceptBid={handleAcceptBid}
+              onRejectBid={handleRejectBid}
             />
 
             {/* Milestone Escrow Rails */}

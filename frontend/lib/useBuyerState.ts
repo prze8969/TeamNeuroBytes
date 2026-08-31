@@ -764,6 +764,23 @@ export function useBuyerState() {
       const savedUserVaults = localStorage.getItem(userVaultsKey);
       const curUserVaults = savedUserVaults ? JSON.parse(savedUserVaults) : [];
       localStorage.setItem(userVaultsKey, JSON.stringify([newActiveDeal, ...curUserVaults.filter((v: any) => v.id !== newActiveDeal.id)]));
+
+      // Save to shared bids storage so the farmer dashboard immediately receives this bid
+      const newFarmerBid: Bid = {
+        id: `BID-${uniqueVaultId}`,
+        lotId: String(bidData.lotId).startsWith('LOT-') ? String(bidData.lotId) : `LOT-${numericLotId}`,
+        buyerId: String(user?.id || 'USR-BUYER-01'),
+        buyerName: user?.name || buyerProfile.business_name || 'Sahyadri AgroProcure Ltd',
+        amountPerKg: bidData.bidPricePerKg,
+        totalAmount: bidData.totalCropValue,
+        escrowStatus: 'INITIATED',
+        createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16)
+      };
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      const curBids = savedBids ? JSON.parse(savedBids) : [];
+      localStorage.setItem('kisansetu_bids', JSON.stringify([newFarmerBid, ...curBids.filter((b: any) => b.id !== newFarmerBid.id)]));
+      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new Event('kisansetu_lots_updated'));
     } catch {}
 
     // 4. Post bid statistics to backend database
