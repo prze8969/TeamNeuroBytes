@@ -14,7 +14,8 @@ import {
   Sparkles,
   MessageSquare,
   Trash2,
-  UserCheck
+  UserCheck,
+  Search
 } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
@@ -595,6 +596,16 @@ export function FarmerDashboardLayout() {
 
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
         
+        {/* Top Global Search Bar */}
+        <div className="relative">
+          <input 
+            type="text" 
+            placeholder="Search Mandi prices, nearby FPOs, warehouses, crop quality..."
+            className="w-full bg-white border border-slate-200/90 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        </div>
+
         {/* ========================================================================= */}
         {/* 1. HEADER & PROFILE INTEGRATION (MODERNIZED) */}
         {/* ========================================================================= */}
