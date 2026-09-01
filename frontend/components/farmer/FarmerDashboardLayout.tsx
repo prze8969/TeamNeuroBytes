@@ -51,6 +51,16 @@ export function FarmerDashboardLayout() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isListModalOpen, setIsListModalOpen] = useState<boolean>(false);
   const [lotToDelete, setLotToDelete] = useState<{ id: string; cropName: string } | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | undefined>(undefined);
+
+  const handleTrackOrder = (bidIdStr: string) => {
+    const numericId = parseInt(bidIdStr.replace(/\D/g, ''), 10) || 101;
+    setSelectedOrderId(numericId);
+    setActiveTab('overview');
+    setTimeout(() => {
+      document.getElementById('payment-tracker')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
 
   const triggerToast = (msg: string) => {
     setToastMsg(msg);
@@ -378,11 +388,23 @@ export function FarmerDashboardLayout() {
         setMyLots([]);
       }
 
+      let localBids: Bid[] = [];
+      try {
+        const savedBids = localStorage.getItem('kisansetu_bids');
+        if (savedBids) {
+          const parsed = JSON.parse(savedBids);
+          if (Array.isArray(parsed)) {
+            localBids = parsed;
+          }
+        }
+      } catch {}
+
+      let backendBids: Bid[] = [];
       if (bidsRes.ok) {
         const rawBids = await bidsRes.json();
         if (Array.isArray(rawBids) && rawBids.length > 0) {
           const buyerNames = ['Sahyadri Farms Trading Co.', 'AgroProcure Private Ltd', 'Vashi Fresh Distributors', 'Nashik Agro Exports'];
-          const mappedBids: Bid[] = rawBids.map((b: any, idx: number) => ({
+          backendBids = rawBids.map((b: any, idx: number) => ({
             id: `BID-${b.id || idx + 101}`,
             lotId: `LOT-${b.lot_id || 101}`,
             buyerId: String(b.buyer_id || idx + 2),
@@ -392,29 +414,70 @@ export function FarmerDashboardLayout() {
             escrowStatus: b.status === 'ACCEPTED' ? 'LOCKED' : b.status === 'REJECTED' ? 'RELEASED' : 'INITIATED',
             createdAt: b.created_at ? b.created_at.replace('T', ' ').slice(0, 16) : '2026-08-25 15:10'
           }));
-          if (finalLots.length > 0 || isDemoFarmer) {
-            setBids(mappedBids);
-          } else {
-            setBids([]);
-          }
-        } else if (isDemoFarmer) {
-          setBids(defaultBids);
-        } else {
-          setBids([]);
         }
+      }
+
+      const allMergedBids = [...localBids, ...backendBids];
+      const seenKeys = new Set<string>();
+      const finalBids: Bid[] = [];
+
+      for (const b of allMergedBids) {
+        const normLotId = String(b.lotId || '').replace(/\D/g, '') || '1';
+        const normRate = Number(b.amountPerKg || 0).toFixed(2);
+        const normBuyer = String(b.buyerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        // Unique signature: buyer + lot + rate (e.g. "agroprocureprivateltd_1_30.00")
+        const compositeKey = `${normBuyer}_${normLotId}_${normRate}`;
+        const idKey = String(b.id || '');
+
+        if (seenKeys.has(compositeKey) || (idKey && seenKeys.has(idKey))) {
+          continue;
+        }
+
+        if (compositeKey) seenKeys.add(compositeKey);
+        if (idKey) seenKeys.add(idKey);
+        finalBids.push(b);
+      }
+
+      if (finalBids.length > 0) {
+        setBids(finalBids);
       } else if (isDemoFarmer) {
         setBids(defaultBids);
       } else {
         setBids([]);
       }
     } catch {
+      let fallbackLocalBids: Bid[] = [];
+      try {
+        const savedBids = localStorage.getItem('kisansetu_bids');
+        if (savedBids) fallbackLocalBids = JSON.parse(savedBids);
+      } catch {}
+
       if (localLots.length > 0) {
         setMyLots(localLots);
       } else if (isDemoFarmer) {
         setMyLots(defaultLots);
-        setBids(defaultBids);
       } else {
         setMyLots([]);
+      }
+
+      if (fallbackLocalBids.length > 0) {
+        const seenFallbackKeys = new Set<string>();
+        const uniqueFallback: Bid[] = [];
+        for (const b of fallbackLocalBids) {
+          const normLotId = String(b.lotId || '').replace(/\D/g, '') || '1';
+          const normRate = Number(b.amountPerKg || 0).toFixed(2);
+          const normBuyer = String(b.buyerName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const compositeKey = `${normBuyer}_${normLotId}_${normRate}`;
+          if (!seenFallbackKeys.has(compositeKey)) {
+            seenFallbackKeys.add(compositeKey);
+            uniqueFallback.push(b);
+          }
+        }
+        setBids(uniqueFallback);
+      } else if (isDemoFarmer) {
+        setBids(defaultBids);
+      } else {
         setBids([]);
       }
     } finally {
@@ -439,24 +502,37 @@ export function FarmerDashboardLayout() {
     const numericBidId = parseInt(bidIdStr.replace(/\D/g, ''), 10) || 1;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/escrow/accept-bid/${numericBidId}`, {
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      if (savedBids) {
+        const parsed = JSON.parse(savedBids);
+        const updated = parsed.map((b: any) => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b);
+        localStorage.setItem('kisansetu_bids', JSON.stringify(updated));
+      }
+    } catch {}
+
+    setBids(prev => prev.map(b => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b));
+    triggerToast(`🎉 Bid accepted! 100% buyer funds locked in RBI Escrow Vault. Transporter Kisan Express assigned for pickup.`);
+
+    try {
+      await fetch(`${API_BASE_URL}/api/escrow/accept-bid/${numericBidId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transporter_id: 4 })
-      });
+      }).catch(() => {});
+    } catch {}
+  };
 
-      if (res.ok) {
-        const data = await res.json();
-        triggerToast(`🎉 Bid accepted! 100% buyer funds (₹${data.total_locked_amount?.toLocaleString('en-IN') || '1,32,500'}) locked in RBI Escrow Vault #${data.id}. Transporter Kisan Express assigned.`);
-        await fetchLiveBidsAndLots();
-      } else {
-        triggerToast(`🎉 Bid accepted! 100% buyer funds locked in RBI Escrow Vault #101. Transporter assigned.`);
-        setBids(prev => prev.map(b => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b));
+  const handleRejectBid = (bidIdStr: string) => {
+    try {
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      if (savedBids) {
+        const parsed = JSON.parse(savedBids);
+        const filtered = parsed.filter((b: any) => b.id !== bidIdStr);
+        localStorage.setItem('kisansetu_bids', JSON.stringify(filtered));
       }
-    } catch {
-      triggerToast(`🎉 Bid accepted! 100% buyer funds locked in RBI Escrow Vault #101. Transporter assigned.`);
-      setBids(prev => prev.map(b => b.id === bidIdStr ? { ...b, escrowStatus: 'LOCKED' } : b));
-    }
+    } catch {}
+    setBids(prev => prev.filter(b => b.id !== bidIdStr));
+    triggerToast(`Bid rejected.`);
   };
 
   const mockPrices: MandiPrice[] = [
@@ -514,169 +590,43 @@ export function FarmerDashboardLayout() {
   const totalEscrowLocked = lockedBids.reduce((sum, b) => sum + (b.totalAmount || (b.amountPerKg * (myLots[0]?.quantityKg || 5000))), 0);
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+    <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950 relative">
       <Navbar activeRole="FARMER" />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
+
+
+      <main className="flex-1 max-w-[1600px] mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-8 pb-32">
         
-        {/* ========================================================================= */}
-        {/* 1. HEADER & PROFILE INTEGRATION (MODERNIZED) */}
-        {/* ========================================================================= */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
+        {/* Top Actions Row: Search + Shortcuts */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center">
           
-          {/* Left: Identity & Badges */}
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-emerald-600/20">
-                <UserCheck size={22} className="text-white" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-                    {user?.name || tDash('farmerName')}
-                  </h2>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shadow-2xs font-mono">
-                    <ShieldCheck size={12} className="text-emerald-700" />
-                    {tDash('digilockerVerified')}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
-                  <MapPin size={12} className="text-slate-400" />
-                  <span>{user?.location || tDash('location')}</span>
-                </p>
-              </div>
+          {/* Simple Search Bar */}
+          <div className="relative w-full sm:flex-1">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
             </div>
-
-            {/* Badges Strip */}
-            <div className="flex items-center gap-2 pt-0.5">
-              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/90 px-3 py-1 rounded-xl text-xs font-black font-mono">
-                {totalLots} {totalLots === 1 ? tDash('lotActive') : tDash('lotsActive')}
-              </span>
-              <span className={`px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-1.5 font-mono ${
-                pooledCount > 0
-                  ? 'bg-purple-50 text-purple-900 border-purple-200' 
-                  : totalLots > 0
-                  ? 'bg-slate-100 text-slate-700 border-slate-200'
-                  : 'bg-slate-50 text-slate-500 border-slate-200'
-              }`}>
-                {pooledCount > 0 ? (
-                  <>
-                    <Users size={13} className="text-purple-600" />
-                    <span>{tDash('fpoEnrolled')} ({pooledCount} Lots)</span>
-                  </>
-                ) : totalLots > 0 ? (
-                  <>
-                    <Truck size={13} className="text-slate-500" />
-                    <span>{tDash('soloHaulage')}</span>
-                  </>
-                ) : (
-                  <>
-                    <Users size={13} className="text-slate-400" />
-                    <span>FPO: Standalone Farmer</span>
-                  </>
-                )}
-              </span>
-            </div>
+            <input 
+              type="text" 
+              placeholder="Search items, buyers, lots..." 
+              className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
+            />
           </div>
 
-          {/* Right: Primary Call to Action */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Button
-              onClick={() => setIsListModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 px-5 rounded-2xl shadow-lg shadow-emerald-600/25 ring-2 ring-emerald-400/40 hover:ring-emerald-400 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <Plus size={16} className="stroke-[2.5]" />
-              <span>{tDash('listNewCropProduce')}</span>
-            </Button>
+          {/* Quick Shortcuts */}
+          <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+            <button onClick={() => window.location.href='/fpo/dashboard'} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#3B5998] hover:bg-[#2d4373] text-white rounded-2xl px-5 py-3.5 shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border border-[#2d4373]/20">
+              <Truck size={18} />
+              <span className="text-sm font-bold">FPO</span>
+            </button>
+            <button onClick={() => window.location.href='/warehouse/dashboard'} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#3B5998] hover:bg-[#2d4373] text-white rounded-2xl px-5 py-3.5 shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border border-[#2d4373]/20">
+              <Boxes size={18} />
+              <span className="text-sm font-bold">Warehouse</span>
+            </button>
           </div>
-        </div>
 
-        {/* ========================================================================= */}
-        {/* 2. CLEAN SEGMENTED NAVIGATION BAR */}
-        {/* ========================================================================= */}
-        <div className="bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/60 inline-flex flex-wrap gap-1 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'overview'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Boxes size={14} className={activeTab === 'overview' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>{tDash('overview')}</span>
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => setActiveTab('fpo-pooling')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'fpo-pooling'
-                ? 'bg-white text-purple-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Users size={14} className={activeTab === 'fpo-pooling' ? 'text-purple-700' : 'text-slate-500'} />
-            <span>{tDash('joinFpoPool')}</span>
-            {pooledCount > 0 && (
-              <span className="text-[10px] bg-purple-100 text-purple-900 font-mono font-black px-1.5 py-0.2 rounded-full">
-                {pooledCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('ai-grading')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'ai-grading'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <Microscope size={14} className={activeTab === 'ai-grading' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>{tDash('aiQualityInspection')}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('decision-engine')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'decision-engine'
-                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <TrendingUp size={14} className={activeTab === 'decision-engine' ? 'text-blue-700' : 'text-slate-500'} />
-            <span>{tDash('marketIntelligence')}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('escrow')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'escrow'
-                ? 'bg-white text-blue-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <ShieldCheck size={14} className={activeTab === 'escrow' ? 'text-blue-700' : 'text-slate-500'} />
-            <span>{tDash('escrowRails')}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('whatsapp-bot')}
-            className={`px-4 py-2 text-xs transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeTab === 'whatsapp-bot'
-                ? 'bg-white text-emerald-950 shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 font-bold rounded-xl'
-            }`}
-          >
-            <MessageSquare size={14} className={activeTab === 'whatsapp-bot' ? 'text-emerald-700' : 'text-slate-500'} />
-            <span>{tDash('whatsappBot')}</span>
-          </button>
         </div>
 
         {/* Global Toast Message */}
@@ -690,308 +640,132 @@ export function FarmerDashboardLayout() {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* 3. KPI STAT CARDS (TOP STRIP) */}
-        {/* ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Your Crops (Swipeable Row) */}
+        <section className="space-y-4">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Current Lots</h2>
           
-          {/* KPI 1: AI Quality Grade */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  {tKpi('aiQualityGrade')}
-                </span>
-                <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
-                  Portfolio Average
-                </span>
-              </div>
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
-                <Microscope size={18} />
-              </div>
+          {loading ? (
+             <div className="p-8 text-center text-slate-400 font-medium flex flex-col items-center justify-center gap-3">
+               <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+             </div>
+          ) : totalLots === 0 ? (
+             <div className="p-8 text-center text-slate-500 bg-white rounded-3xl border border-slate-100 shadow-xs">
+               <p>No crops listed yet.</p>
+             </div>
+          ) : (
+            <div className="flex overflow-x-auto gap-4 pb-4 snap-x px-1">
+              {myLots.map((lot) => {
+                const getQualityText = (grade: string) => {
+                  if (grade.includes('A')) return 'Excellent Quality';
+                  if (grade.includes('B')) return 'Good Quality';
+                  return 'Standard Quality';
+                };
+                
+                return (
+                  <div key={lot.id} className="snap-start shrink-0 w-[260px] bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.04)] flex flex-col gap-3 overflow-hidden group">
+                    <div className="w-full h-32 bg-slate-50/50 rounded-2xl overflow-hidden mb-1 relative shrink-0">
+                       <img src={resolveCropImageUrl(lot.cropName, lot.imageUrl || undefined)} alt={lot.cropName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                       <span className="font-bold text-slate-800 text-lg sm:text-xl">{lot.cropName}</span>
+                       <span className={`text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider ${
+                         lot.status === 'BIDDING' || lot.status === 'LISTED' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+                       }`}>
+                         {lot.status === 'BIDDING' || lot.status === 'LISTED' ? 'Selling' : 'Sold'}
+                       </span>
+                    </div>
+                    <div className="text-3xl font-black text-slate-900 font-mono tracking-tight">
+                      {lot.quantityTons} <span className="text-sm font-bold text-slate-500 ml-1">Tons</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 w-fit px-3 py-1.5 rounded-xl">
+                      <ShieldCheck size={14} />
+                      {getQualityText(lot.qualityGrade || '')}
+                    </div>
+                    <button 
+                       onClick={() => handleDeleteLot(lot.id, lot.cropName)}
+                       className="mt-3 text-rose-500 hover:text-rose-700 text-[11px] font-bold self-start cursor-pointer tracking-wide uppercase"
+                    >
+                      Remove Lot
+                    </button>
+                  </div>
+                );
+              })}
             </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">
-                {portfolioGrade}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-emerald-700 font-bold font-mono">
-                  {totalLots > 0 ? `${avgQualityScore}% Quality Score` : 'No Scans Yet'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">{tKpi('aiVerified')}</span>
-              </div>
+          )}
+        </section>
+
+        {/* Create New Lot Button */}
+        <button 
+          onClick={() => setIsListModalOpen(true)}
+          className="w-full bg-white border border-slate-100 rounded-[2rem] p-6 sm:p-8 flex items-center justify-between shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-all cursor-pointer group mt-2"
+        >
+          <div className="flex items-center gap-5 sm:gap-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50/70 text-[#3B5998] rounded-2xl sm:rounded-3xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+              <Plus size={36} className="stroke-[2.5]" />
+            </div>
+            <div className="text-left space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Create New Lot</h3>
+              <p className="text-sm sm:text-base text-slate-500 font-medium">List a new lot and sell to buyers</p>
             </div>
           </div>
+          <ArrowRight className="text-[#3B5998] group-hover:translate-x-2 transition-transform hidden sm:block" size={28} />
+        </button>
 
-          {/* KPI 2: Highest Market Bid */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('highestActiveBid')}
-              </span>
-              <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs">
-                <TrendingUp size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900 font-mono">
-                {highestBid > 0 ? `₹${highestBid.toFixed(2)}/kg` : '₹0.00'}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-blue-700 font-bold font-mono">
-                  {highestBid > 0 ? `+₹${Math.max(0, highestBid - 24.50).toFixed(2)}/kg ${tKpi('aboveFloor')}` : 'No Active Bids'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 truncate max-w-[120px]" title={highestBidBuyer}>
-                  {highestBidBuyer || ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* KPI 3: Escrow Security */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('escrowSecurity')}
-              </span>
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
-                <ShieldCheck size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">
-                {totalEscrowLocked > 0 ? tKpi('locked100') : '₹0 Guarantee'}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-emerald-700 font-bold font-mono">
-                  {totalEscrowLocked > 0 ? `₹${totalEscrowLocked.toLocaleString('en-IN')} ${tKpi('guarantee')}` : 'No Escrow Locked'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">{tKpi('rbiCompliantEscrow')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* KPI 4: FPO Logistics Savings */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('freightPooling')}
-              </span>
-              <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-2xs">
-                <Truck size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">
-                {pooledCount > 0 ? `-35.1% ${tKpi('costSavings')}` : totalLots > 0 ? tKpi('individual') : 'No FPO Enrolled'}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-purple-700 font-bold font-mono">
-                  {pooledCount > 0 ? 'Nashik East Pool' : totalLots > 0 ? '₹1.85/kg Solo' : 'Enroll produce to pool'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">{tKpi('sharedDeliveryRoute')}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* ========================================================================= */}
-        {/* TAB 1: OVERVIEW */}
-        {/* ========================================================================= */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
+        {/* Market Price */}
+        <section className="space-y-4 pt-6">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Market Price</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             
-            {/* 4. FPO COLLECTIVE NOTIFICATION BANNER */}
-            <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-emerald-950 text-white rounded-2xl p-5 sm:p-6 shadow-lg border border-purple-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-purple-300 font-mono">
-                    {tFpo('smartRoutePooling')}
-                  </span>
-                  <span className="rounded-full bg-purple-400/20 text-purple-200 border border-purple-400/30 px-2.5 py-0.5 text-xs font-black font-mono">
-                    {pooledCount > 0 ? `${tFpo('connectedToFpo')} (${pooledCount} LOTS)` : totalLots > 0 ? tFpo('individualTransportActive') : 'Idle • Standalone Farmer'}
-                  </span>
-                </div>
-                <p className="text-xs text-purple-100/90 max-w-3xl leading-relaxed">
-                  {pooledCount > 0
-                    ? tFpo('fpoSavingsDesc')
-                    : totalLots > 0
-                    ? tFpo('fpoJoinDesc')
-                    : 'Enroll farm produce listings to enable collective pooling with neighboring farms and save up to 35% on APMC freight.'}
-                </p>
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer hover:shadow-lg transition-shadow group">
+              <div className="aspect-square bg-slate-50/50 p-6 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <img src="https://images.unsplash.com/photo-1518843875459-f738682238a6?auto=format&fit=crop&w=400&q=80" alt="Vegetables" className="w-full h-full object-cover rounded-2xl shadow-sm" />
               </div>
-
-              <Button
-                type="button"
-                onClick={() => setActiveTab('fpo-pooling')}
-                className={`text-xs font-black px-6 h-11 rounded-xl shadow-md whitespace-nowrap cursor-pointer flex items-center gap-2 transition-all ${
-                  pooledCount > 0
-                    ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                    : 'bg-emerald-400 hover:bg-emerald-300 text-slate-950'
-                }`}
-              >
-                <span>{pooledCount > 0 ? tFpo('manageFpoPoolLots') : tFpo('joinPoolCta')}</span>
-                <ArrowRight size={14} />
-              </Button>
+              <div className="p-4 text-center border-t border-slate-50 bg-white">
+                <span className="font-bold text-slate-900 text-sm sm:text-base">Vegetables</span>
+              </div>
             </div>
 
-            {/* 5. "MY ACTIVE PRODUCE LISTINGS" CARD GRID */}
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-              <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                    <Boxes size={18} className="text-emerald-700" />
-                    <span>{tList('myActiveListings')} ({totalLots})</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {tList('listingsSubtitle')}
-                  </p>
-                </div>
-                {totalLots > 0 && (
-                  <Button
-                    size="sm"
-                    onClick={() => setIsListModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-9 px-4 shadow-xs cursor-pointer flex items-center gap-1.5 self-start sm:self-auto"
-                  >
-                    <Plus size={14} className="stroke-[2.5]" />
-                    <span>{tList('listNewCropProduce')}</span>
-                  </Button>
-                )}
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer hover:shadow-lg transition-shadow group">
+              <div className="aspect-square bg-slate-50/50 p-6 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=400&q=80" alt="Fruits" className="w-full h-full object-cover rounded-2xl shadow-sm" />
               </div>
-
-              {loading ? (
-                <div className="p-16 text-center text-slate-400 font-medium animate-pulse flex flex-col items-center justify-center gap-3">
-                  <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs">Loading your farm produce listings from Supabase...</p>
-                </div>
-              ) : totalLots === 0 ? (
-                <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-gradient-to-b from-white to-slate-50/60 p-10 sm:p-14 text-center flex flex-col items-center justify-center space-y-4">
-                  <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-200/70 text-emerald-600 flex items-center justify-center text-3xl shadow-sm">
-                    🌾
-                  </div>
-                  <div className="space-y-1.5 max-w-md mx-auto">
-                    <h4 className="text-base sm:text-lg font-black text-slate-900">No Produce Lots Listed Yet</h4>
-                    <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                      You haven't listed any farm produce for sale. Add your first crop batch to get an AI quality grade and receive bids from institutional buyers.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => setIsListModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-2xl h-11 px-6 shadow-md shadow-emerald-600/20 cursor-pointer flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <Plus size={16} className="stroke-[2.5]" />
-                    <span>+ List New Crop Produce</span>
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {myLots.map((lot) => (
-                    <ProduceCard
-                      key={`farmer-lot-${lot.id}`}
-                      lot={lot}
-                      onDelete={handleDeleteLot}
-                      onClick={() => {}}
-                    />
-                  ))}
-                </div>
-              )}
+              <div className="p-4 text-center border-t border-slate-50 bg-white">
+                <span className="font-bold text-slate-900 text-sm sm:text-base">Fruits</span>
+              </div>
             </div>
 
-            {/* Price Chart & Live Market Feed */}
-            <PriceChart commodity="Sharbati Wheat" mandiPrices={mockPrices} />
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col">
+              <div className="aspect-square bg-[#F8FAFC] flex items-center justify-center m-6 rounded-2xl">
+                <span className="text-3xl font-bold text-slate-300">--</span>
+              </div>
+              <div className="p-4 text-center border-t border-slate-50 mt-auto bg-white">
+                <span className="font-medium text-xs sm:text-sm text-slate-500">Coming Soon</span>
+              </div>
+            </div>
 
-            {/* Live Bids Table from Institutional Buyers */}
-            <BidTable
-              bids={bids}
-              isFarmerView={true}
-              onAcceptBid={handleAcceptBid}
-            />
-
-            {/* Milestone Escrow Rails */}
-            <EscrowTracker />
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_4px_15px_-4px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col">
+              <div className="aspect-square bg-[#F8FAFC] flex items-center justify-center m-6 rounded-2xl">
+                <span className="text-3xl font-bold text-slate-300">--</span>
+              </div>
+              <div className="p-4 text-center border-t border-slate-50 mt-auto bg-white">
+                <span className="font-medium text-xs sm:text-sm text-slate-500">Coming Soon</span>
+              </div>
+            </div>
 
           </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 2: SELECTIVE FPO POOLING HUB */}
-        {/* ========================================================================= */}
-        {activeTab === 'fpo-pooling' && (
-          <div className="space-y-6">
-            <FPOCollectiveView
-              activeLots={myLots}
-              onUpdatePoolSelection={handleUpdatePoolSelection}
-              onNavigateToTab={(tab) => {
-                if (tab === 'overview') setActiveTab('overview');
-                else if (tab === 'list-crop') setIsListModalOpen(true);
-                else setActiveTab(tab as any);
-              }}
-            />
-            <ClusterMap clusters={mockClusters} />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 3: YOLOv8 AI QUALITY ASSAY STUDIO */}
-        {/* ========================================================================= */}
-        {activeTab === 'ai-grading' && (
-          <div className="space-y-6">
-            <AIGradingCard
-              onApplyToLot={(data) => {
-                const baseCommodity = data.commodity.split(' ')[0] || 'Wheat';
-                setIsListModalOpen(true);
-                triggerToast(`🔬 AI Certified: ${data.commodity} (Grade ${data.grade}, ${data.score}% Score)! Transferred to listing.`);
-              }}
-            />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 4: SELL VS WAIT AI DECISION ENGINE */}
-        {/* ========================================================================= */}
-        {activeTab === 'decision-engine' && (
-          <div className="space-y-6">
-            <SellVsWaitCard />
-            <PriceChart commodity="Sharbati Wheat" mandiPrices={mockPrices} />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 5: ESCROW RAILS */}
-        {/* ========================================================================= */}
-        {activeTab === 'escrow' && (
-          <div className="space-y-6">
-            <EscrowTracker />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 6: WHATSAPP VERNACULAR SIMULATOR */}
-        {/* ========================================================================= */}
-        {activeTab === 'whatsapp-bot' && (
-          <div className="space-y-6">
-            <WhatsAppSimulatorModal />
-          </div>
-        )}
-
+        </section>
       </main>
 
-      {/* ========================================================================= */}
       {/* 4-STEP CROP LISTING MODAL */}
-      {/* ========================================================================= */}
       <ListNewCropModal
         isOpen={isListModalOpen}
         onClose={() => setIsListModalOpen(false)}
         onLotPublished={(newLot) => {
           setMyLots(prev => [newLot, ...prev.filter(l => l.id !== newLot.id)]);
-          setActiveTab('overview');
         }}
       />
 
-      {/* ========================================================================= */}
       {/* DELETE CONFIRMATION MODAL */}
-      {/* ========================================================================= */}
       {lotToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full border border-slate-200 shadow-2xl space-y-4">
@@ -1032,7 +806,6 @@ export function FarmerDashboardLayout() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

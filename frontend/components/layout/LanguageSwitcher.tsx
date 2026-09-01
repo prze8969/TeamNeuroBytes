@@ -34,17 +34,17 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-emerald-950/80 hover:bg-emerald-950 border border-emerald-700/60 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-100 hover:text-white transition-all shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        className="flex items-center gap-2 bg-emerald-950/80 hover:bg-emerald-950 border border-emerald-700/60 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-100 hover:text-amber-300 transition-all shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <Globe size={14} className="text-emerald-400 shrink-0" />
+        <Globe size={14} className="text-amber-400 shrink-0" />
         <span className="font-medium tracking-wide">
           {currentConfig.native}
         </span>
         <ChevronDown 
           size={12} 
-          className={`text-emerald-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+          className={`text-amber-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
         />
       </button>
 
