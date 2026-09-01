@@ -19,7 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
-import { useAuth, UserRole } from '@/lib/AuthContext';
+import { useAuth, UserRole, normalizeRole } from '@/lib/AuthContext';
 import { API_BASE_URL } from '@/lib/api';
 import { toast } from 'sonner';
 
@@ -38,48 +38,54 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const quickRoles: { role: UserRole; email: string; label: string; icon: string; desc: string }[] = [
+  const quickRoles: { role: UserRole; email: string; label: string; icon: string; desc: string; pass: string }[] = [
     { 
       role: 'FARMER', 
       email: 'farmer@kisansetu.in', 
       label: 'Farmer', 
       icon: '🚜',
-      desc: 'Sell your crops' 
+      desc: 'Sell your crops',
+      pass: 'farmer123'
     },
     { 
       role: 'BUYER', 
       email: 'buyer@kisansetu.in', 
       label: 'Buyer', 
       icon: '🏢',
-      desc: 'Buy crops in bulk' 
+      desc: 'Buy crops in bulk',
+      pass: 'buyer123'
     },
     { 
       role: 'ORGANIZATION', 
       email: 'fpo@kisansetu.in', 
       label: 'FPO Co.', 
       icon: '👥',
-      desc: 'Help farmers group crops' 
+      desc: 'Help farmers group crops',
+      pass: 'fpo123'
     },
     { 
       role: 'TRANSPORTATION', 
       email: 'transporter@kisansetu.in', 
       label: 'Transporter', 
       icon: '🚚',
-      desc: 'Move crops safely' 
+      desc: 'Move crops safely',
+      pass: 'trans123'
     },
     { 
       role: 'WAREHOUSE', 
       email: 'warehouse@kisansetu.in', 
       label: 'Warehouse', 
       icon: '🏭',
-      desc: 'Store crops safely' 
+      desc: 'Store crops safely',
+      pass: 'warehouse123'
     },
     { 
       role: 'ADMIN', 
       email: 'admin@kisansetu.in', 
       label: 'Admin', 
       icon: '⚖️',
-      desc: 'Help and Support' 
+      desc: 'Help and Support',
+      pass: 'admin123'
     },
   ];
 
@@ -101,7 +107,7 @@ function LoginContent() {
     if (matched) {
       setRole(matched.role);
       setIdentifier(matched.email);
-      setPassword(`${matched.role.toLowerCase()}123`);
+      setPassword(matched.pass);
     }
   }, [preselectedRoleParam]);
 
@@ -129,13 +135,14 @@ function LoginContent() {
 
       if (res.ok) {
         const data = await res.json();
-        const resolvedRole: UserRole = (data.role ? data.role.toUpperCase() : role) as UserRole;
+        const rawRole = data.role ? String(data.role) : role;
+        const resolvedRole: UserRole = normalizeRole(rawRole);
         const token = data.access_token || 'authenticated-session-token';
 
-        login(identifier, resolvedRole, token, {
+        login(identifier.trim(), resolvedRole, token, {
           id: String(data.user_id || 'USR-01'),
           name: data.full_name || identifier,
-          email: identifier,
+          email: identifier.trim(),
           role: resolvedRole,
           isKycVerified: Boolean(data.kyc_verified)
         });
@@ -160,7 +167,6 @@ function LoginContent() {
           const isWhRoute = redirectTo.startsWith('/warehouse');
           const isAdminRoute = redirectTo.startsWith('/admin');
 
-          // Only use redirectTo if it matches the current user's role
           if (
             (resolvedRole === 'FARMER' && isFarmerRoute) ||
             (resolvedRole === 'BUYER' && isBuyerRoute) ||
@@ -198,7 +204,7 @@ function LoginContent() {
   const selectDemoRole = (r: typeof quickRoles[0]) => {
     setRole(r.role);
     setIdentifier(r.email);
-    setPassword(`${r.role.toLowerCase()}123`);
+    setPassword(r.pass);
     setErrorMessage(null);
   };
 

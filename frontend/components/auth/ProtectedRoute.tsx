@@ -1,8 +1,9 @@
+// frontend/components/auth/ProtectedRoute.tsx
 'use client';
 
 import React, { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth, UserRole } from '@/lib/AuthContext';
+import { useAuth, UserRole, normalizeRole } from '@/lib/AuthContext';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
@@ -19,6 +20,16 @@ export function ProtectedRoute({
   const { user, session, role, loading, isAuthenticated } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+
+  const isRoleAuthorized = (): boolean => {
+    if (!allowedRoles || allowedRoles.length === 0) return true;
+    const userNorm = normalizeRole(role);
+    if (userNorm === 'ADMIN') return true;
+    return allowedRoles.some(r => {
+      const allowedNorm = normalizeRole(r as string);
+      return allowedNorm === userNorm || (r as string).toUpperCase() === role.toUpperCase();
+    });
+  };
 
   useEffect(() => {
     if (loading) return;
@@ -39,9 +50,9 @@ export function ProtectedRoute({
     }
 
     // 2. Authenticated but wrong role -> Redirect to unauthorized view
-    if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    if (!isRoleAuthorized()) {
       router.replace(
-        `/unauthorized?required=${encodeURIComponent(allowedRoles.join(','))}&current=${encodeURIComponent(role)}`
+        `/unauthorized?required=${encodeURIComponent(allowedRoles!.join(','))}&current=${encodeURIComponent(role)}`
       );
     }
   }, [user, session, role, loading, isAuthenticated, allowedRoles, router, pathname]);
@@ -74,7 +85,7 @@ export function ProtectedRoute({
   }
 
   // Unauthorized role
-  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+  if (!isRoleAuthorized()) {
     return fallback || (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8 text-xs text-slate-400 font-mono">
         Access restricted. Redirecting to authorization desk...
@@ -86,3 +97,4 @@ export function ProtectedRoute({
 }
 
 export default ProtectedRoute;
+
