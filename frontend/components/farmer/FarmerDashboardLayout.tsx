@@ -44,7 +44,7 @@ export function FarmerDashboardLayout() {
   const tEscrow = useTranslations('escrow');
   const tCrop = useCropTranslation();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'fpo-pooling' | 'ai-grading' | 'decision-engine' | 'whatsapp-bot' | 'escrow'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'fpo-pooling' | 'decision-engine' | 'whatsapp-bot' | 'escrow'>('overview');
   const [isPooled, setIsPooled] = useState<boolean>(true);
   const [bids, setBids] = useState<Bid[]>([]);
   const [myLots, setMyLots] = useState<CropLot[]>([]);
@@ -713,19 +713,6 @@ export function FarmerDashboardLayout() {
                 {pooledCount}
               </span>
             )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('ai-grading')}
-            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'ai-grading'
-                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
-            }`}
-          >
-            <Microscope size={15} className={activeTab === 'ai-grading' ? 'text-white' : 'text-slate-500'} />
-            <span>Crop Quality Photo Check</span>
           </button>
 
           <button
