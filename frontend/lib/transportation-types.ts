@@ -600,12 +600,16 @@ export const INITIAL_TRANSPORTATION_ORDERS: TransportationOrder[] = [
 
 // Helper: Convert ActiveTrip / OpenTender into TransportationOrder
 export function adaptTripToOrder(trip: any): TransportationOrder {
-  const isAssigned = trip.status === 'ASSIGNED';
-  const isInTransit = trip.status === 'IN_TRANSIT' || trip.current_milestone === 'IN_TRANSIT';
-  const isArrived = trip.status === 'ARRIVED_AT_MANDI';
+  const statusRaw = String(trip.status || '').toUpperCase();
+  const milestone = String(trip.current_milestone || '').toUpperCase();
+
+  // Backend milestone lifecycle: LOCKED → FREIGHT_ADVANCE_PAID → IN_TRANSIT → ARRIVED_AT_MANDI
+  const isAssigned = statusRaw === 'ASSIGNED' || statusRaw === 'ADVANCE_PAID' || milestone === 'LOCKED' || milestone === 'FREIGHT_ADVANCE_PAID';
+  const isInTransit = statusRaw === 'IN_TRANSIT' || milestone === 'IN_TRANSIT';
+  const isArrived = statusRaw === 'ARRIVED_AT_MANDI' || milestone === 'ARRIVED_AT_MANDI';
 
   const status: OrderStatus = isArrived ? 'ARRIVED_AT_MANDI' : isInTransit ? 'IN_TRANSIT' : isAssigned ? 'ASSIGNED' : 'PENDING';
-  const deliveryStatus: DeliveryStatus = trip.temperature_c > 20 ? 'AT_RISK' : 'ON_TIME';
+  const deliveryStatus: DeliveryStatus = (typeof trip.temperature_c === 'number' && trip.temperature_c > 20) ? 'AT_RISK' : 'ON_TIME';
 
   return {
     id: `ORD-TRIP-${trip.id || 1}`,
