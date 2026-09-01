@@ -73,7 +73,7 @@ const notoGurmukhi = Noto_Sans_Gurmukhi({
 
 export const metadata: Metadata = {
   title: "Krishi Niti • Smart Trading, समृद्ध किसान",
-  description: "Smart India Hackathon SIH26132: Omnichannel agricultural trade & policy platform with YOLOv8 crop grading, PostGIS freight pooling, and milestone escrow rails.",
+  description: "Smart India Hackathon SIH26132: Omnichannel agricultural trade & policy platform with DINOv2 crop grading, PostGIS freight pooling, and milestone escrow rails.",
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",

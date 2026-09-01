@@ -91,7 +91,7 @@ export default function AdminDashboardPage() {
           <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-1">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">AI Grading Pass Rate</p>
             <p className="text-3xl font-black text-blue-700 mt-1 font-mono">94.8%</p>
-            <p className="text-[11px] text-slate-500">YOLOv8 Vision Model</p>
+            <p className="text-[11px] text-slate-500">DINOv2 + CORAL Model</p>
           </div>
           <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs space-y-1">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Freight Cost Saved</p>
@@ -134,8 +134,8 @@ export default function AdminDashboardPage() {
             <h3 className="text-base font-extrabold text-slate-900">AI Model Pipelines & External Feeds</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
               <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50 space-y-2">
-                <span className="font-black text-emerald-900 text-sm">YOLOv8 Quality Classifier</span>
-                <p className="text-slate-600">Model: yolov8n-agri-v2.1 • Inference: ~38ms • Accuracy: 96.2%</p>
+                <span className="font-black text-emerald-900 text-sm">DINOv2 + CORAL Quality Classifier</span>
+                <p className="text-slate-600">Model: dinov2_vitb14 • Inference: ~42ms • Accuracy: 68.14% • QWK: 0.91</p>
                 <span className="inline-block px-2 py-0.5 bg-emerald-600 text-white rounded font-black text-[10px]">HEALTHY</span>
               </div>
               <div className="p-4 rounded-xl border border-blue-200 bg-blue-50 space-y-2">

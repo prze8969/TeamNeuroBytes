@@ -19,7 +19,7 @@ export interface CropLot {
   quantityTons?: number;
   grade: 'A' | 'B' | 'C' | 'REJECTED' | 'UNGRADED';
   qualityGrade?: 'Grade A' | 'Grade B' | 'Grade C' | 'REJECTED' | 'Grade Rejected';
-  qualityScore: number; // e.g. 94.2 from YOLO model
+  qualityScore: number; // e.g. 94.2 from DINOv2 model
   basePricePerKg: number;
   askingFloorPerKg?: number;
   mandiAvgPerKg?: number;

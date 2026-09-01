@@ -13,6 +13,8 @@ from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escro
 
 logger = logging.getLogger(__name__)
 
+from app.core.ml_models.crop_quality_predictor import crop_quality_predictor
+
 async def scheduled_agmarknet_sync_loop():
     """
     Background worker that runs on startup and every 6 hours
@@ -34,6 +36,13 @@ async def scheduled_agmarknet_sync_loop():
 async def lifespan(app: FastAPI):
     # Initialize SQLModel DB and auto-seed initial demo dataset
     create_db_and_tables()
+
+    # Pre-load High-Accuracy DINOv2 Crop Quality Grading Model onto GPU
+    try:
+        crop_quality_predictor.load_model()
+    except Exception as e:
+        print(f"[WARN] Could not pre-load DINOv2 crop model on startup: {e}")
+
     # Spawn background recurring 6-hour AGMARKNET sync worker
     sync_task = asyncio.create_task(scheduled_agmarknet_sync_loop())
     yield
@@ -44,7 +53,7 @@ app = FastAPI(
     description=(
         "Production-ready backend for Smart India Hackathon (SIH Problem Statement 26132: "
         "'Strengthening market linkages and price discovery for farmers'). "
-        "Orchestrates YOLOv8 AI Crop Grading, Geospatial Freight Pooling, Price Intelligence, "
+        "Orchestrates DINOv2 + CORAL AI Crop Grading, Geospatial Freight Pooling, Price Intelligence, "
         "WhatsApp Business Conversational Bot, Milestone Escrow Rails, and Buyer Institutional KYC."
     ),
     version="2.0.0",
@@ -67,7 +76,7 @@ app.include_router(buyer.router, prefix="/api/buyer", tags=["Buyer Institutional
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["Crop Marketplace & Bidding"])
 app.include_router(escrow.router, prefix="/api/bids", tags=["Bidding & Direct Escrow Vault"])
 app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["WhatsApp Bot & Webhooks"])
-app.include_router(ai_grading.router, prefix="/api/ai", tags=["YOLOv8 AI Quality Grading"])
+app.include_router(ai_grading.router, prefix="/api/ai", tags=["DINOv2 AI Quality Grading"])
 app.include_router(decision.router, prefix="/api/decision", tags=["APMC Decision & Price Intelligence"])
 app.include_router(escrow.router, prefix="/api/escrow", tags=["Milestone Escrow & Settlements"])
 app.include_router(transporter.router, prefix="/api/transporter", tags=["Transporter & Fleet Portal"])

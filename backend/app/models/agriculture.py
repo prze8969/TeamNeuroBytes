@@ -129,14 +129,14 @@ class MandiPrice(MandiPriceBase, table=True):
 
 class CropInventoryBase(SQLModel):
     farmer_id: int = Field(default=1, index=True)
-    batch_id: str = Field(index=True)
-    crop_name: str = Field(index=True)
-    overall_grade: str = Field(default="A")
+    batch_id: Optional[str] = Field(default=None, index=True)
+    crop_name: str = Field(index=True)  # Auto-identified by AI, editable
+    overall_grade: str = Field(default="A")  # Grade A, B, C, D
     quality_score: float = Field(default=95.0)
     item_count: int = Field(default=1)
-    image_url: Optional[str] = None
-    bounding_box_data: Optional[str] = None
-    distribution_json: Optional[str] = None
+    image_url: Optional[str] = Field(default=None)
+    bounding_box_data: Optional[str] = Field(default=None)  # JSON string storing bbox details
+    distribution_json: Optional[str] = Field(default=None)  # JSON string storing grade mix counts
 
 class CropInventory(CropInventoryBase, table=True):
     __tablename__ = "crop_inventories"
@@ -154,7 +154,8 @@ class BatchCropInventoryItem(SQLModel):
     distribution_json: Optional[str] = None
 
 class BatchCropInventoryCreate(SQLModel):
-    farmer_id: Optional[int] = 1
     batch_id: Optional[str] = None
+    farmer_id: int = 1
     items: List[BatchCropInventoryItem]
+
 

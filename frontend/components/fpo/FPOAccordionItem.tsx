@@ -266,7 +266,7 @@ export function FPOAccordionItem({
                   {qualityScore}% Score
                 </p>
                 <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
-                  <CheckCircle2 size={12} /> YOLOv8 Computer Vision Verified
+                  <CheckCircle2 size={12} /> DINOv2 Computer Vision Verified
                 </span>
               </div>
 

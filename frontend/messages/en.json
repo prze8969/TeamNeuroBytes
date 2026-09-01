@@ -117,7 +117,7 @@
     "applyToLot": "Apply to Lot #LOT-99"
   },
   "aiGrading": {
-    "title": "YOLOv8 AI Crop Quality Inspection",
+    "title": "DINOv2 AI Crop Quality Inspection",
     "badge": "Live Vision Engine",
     "subtitle": "Instant produce defect detection, color uniformity analysis, and Agmarknet certification",
     "uploadPhoto": "Upload Your Crop Photo",
