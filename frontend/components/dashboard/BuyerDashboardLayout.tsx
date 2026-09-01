@@ -94,6 +94,35 @@ export function BuyerDashboardLayout() {
   } = useBuyerState();
 
   const [selectedDetailLot, setSelectedDetailLot] = React.useState<CropLot | null>(null);
+  const [buyerNotifications, setBuyerNotifications] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const syncNotifs = () => {
+      try {
+        const saved = localStorage.getItem('kisansetu_buyer_notifications');
+        if (saved) {
+          setBuyerNotifications(JSON.parse(saved));
+        } else {
+          setBuyerNotifications([]);
+        }
+      } catch {}
+    };
+    syncNotifs();
+    window.addEventListener('storage', syncNotifs);
+    window.addEventListener('kisansetu_bids_updated', syncNotifs);
+    return () => {
+      window.removeEventListener('storage', syncNotifs);
+      window.removeEventListener('kisansetu_bids_updated', syncNotifs);
+    };
+  }, []);
+
+  const dismissNotification = (id: number) => {
+    const filtered = buyerNotifications.filter(n => n.id !== id);
+    setBuyerNotifications(filtered);
+    try {
+      localStorage.setItem('kisansetu_buyer_notifications', JSON.stringify(filtered));
+    } catch {}
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -288,6 +317,42 @@ export function BuyerDashboardLayout() {
             <button onClick={() => setToastMsg(null)} className="text-emerald-800 hover:text-emerald-950 font-extrabold text-sm ml-4 cursor-pointer">
               ✕
             </button>
+          </div>
+        )}
+
+        {/* Live Farmer Listing Withdrawal Alerts for Buyer */}
+        {buyerNotifications.length > 0 && (
+          <div className="space-y-2.5">
+            {buyerNotifications.map((notif, idx) => (
+              <div 
+                key={`buyer-notif-${notif.id || idx}`}
+                className="bg-rose-50/95 border border-rose-300/80 rounded-2xl p-4 flex items-start justify-between gap-3 text-xs text-rose-950 shadow-xs animate-in fade-in"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-rose-100 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0 font-bold text-base">
+                    ⚠️
+                  </div>
+                  <div className="space-y-1">
+                    <strong className="font-black text-rose-900 text-sm block">
+                      {notif.title || 'Bid Cancelled: Listing Withdrawn'}
+                    </strong>
+                    <p className="text-rose-800 leading-relaxed font-medium">
+                      {notif.message}
+                    </p>
+                    <span className="text-[10px] text-rose-500 font-mono block pt-0.5">
+                      {notif.timestamp}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => dismissNotification(notif.id)}
+                  className="text-rose-600 hover:text-rose-950 font-black text-xs px-2.5 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 transition-all cursor-pointer shrink-0"
+                >
+                  Dismiss ✕
+                </button>
+              </div>
+            ))}
           </div>
         )}
 

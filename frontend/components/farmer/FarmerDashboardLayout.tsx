@@ -26,7 +26,6 @@ import { PriceChart } from '@/components/dashboard/PriceChart';
 import { BidTable } from '@/components/dashboard/BidTable';
 import { API_BASE_URL } from '@/lib/api';
 import { EscrowTracker } from '@/components/dashboard/EscrowTracker';
-import { AIGradingCard } from '@/components/dashboard/AIGradingCard';
 import { SellVsWaitCard } from '@/components/dashboard/SellVsWaitCard';
 import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulatorModal';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
@@ -536,6 +535,92 @@ export function FarmerDashboardLayout() {
     triggerToast(`Bid rejected.`);
   };
 
+  const handleDeleteLot = (lotId: string, cropName: string) => {
+    setLotToDelete({ id: lotId, cropName });
+  };
+
+  const confirmDeleteLot = (lotId: string, cropName: string) => {
+    // 1. Remove the lot from state
+    setMyLots(prev => prev.filter(l => l.id !== lotId));
+
+    // 2. Track in deleted lot IDs and remove from stored crop lots
+    try {
+      let deletedIds: string[] = [];
+      const savedDeleted = localStorage.getItem('kisansetu_deleted_lot_ids');
+      if (savedDeleted) deletedIds = JSON.parse(savedDeleted);
+      if (!deletedIds.includes(lotId)) {
+        deletedIds.push(lotId);
+        localStorage.setItem('kisansetu_deleted_lot_ids', JSON.stringify(deletedIds));
+      }
+
+      const savedLots = localStorage.getItem('kisansetu_crop_lots');
+      if (savedLots) {
+        const parsedLots = JSON.parse(savedLots);
+        const remainingLots = parsedLots.filter((l: any) => l.id !== lotId);
+        localStorage.setItem('kisansetu_crop_lots', JSON.stringify(remainingLots));
+      }
+    } catch {}
+
+    // 3. Remove all bids for this deleted lot from the farmer's active view
+    setBids(prev => prev.filter(b => b.lotId !== lotId));
+
+    // 4. Update the bids in localStorage so Buyer is informed the bid was rejected/withdrawn
+    try {
+      const savedBids = localStorage.getItem('kisansetu_bids');
+      if (savedBids) {
+        const parsedBids = JSON.parse(savedBids);
+        const updatedBids = parsedBids.map((b: any) => {
+          if (b.lotId === lotId) {
+            return {
+              ...b,
+              escrowStatus: 'REJECTED',
+              rejectionReason: `Listing Delisted: Farmer decided to hold stock in cold storage for higher future market rates.`
+            };
+          }
+          return b;
+        });
+        localStorage.setItem('kisansetu_bids', JSON.stringify(updatedBids));
+      }
+
+      // 5. Add a clear notification for the Buyer portal
+      let buyerNotifs: any[] = [];
+      const savedNotifs = localStorage.getItem('kisansetu_buyer_notifications');
+      if (savedNotifs) buyerNotifs = JSON.parse(savedNotifs);
+      buyerNotifs.unshift({
+        id: Date.now(),
+        title: '❌ Bid Cancelled: Listing Withdrawn by Farmer',
+        message: `Your bid on ${cropName} (${lotId}) was cancelled because the farmer withdrew the listing to hold stock for higher future rates. Any escrow funds have been released back to your balance.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        lotId: lotId
+      });
+      localStorage.setItem('kisansetu_buyer_notifications', JSON.stringify(buyerNotifs));
+
+      // 6. Release any escrow vaults in Buyer active deals
+      const savedVaults = localStorage.getItem('kisansetu_active_vaults');
+      if (savedVaults) {
+        const parsedVaults = JSON.parse(savedVaults);
+        const updatedVaults = parsedVaults.map((v: any) => {
+          if (v.lot_id === lotId) {
+            return {
+              ...v,
+              status: 'CANCELLED_WITHDRAWN',
+              dispute_reason: 'Farmer withdrew listing from marketplace (decided to store/wait for higher price).'
+            };
+          }
+          return v;
+        });
+        localStorage.setItem('kisansetu_active_vaults', JSON.stringify(updatedVaults));
+      }
+    } catch {}
+
+    // 7. Broadcast real-time cross-tab events
+    window.dispatchEvent(new Event('kisansetu_lots_updated'));
+    window.dispatchEvent(new Event('kisansetu_bids_updated'));
+    window.dispatchEvent(new Event('storage'));
+
+    triggerToast(`🗑️ ${cropName} (${lotId}) delisted. Associated buyer bids have been removed and buyer was notified.`);
+  };
+
   const mockPrices: MandiPrice[] = [
     { mandiName: 'Nashik APMC', state: 'Maharashtra', district: 'Nashik', commodity: 'Wheat', minPrice: 2200, maxPrice: 2750, modalPrice: 25.50, date: '2026-08-23', forecastNextWeek: 27.20 },
     { mandiName: 'Lasalgaon APMC', state: 'Maharashtra', district: 'Nashik', commodity: 'Wheat', minPrice: 2150, maxPrice: 2650, modalPrice: 24.80, date: '2026-08-23', forecastNextWeek: 26.50 },
@@ -1007,20 +1092,7 @@ export function FarmerDashboardLayout() {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* TAB 3: YOLOv8 AI QUALITY ASSAY STUDIO */}
-        {/* ========================================================================= */}
-        {activeTab === 'ai-grading' && (
-          <div className="space-y-6">
-            <AIGradingCard
-              onApplyToLot={(data) => {
-                const baseCommodity = data.commodity.split(' ')[0] || 'Wheat';
-                setIsListModalOpen(true);
-                triggerToast(`🔬 AI Certified: ${data.commodity} (Grade ${data.grade}, ${data.score}% Score)! Transferred to listing.`);
-              }}
-            />
-          </div>
-        )}
+
 
         {/* ========================================================================= */}
         {/* TAB 4: SELL VS WAIT AI DECISION ENGINE */}

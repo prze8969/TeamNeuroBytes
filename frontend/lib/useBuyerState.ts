@@ -248,7 +248,7 @@ export function useBuyerState() {
       fetchLiveMarketplaceData();
     } catch {}
 
-    // Listen to real-time cross-tab crop listings
+    // Listen to real-time cross-tab crop listings and bid updates
     const handleStorageChange = () => {
       try {
         let deletedIds: string[] = [];
@@ -265,15 +265,29 @@ export function useBuyerState() {
         const unique = Array.from(new Map(combined.map(l => [l.id, l])).values())
           .filter(l => !deletedIds.includes(l.id));
         setLots(unique);
+
+        // Sync live bids status updates (e.g. farmer delisting / cancellation)
+        const bidsSaved = localStorage.getItem('kisansetu_bids');
+        if (bidsSaved) {
+          const parsedBids = JSON.parse(bidsSaved);
+          if (Array.isArray(parsedBids)) {
+            const uniqueBids = Array.from(
+              new Map(parsedBids.filter(Boolean).map((b: Bid) => [b.id, b])).values()
+            );
+            setBids(uniqueBids);
+          }
+        }
       } catch {}
     };
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('kisansetu_lots_updated', handleStorageChange);
+    window.addEventListener('kisansetu_bids_updated', handleStorageChange);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('kisansetu_lots_updated', handleStorageChange);
+      window.removeEventListener('kisansetu_bids_updated', handleStorageChange);
     };
   }, [user?.email]);
 
