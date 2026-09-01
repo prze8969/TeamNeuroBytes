@@ -243,7 +243,7 @@ function LoginContent() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
             {quickRoles.map((r) => {
               const isSelected = role === r.role;
               return (
@@ -251,17 +251,17 @@ function LoginContent() {
                   key={r.role}
                   type="button"
                   onClick={() => selectDemoRole(r)}
-                  className={`py-2 px-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between border cursor-pointer ${
+                  className={`py-2.5 px-3 rounded-xl font-bold transition-all flex items-center justify-between border cursor-pointer ${
                     isSelected
                       ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-600/30 scale-[1.02]'
                       : 'bg-white text-slate-700 hover:bg-slate-100/80 border-slate-200/90'
                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <span className="text-base shrink-0">{r.icon}</span>
-                    <span>{r.label}</span>
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-lg sm:text-xl shrink-0">{r.icon}</span>
+                    <span className="text-[13px] sm:text-[14px] leading-tight tracking-tight">{r.label}</span>
                   </span>
-                  {isSelected && <Check size={13} className="text-white shrink-0 ml-1" />}
+                  {isSelected && <Check size={14} className="text-white shrink-0 ml-0.5" />}
                 </button>
               );
             })}
