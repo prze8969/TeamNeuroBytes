@@ -227,50 +227,6 @@ export function FarmerDashboardLayout() {
     }
   ];
 
-  const handleDeleteLot = (lotId: string, cropName: string) => {
-    setLotToDelete({ id: lotId, cropName });
-  };
-
-  const confirmDeleteLot = async (lotId: string, cropName: string) => {
-    // Optimistic UI update
-    setMyLots(prev => prev.filter(l => l.id !== lotId));
-
-    try {
-      const numericId = parseInt(lotId.replace(/\D/g, ''), 10);
-      if (numericId && !lotId.startsWith('LOT-2026-')) {
-        await fetch(`${API_BASE_URL}/api/marketplace/lots/${numericId}`, {
-          method: 'DELETE'
-        });
-      }
-
-      const userLotStorageKey = user?.email ? `kisansetu_crop_lots_${user.email.toLowerCase()}` : 'kisansetu_crop_lots';
-      const userSaved = localStorage.getItem(userLotStorageKey);
-      if (userSaved) {
-        const currentLots = JSON.parse(userSaved);
-        const filtered = currentLots.filter((l: any) => l.id !== lotId);
-        localStorage.setItem(userLotStorageKey, JSON.stringify(filtered));
-      }
-
-      const saved = localStorage.getItem('kisansetu_crop_lots');
-      if (saved) {
-        const currentLots = JSON.parse(saved);
-        const filtered = currentLots.filter((l: any) => l.id !== lotId);
-        localStorage.setItem('kisansetu_crop_lots', JSON.stringify(filtered));
-      }
-
-      const deletedSaved = localStorage.getItem('kisansetu_deleted_lot_ids');
-      const deletedIds: string[] = deletedSaved ? JSON.parse(deletedSaved) : [];
-      if (!deletedIds.includes(lotId)) {
-        deletedIds.push(lotId);
-        localStorage.setItem('kisansetu_deleted_lot_ids', JSON.stringify(deletedIds));
-      }
-
-      window.dispatchEvent(new Event('kisansetu_lots_updated'));
-    } catch {}
-
-    triggerToast(`🗑️ Lot ${lotId} (${cropName}) delisted and removed.`);
-  };
-
   const fetchLiveBidsAndLots = async () => {
     let localLots: CropLot[] = [];
     let deletedIds: string[] = [];
