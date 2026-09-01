@@ -46,10 +46,12 @@ export function KrishiNitiLogo({
       <div className="flex flex-col text-left">
         <div className="flex items-center gap-2.5">
           <span 
-            className={`font-heading font-black tracking-tight leading-none text-white ${currentSize.textClass}`}
+            className={`font-heading font-black tracking-tight leading-none ${
+              variant === 'dark' ? 'text-slate-900' : 'text-white'
+            } ${currentSize.textClass}`}
           >
             <span>Krishi</span>
-            <span className="ml-1 text-amber-400 font-black">Niti</span>
+            <span className="ml-1 text-amber-500 font-black">Niti</span>
           </span>
 
           {badge && (

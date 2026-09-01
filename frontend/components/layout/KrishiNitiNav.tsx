@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -14,10 +15,7 @@ import {
   ChevronDown, 
   Menu, 
   X, 
-  ArrowRight,
-  Check,
-  ExternalLink,
-  ShieldCheck
+  MessageSquare
 } from 'lucide-react';
 
 const LANGUAGES: Array<{ code: Locale; name: string; native: string }> = [
@@ -32,7 +30,6 @@ const LANGUAGES: Array<{ code: Locale; name: string; native: string }> = [
 ];
 
 export function KrishiNitiNav() {
-  const { role, isAuthenticated } = useAuth();
   const { currentLocale, setLocale } = useLocaleContext();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
@@ -48,155 +45,128 @@ export function KrishiNitiNav() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-emerald-800/70 bg-emerald-950/95 backdrop-blur-xl transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between">
+      <header className="absolute top-0 left-0 z-50 w-full bg-gradient-to-b from-black via-black/70 to-transparent transition-all pt-5 pb-8 pointer-events-none">
+        <div className="max-w-[1400px] mx-auto px-6 h-16 flex items-center justify-between pointer-events-auto">
           
-          {/* Left: Clean Branding with compact SIH badge */}
+          {/* Left: Branding */}
           <Link href="/" className="flex items-center group">
-            <KisanSetuLogo size="md" variant="light" badge="SIH 2026" showTagline={false} />
+            <KisanSetuLogo size="md" variant="light" showTagline={false} />
           </Link>
 
-          {/* Center Navigation Links (Radically Simplified for Farmers: 3 items) */}
-          <nav className="hidden md:flex items-center space-x-2 font-semibold text-sm text-emerald-100">
-            <Link 
-              href="/" 
-              className="px-3.5 py-2 rounded-xl hover:bg-emerald-900/60 hover:text-amber-300 transition-colors"
-            >
-              {t.home}
+          {/* Center Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-10 font-bold text-[13px] uppercase tracking-[0.1em] text-white/90 drop-shadow-md">
+            <Link href="/" className="relative group hover:text-white transition-colors">
+              Home
+              <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full rounded-full"></span>
             </Link>
-            <Link 
-              href="/#workflow" 
-              className="px-3.5 py-2 rounded-xl hover:bg-emerald-900/60 hover:text-amber-300 transition-colors"
-            >
-              {t.howItWorks}
+            <Link href="/#workflow" className="relative group hover:text-white transition-colors">
+              How It Works
+              <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full rounded-full"></span>
             </Link>
-            <button
-              onClick={() => setIsHelpOpen(true)}
-              className="px-3.5 py-2 rounded-xl text-emerald-100 hover:bg-emerald-900/60 hover:text-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <HelpCircle size={15} className="text-amber-300" />
-              <span>{t.help}</span>
+            <Link href="/farmer/dashboard" className="relative group hover:text-white transition-colors">
+              For Farmers
+              <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full rounded-full"></span>
+            </Link>
+            <Link href="/buyer/dashboard" className="relative group hover:text-white transition-colors">
+              For Buyers
+              <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full rounded-full"></span>
+            </Link>
+            <button onClick={() => setIsHelpOpen(true)} className="relative group hover:text-white transition-colors cursor-pointer uppercase">
+              Help
+              <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full rounded-full"></span>
             </button>
-            
-            {/* Tucked away link for SIH Judges & Partners */}
-            <Link 
-              href="/#differentiation" 
-              className="px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-400/80 hover:text-emerald-200 hover:bg-emerald-900/40 transition-colors flex items-center gap-1 ml-2"
-            >
-              <span>{t.forJudges}</span>
-            </Link>
           </nav>
 
           {/* Right Action Group */}
-          <div className="flex items-center space-x-2.5 sm:space-x-3">
+          <div className="flex items-center space-x-5">
             
-            {/* Language Selector Dropdown (Prominent for farmers) */}
-            <div className="relative">
+            {/* Language Selector */}
+            <div className="relative hidden sm:block">
               <button
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="text-xs sm:text-sm font-bold px-3 py-2 rounded-xl border border-emerald-700/80 bg-emerald-900/70 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                title="Change Language"
+                className="text-[11px] font-bold px-3 py-2 rounded-full border border-white/20 text-white hover:bg-white/10 hover:scale-[1.02] transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-md uppercase tracking-wider"
               >
-                <Globe size={15} className="text-amber-400" />
-                <span>{activeLangObj.native}</span>
-                <ChevronDown size={13} className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
+                <Globe size={14} />
+                <span>{activeLangObj.code}</span>
+                <ChevronDown size={12} className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isLangDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 rounded-2xl bg-emerald-950/98 border border-emerald-700/90 shadow-2xl p-1.5 z-50 backdrop-blur-2xl">
+                <div className="absolute right-0 mt-2 w-40 rounded-xl bg-[#04130c]/95 border border-emerald-800 shadow-2xl p-2 z-50 backdrop-blur-xl tracking-normal">
                   {LANGUAGES.map((lang) => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code)}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm flex items-center justify-between cursor-pointer transition-colors ${
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between cursor-pointer transition-colors ${
                         currentLocale === lang.code
-                          ? 'bg-amber-400/20 text-amber-300 font-bold'
-                          : 'text-emerald-100 hover:bg-emerald-900/70 hover:text-white'
+                          ? 'bg-amber-400/20 text-amber-400 font-bold'
+                          : 'text-white/80 hover:bg-white/10 hover:text-white'
                       }`}
                     >
-                      <span>{lang.native} <span className="text-[10px] text-emerald-400">({lang.name})</span></span>
-                      {currentLocale === lang.code && <Check size={14} className="text-amber-300" />}
+                      <span>{lang.native}</span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Auth Action */}
-            {isAuthenticated ? (
-              <Link
-                href={role === 'FARMER' ? '/farmer/dashboard' : '/buyer/dashboard'}
-                className="text-xs sm:text-sm font-black px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 transition-all shadow-md shadow-amber-400/20 flex items-center gap-1.5 cursor-pointer"
-              >
-                <span>{t.dashboard}</span>
-                <ArrowRight size={14} />
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 rounded-xl border border-emerald-700/80 bg-emerald-900/60 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-all shadow-sm cursor-pointer"
-              >
-                {t.signIn}
-              </Link>
-            )}
+            {/* Sign In Link - Clearly Visible */}
+            <Link
+              href="/login"
+              className="hidden sm:block text-white hover:text-amber-400 font-bold text-[13px] uppercase tracking-wider transition-colors px-2 relative group"
+            >
+              Sign In
+              <span className="absolute -bottom-1.5 left-2 w-[calc(100%-16px)] h-0.5 bg-white/30 transition-all duration-300 group-hover:bg-amber-400 group-hover:w-[calc(100%-16px)] rounded-full"></span>
+            </Link>
+
+            {/* Primary CTA Button */}
+            <a
+              href="https://wa.me/918000000000?text=Hi%20Krishi%20Niti%20I%20want%20to%20sell%20my%20crop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex px-6 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-[#04130c] font-bold text-[13px] uppercase tracking-wider transition-all transform hover:scale-[1.03] items-center gap-2 shadow-lg cursor-pointer"
+            >
+              <MessageSquare size={16} className="fill-[#04130c]" />
+              <span>List Crop</span>
+            </a>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl border border-emerald-700/80 bg-emerald-900/60 text-emerald-100 hover:text-white cursor-pointer"
+              className="md:hidden p-2 rounded-full border border-white/20 text-white hover:bg-white/10 cursor-pointer backdrop-blur-md"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
 
           </div>
-
         </div>
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-emerald-800/80 bg-emerald-950 px-6 py-4 space-y-3">
-            <div className="space-y-2 text-sm font-semibold">
-              <Link 
-                href="/" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-700/70 text-emerald-100"
-              >
-                {t.home}
-              </Link>
-              <Link 
-                href="/#workflow" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-700/70 text-emerald-100"
-              >
-                {t.howItWorks}
-              </Link>
-              <button
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsHelpOpen(true);
-                }}
-                className="w-full text-left p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-700/70 text-emerald-100 flex items-center gap-2"
-              >
-                <HelpCircle size={16} className="text-amber-400" />
-                <span>{t.help}</span>
-              </button>
-            </div>
-
-            <div className="pt-2 border-t border-emerald-800/60 flex items-center justify-between text-xs">
+          <div className="md:hidden absolute top-full left-0 w-full bg-[#04130c]/98 border-b border-emerald-800/80 px-6 py-6 space-y-6 backdrop-blur-2xl">
+            <nav className="flex flex-col space-y-4 text-white text-lg font-medium">
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+              <Link href="/#workflow" onClick={() => setIsMobileMenuOpen(false)}>How It Works</Link>
+              <Link href="/farmer/dashboard" onClick={() => setIsMobileMenuOpen(false)}>For Farmers</Link>
+              <Link href="/buyer/dashboard" onClick={() => setIsMobileMenuOpen(false)}>For Buyers</Link>
+              <button onClick={() => { setIsMobileMenuOpen(false); setIsHelpOpen(true); }} className="text-left">Help</button>
+            </nav>
+            <div className="pt-4 border-t border-emerald-800/60 flex flex-col gap-4">
               <Link 
                 href="/login" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-emerald-200 hover:text-white font-bold"
+                className="w-full text-center py-2 text-white font-bold uppercase tracking-wider text-sm hover:text-amber-400"
               >
-                {t.signIn}
+                Sign In
               </Link>
-              <Link 
-                href="/register" 
+              <a
+                href="https://wa.me/918000000000?text=Hi%20Krishi%20Niti%20I%20want%20to%20sell%20my%20crop"
+                className="w-full py-3 rounded-xl bg-amber-400 text-[#04130c] font-bold flex justify-center items-center gap-2"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="text-amber-300 font-bold"
               >
-                {t.getStarted}
-              </Link>
+                <MessageSquare size={18} className="fill-[#04130c]" />
+                <span>List Crop via WhatsApp</span>
+              </a>
             </div>
           </div>
         )}

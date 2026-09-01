@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Mukta:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Mukta:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -9,9 +9,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans), "Noto Sans", sans-serif;
-  --font-display: var(--font-mukta), "Mukta", sans-serif;
-  --font-heading: var(--font-mukta), "Mukta", sans-serif;
+  --font-sans: "Mukta", var(--font-noto-sans), "Noto Sans", sans-serif;
+  --font-display: "Quicksand", var(--font-mukta), "Mukta", sans-serif;
+  --font-heading: "Quicksand", var(--font-mukta), "Mukta", sans-serif;
   --font-mono: var(--font-geist-mono);
   --tracking-tightest: -0.03em;
   --tracking-tighter: -0.02em;
@@ -54,97 +54,301 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: #FAFAF7;
+  --foreground: #1E293B;
+  --card: #FFFFFF;
+  --card-foreground: #1E293B;
+  --popover: #FFFFFF;
+  --popover-foreground: #1E293B;
+  --primary: #2E7D32;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FAFAF7;
+  --secondary-foreground: #2E7D32;
+  --muted: #FAFAF7;
+  --muted-foreground: #64748B;
+  --accent: #FAFAF7;
+  --accent-foreground: #2E7D32;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: transparent;
+  --input: transparent;
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --radius: 0.75rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1E293B;
+  --sidebar-primary: #2E7D32;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FAFAF7;
+  --sidebar-accent-foreground: #2E7D32;
+  --sidebar-border: transparent;
   --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #121210;
+  --foreground: #FAFAF7;
+  --card: #1C1C19;
+  --card-foreground: #FAFAF7;
+  --popover: #1C1C19;
+  --popover-foreground: #FAFAF7;
+  --primary: #4CAF50;
+  --primary-foreground: #121210;
+  --secondary: #1C1C19;
+  --secondary-foreground: #4CAF50;
+  --muted: #1C1C19;
+  --muted-foreground: #94A3B8;
+  --accent: #1C1C19;
+  --accent-foreground: #4CAF50;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: transparent;
+  --input: transparent;
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar: #1C1C19;
+  --sidebar-foreground: #FAFAF7;
+  --sidebar-primary: #4CAF50;
+  --sidebar-primary-foreground: #121210;
+  --sidebar-accent: #262622;
+  --sidebar-accent-foreground: #4CAF50;
+  --sidebar-border: transparent;
   --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: transparent !important;
+    outline-color: transparent;
   }
   body {
-    font-family: var(--font-noto-sans), "Noto Sans", sans-serif;
-    @apply bg-background text-foreground antialiased;
+    font-family: "Mukta", "Noto Sans", sans-serif !important;
+    font-size: 18px !important;
+    line-height: 1.6 !important;
+    background-color: #FAFAF7 !important;
+    color: #1E293B !important;
+    -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-mukta), "Mukta", sans-serif;
-    letter-spacing: -0.02em;
+    font-family: "Quicksand", sans-serif !important;
+    letter-spacing: -0.01em;
+    font-weight: 700 !important;
   }
   html {
-    font-family: var(--font-noto-sans), "Noto Sans", sans-serif;
+    font-family: "Mukta", "Noto Sans", sans-serif !important;
+    background-color: #FAFAF7 !important;
   }
 }
 
 .font-display {
-  font-family: var(--font-mukta), "Mukta", sans-serif !important;
+  font-family: "Quicksand", sans-serif !important;
 }
 
 .font-sans-body {
-  font-family: var(--font-noto-sans), "Noto Sans", sans-serif !important;
+  font-family: "Mukta", "Noto Sans", sans-serif !important;
+}
+
+/* ========================================================================= */
+/* CLAYMORPHISM DESIGN SYSTEM UTILITY CLASSES */
+/* ========================================================================= */
+
+.clay-base {
+  background-color: #FAFAF7 !important;
+}
+
+/* Claymorphic Raised Card - Soft, Tactile, 3D Inflated */
+.clay-card {
+  background: #FFFFFF !important;
+  border-radius: 24px !important;
+  border: none !important;
+  box-shadow: 
+    8px 8px 20px rgba(163, 163, 140, 0.22), 
+    -8px -8px 20px rgba(255, 255, 255, 0.95), 
+    inset 4px 4px 8px rgba(255, 255, 255, 0.85), 
+    inset -4px -4px 8px rgba(163, 163, 140, 0.08) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Active Highlight Card - Deeper shadow */
+.clay-card-active {
+  background: #FFFFFF !important;
+  border-radius: 24px !important;
+  border: none !important;
+  box-shadow: 
+    12px 12px 28px rgba(163, 163, 140, 0.28), 
+    -10px -10px 24px rgba(255, 255, 255, 0.98), 
+    inset 5px 5px 10px rgba(255, 255, 255, 0.9), 
+    inset -5px -5px 10px rgba(163, 163, 140, 0.12) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Sunken / Pressed State - For active navigation items, active steps, or selected card items */
+.clay-card-pressed, .clay-pressed {
+  background: #FAFAF7 !important;
+  border-radius: 24px !important;
+  border: none !important;
+  box-shadow: 
+    inset 4px 4px 10px rgba(163, 163, 140, 0.25), 
+    inset -4px -4px 10px rgba(255, 255, 255, 0.95), 
+    0px 2px 4px rgba(163, 163, 140, 0.04) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+/* Flat / Inactive items - Flatter look */
+.clay-card-flat {
+  background: #FAFAF7 !important;
+  border-radius: 24px !important;
+  border: none !important;
+  box-shadow: 
+    3px 3px 6px rgba(163, 163, 140, 0.1), 
+    -3px -3px 6px rgba(255, 255, 255, 0.6), 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.5) !important;
+  opacity: 0.8 !important;
+}
+
+/* Floating Toolbar Clay Bar */
+.clay-header {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 24px !important;
+  border: none !important;
+  box-shadow: 
+    10px 10px 24px rgba(163, 163, 140, 0.18), 
+    -8px -8px 20px rgba(255, 255, 255, 0.9), 
+    inset 4px 4px 8px rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Primary Green Button (Puffy, raised, tactile) */
+.clay-btn-primary {
+  background-color: #2E7D32 !important;
+  color: #FFFFFF !important;
+  font-family: "Quicksand", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  border-radius: 9999px !important;
+  min-height: 48px !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  border: none !important;
+  box-shadow: 
+    6px 6px 14px rgba(46, 125, 50, 0.28), 
+    -6px -6px 14px rgba(255, 255, 255, 0.6), 
+    inset 3px 3px 6px rgba(255, 255, 255, 0.45), 
+    inset -3px -3px 6px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.1s ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.clay-btn-primary:active {
+  box-shadow: 
+    inset 4px 4px 10px rgba(0, 0, 0, 0.35), 
+    inset -4px -4px 10px rgba(255, 255, 255, 0.15), 
+    0px 2px 4px rgba(0, 0, 0, 0.05) !important;
+  transform: translateY(1.5px) !important;
+}
+
+/* Secondary Button (Cream/pale green, soft outline shadow) */
+.clay-btn-secondary {
+  background-color: #F1F8E9 !important; /* Pale green-cream tint */
+  color: #2E7D32 !important;
+  font-family: "Quicksand", sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  border-radius: 9999px !important;
+  min-height: 48px !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  border: none !important;
+  box-shadow: 
+    6px 6px 14px rgba(163, 163, 140, 0.15), 
+    -6px -6px 14px rgba(255, 255, 255, 0.8), 
+    inset 3px 3px 6px rgba(255, 255, 255, 0.95), 
+    inset -3px -3px 6px rgba(163, 163, 140, 0.1) !important;
+  transition: all 0.1s ease-in-out !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.clay-btn-secondary:active {
+  box-shadow: 
+    inset 3px 3px 8px rgba(163, 163, 140, 0.22), 
+    inset -3px -3px 8px rgba(255, 255, 255, 0.7), 
+    0px 1px 2px rgba(163, 163, 140, 0.05) !important;
+  transform: translateY(1.5px) !important;
+}
+
+/* Clay Status Badges (Green, Amber, Red) */
+.clay-pill-green {
+  background: #E8F5E9 !important;
+  color: #1B5E20 !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  box-shadow: 
+    3px 3px 6px rgba(46, 125, 50, 0.12), 
+    -3px -3px 6px rgba(255, 255, 255, 0.85), 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9), 
+    inset -2px -2px 4px rgba(46, 125, 50, 0.05) !important;
+  border: none !important;
+}
+
+.clay-pill-amber {
+  background: #FFF8E1 !important;
+  color: #E65100 !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  box-shadow: 
+    3px 3px 6px rgba(230, 81, 0, 0.12), 
+    -3px -3px 6px rgba(255, 255, 255, 0.85), 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9), 
+    inset -2px -2px 4px rgba(230, 81, 0, 0.05) !important;
+  border: none !important;
+}
+
+.clay-pill-red {
+  background: #FFEBEE !important;
+  color: #B71C1C !important;
+  font-weight: 700 !important;
+  border-radius: 9999px !important;
+  box-shadow: 
+    3px 3px 6px rgba(183, 28, 28, 0.12), 
+    -3px -3px 6px rgba(255, 255, 255, 0.85), 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9), 
+    inset -2px -2px 4px rgba(183, 28, 28, 0.05) !important;
+  border: none !important;
+}
+
+/* Clay Inputs (Puffy recess, solid contrast) */
+.clay-input {
+  background: #FAFAF7 !important;
+  border: none !important;
+  color: #1E293B !important;
+  font-family: "Mukta", sans-serif !important;
+  font-size: 18px !important;
+  border-radius: 16px !important;
+  box-shadow: 
+    inset 4px 4px 8px rgba(163, 163, 140, 0.24), 
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  padding: 10px 16px !important;
+}
+
+.clay-input:focus {
+  box-shadow: 
+    inset 4px 4px 8px rgba(46, 125, 50, 0.18), 
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9),
+    0px 0px 0px 3px rgba(46, 125, 50, 0.35) !important;
 }
 
 @keyframes ticker-marquee {
@@ -164,4 +368,38 @@
 
 .animate-ticker:hover {
   animation-play-state: paused;
+}
+
+/* ── Price-change pulse ── */
+/* Flashes a warm highlight once so users notice price numbers updating */
+@keyframes price-pulse {
+  0%   { background-color: transparent; border-radius: 4px; }
+  20%  { background-color: rgba(250, 204, 21, 0.35); border-radius: 4px; }
+  80%  { background-color: rgba(250, 204, 21, 0.20); border-radius: 4px; }
+  100% { background-color: transparent; border-radius: 4px; }
+}
+
+.animate-price-pulse {
+  animation: price-pulse 1.4s ease-out;
+}
+
+/* ── Hero Animations ── */
+@keyframes ken-burns {
+  0% { transform: scale(1.0); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1.0); }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 20s ease-in-out infinite;
+}
+
+@keyframes soft-float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-soft-float {
+  animation: soft-float 4s ease-in-out infinite;
 }

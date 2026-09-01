@@ -11,15 +11,12 @@ import {
   PhoneCall, 
   ShieldCheck, 
   Clock, 
-  Calendar, 
   Scale, 
-  CheckCircle2, 
   Play, 
   Pause, 
   RotateCcw, 
   FastForward, 
   ArrowRight,
-  ExternalLink,
   Layers
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -279,32 +276,32 @@ export function ShipmentTracker({
   };
 
   return (
-    <div className="rounded-3xl border border-emerald-100 bg-white shadow-sm overflow-hidden text-slate-900 space-y-0">
+    <div className="rounded-3xl bg-white overflow-hidden text-slate-900 space-y-0 clay-card border-none">
       
       {/* ========================================================================= */}
       {/* 1. TOP LOGISTICS HEADER CARD */}
       {/* ========================================================================= */}
-      <div className="p-5 sm:p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 via-white to-emerald-50/50 space-y-4">
+      <div className="p-4 sm:p-5 border-b border-slate-100 bg-white space-y-4">
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           
           {/* Left: Carrier & Fleet Badges */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-sm shadow-emerald-600/30">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-950 flex items-center justify-center font-bold shadow-[inset_1px_1px_3px_rgba(46,125,50,0.15)]">
                 <Truck size={18} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                  <h3 className="text-base sm:text-lg font-black text-slate-950 tracking-tight">
                     {carrierName}
                   </h3>
-                  <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono">
+                  <span className="clay-pill-green text-[10px] font-extrabold px-2.5 py-0.5 font-mono">
                     {vehicleNumber}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500">
-                  E-Way Bill: <strong className="text-slate-700 font-mono">EWB-2026-98412</strong> • Assigned Lot: <strong className="text-emerald-700 font-mono">{lotId}</strong>
+                  E-Way Bill: <strong className="text-slate-700 font-mono">EWB-2026-98412</strong> • Lot: <strong className="text-emerald-700 font-mono">{lotId}</strong>
                 </p>
               </div>
             </div>
@@ -312,74 +309,63 @@ export function ShipmentTracker({
 
           {/* Driver Contact & Trust Badge */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="p-2.5 px-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">
-                👨‍✈️
-              </div>
+            <div className="p-2 px-3 rounded-xl clay-card-flat flex items-center gap-2.5">
+              <span className="text-sm">👨‍✈️</span>
               <div className="text-xs">
-                <span className="font-bold text-slate-900 block leading-tight">
-                  {driverName}
-                </span>
+                <strong className="text-slate-900 block leading-tight">{driverName}</strong>
                 <span className="text-[11px] text-slate-500 font-mono flex items-center gap-1">
-                  <PhoneCall size={10} className="text-emerald-600" /> {driverPhone}
+                  <PhoneCall size={10} className="text-emerald-700" /> {driverPhone}
                 </span>
               </div>
             </div>
 
-            <div className="p-2.5 px-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-1.5 font-mono">
-              <ShieldCheck size={15} className="text-emerald-600" />
-              <span>4.9 ★ (142 Trips)</span>
+            <div className="clay-pill-green flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold font-mono">
+              <ShieldCheck size={14} className="text-emerald-700" />
+              <span>4.9 ★</span>
             </div>
           </div>
 
         </div>
 
         {/* Real-Time Trip Metrics Banner */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs text-xs font-mono">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl clay-card-flat text-xs font-mono">
           
           <div>
             <span className="text-slate-500 text-[10px] uppercase font-bold block font-sans">Trip Status</span>
-            <strong className="text-emerald-700 font-bold flex items-center gap-1.5 pt-0.5">
+            <strong className="text-emerald-800 font-bold flex items-center gap-1.5 pt-0.5">
               <span className={`w-2 h-2 rounded-full ${isArrived ? 'bg-emerald-600' : 'bg-emerald-500 animate-ping'}`} />
-              {isArrived ? 'Arrived at Mandi' : 'In Transit on NH-160'}
+              {isArrived ? 'Arrived at Mandi' : 'In Transit (NH-160)'}
             </strong>
           </div>
 
           <div>
             <span className="text-slate-500 text-[10px] uppercase font-bold block font-sans">Estimated Arrival</span>
             <strong className="text-slate-900 font-bold flex items-center gap-1 pt-0.5">
-              <Clock size={13} className="text-slate-400" />
-              {etaString}
+              <Clock size={13} className="text-emerald-700" />
+              {etaString} ({remainingDistanceKm} km left)
             </strong>
           </div>
 
           <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block font-sans">Remaining Distance</span>
+            <span className="text-slate-500 text-[10px] uppercase font-bold block font-sans">Telemetry Speed</span>
             <strong className="text-slate-900 font-bold flex items-center gap-1 pt-0.5">
-              <Navigation size={13} className="text-purple-600" />
-              {remainingDistanceKm} km ({progressPercent}% done)
-            </strong>
-          </div>
-
-          <div>
-            <span className="text-slate-500 text-[10px] uppercase font-bold block font-sans">Cruising Speed</span>
-            <strong className="text-slate-900 font-bold pt-0.5 block">
-              {speedKmh} km/h (GPS Active)
+              <Navigation size={13} className="text-purple-650" />
+              {speedKmh} km/h • AIS-140 GPS
             </strong>
           </div>
 
         </div>
 
         {/* Progress Bar along Corridor */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-[11px] text-slate-500 font-medium">
-            <span>Origin: <strong>{originName}</strong></span>
-            <span className="text-purple-700 font-bold font-mono">⚡ Shared Freight Corridor (Nashik - Thane - Vashi)</span>
-            <span>Destination: <strong>{destinationName}</strong></span>
+        <div className="space-y-1.5 pt-1">
+          <div className="flex justify-between text-xs text-slate-600 font-medium">
+            <span>Origin: <strong className="text-slate-900">{originName}</strong></span>
+            <span className="text-purple-750 font-bold font-mono text-[11px]">⚡ Pooled Corridor ({progressPercent}% complete)</span>
+            <span>Destination: <strong className="text-emerald-850">{destinationName}</strong></span>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-[inset_1px_1px_3px_rgba(163,163,140,0.2)]">
             <div 
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2.5 rounded-full transition-all duration-500" 
+              className="bg-emerald-600 h-2.5 rounded-full transition-all duration-500" 
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -396,35 +382,30 @@ export function ShipmentTracker({
         <div ref={mapContainerRef} className="w-full h-full z-0" />
 
         {/* Floating Map Legend */}
-        <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur-md p-3 rounded-2xl border border-slate-200/90 shadow-md text-xs space-y-1.5 font-sans">
-          <div className="font-black text-slate-900 text-[11px] flex items-center gap-1.5 border-b border-slate-100 pb-1">
+        <div className="absolute top-3 left-3 z-10 bg-white p-3 rounded-2xl clay-card text-xs space-y-1.5 font-sans border-none">
+          <div className="font-black text-slate-950 text-[11px] flex items-center gap-1.5 border-b border-slate-100 pb-1">
             <Layers size={13} className="text-emerald-700" />
-            <span>Live Route Telemetry</span>
+            <span>Route Telemetry</span>
           </div>
-          <div className="space-y-1 text-[10px] font-medium text-slate-600">
+          <div className="space-y-1 text-[10px] font-bold text-slate-600">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0" />
-              <span>Traversed Route (Completed)</span>
+              <span>Traversed Route</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-600 shrink-0" />
-              <span>Remaining Corridor Path</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs">⚡</span>
-              <span>Igatpuri Pooled Waypoint</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-650 shrink-0" />
+              <span>Remaining Path</span>
             </div>
           </div>
         </div>
 
         {/* Floating Simulation Controls */}
-        <div className="absolute bottom-3 left-3 z-10 bg-white/95 backdrop-blur-md p-2 rounded-2xl border border-slate-200/90 shadow-md flex items-center gap-1.5">
+        <div className="absolute bottom-3 left-3 z-10 bg-white p-2 rounded-2xl clay-card flex items-center gap-1.5 border-none">
           <Button
             type="button"
-            size="sm"
-            variant="outline"
+            variant="claySecondary"
             onClick={() => setIsPlaying(!isPlaying)}
-            className="h-8 px-2.5 rounded-xl font-bold text-xs border-slate-300"
+            className="h-8 min-h-8 rounded-xl px-2.5 text-xs font-bold shrink-0 cursor-pointer"
           >
             {isPlaying ? <Pause size={12} className="mr-1 text-amber-600" /> : <Play size={12} className="mr-1 text-emerald-600" />}
             <span>{isPlaying ? 'Pause' : 'Play'}</span>
@@ -432,21 +413,19 @@ export function ShipmentTracker({
 
           <Button
             type="button"
-            size="sm"
-            variant="outline"
+            variant="claySecondary"
             onClick={handleFastForward}
-            className="h-8 px-2.5 rounded-xl font-bold text-xs border-slate-300"
+            className="h-8 min-h-8 rounded-xl px-2.5 text-xs font-bold shrink-0 cursor-pointer"
           >
-            <FastForward size={12} className="mr-1 text-purple-600" />
+            <FastForward size={12} className="mr-1 text-purple-650" />
             <span>Arrive</span>
           </Button>
 
           <Button
             type="button"
-            size="sm"
-            variant="outline"
+            variant="claySecondary"
             onClick={handleResetRoute}
-            className="h-8 px-2 rounded-xl text-xs border-slate-300"
+            className="h-8 min-h-8 rounded-xl px-2 text-xs shrink-0 cursor-pointer"
           >
             <RotateCcw size={12} />
           </Button>
@@ -457,31 +436,24 @@ export function ShipmentTracker({
       {/* ========================================================================= */}
       {/* 3. REEFER TELEMETRY & HANDOVER ACTION BAR */}
       {/* ========================================================================= */}
-      <div className="p-5 border-t border-slate-100 bg-slate-50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 border-t border-slate-100 bg-[#FAFAF7] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         
-        {/* IoT Cold-Chain Sensors */}
-        <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-2xs">
-            <Thermometer size={15} className="text-blue-600" />
-            <div>
-              <span className="text-slate-400 text-[9px] block uppercase font-bold font-sans">Cold-Chain Temp</span>
-              <strong className="text-slate-900 font-bold">{temperature}°C (Optimal)</strong>
+        {/* IoT Cold-Chain Sensors Grouped */}
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-2xl clay-card">
+            <div className="flex items-center gap-1.5 text-blue-650">
+              <Thermometer size={14} />
+              <strong className="text-slate-900">{temperature}°C</strong>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-2xs">
-            <Droplets size={15} className="text-blue-500" />
-            <div>
-              <span className="text-slate-400 text-[9px] block uppercase font-bold font-sans">Air Humidity</span>
-              <strong className="text-slate-900 font-bold">{humidity}% RH</strong>
+            <span className="text-slate-300">•</span>
+            <div className="flex items-center gap-1.5 text-blue-500">
+              <Droplets size={14} />
+              <strong className="text-slate-900">{humidity}% RH</strong>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-2xs">
-            <Activity size={15} className="text-emerald-600" />
-            <div>
-              <span className="text-slate-400 text-[9px] block uppercase font-bold font-sans">Vibration / Shock</span>
-              <strong className="text-slate-900 font-bold">0.12 G (Smooth)</strong>
+            <span className="text-slate-300">•</span>
+            <div className="flex items-center gap-1.5 text-emerald-650">
+              <Activity size={14} />
+              <strong className="text-slate-900">0.12G Smooth</strong>
             </div>
           </div>
         </div>
@@ -491,11 +463,12 @@ export function ShipmentTracker({
           <Button
             type="button"
             onClick={handleConfirmArrival}
-            className="h-11 px-5 rounded-xl font-black text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 flex items-center gap-2"
+            variant="clayPrimary"
+            className="w-full lg:w-auto h-12 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
-            <Scale size={15} className="text-emerald-200" />
-            <span>Confirm Mandi Arrival & Proceed to Weighbridge Pass</span>
-            <ArrowRight size={14} />
+            <Scale size={16} className="text-emerald-100" />
+            <span>Confirm Mandi Arrival</span>
+            <ArrowRight size={15} />
           </Button>
         </div>
 

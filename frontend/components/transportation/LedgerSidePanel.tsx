@@ -119,24 +119,29 @@ export function LedgerSidePanel({
   }
 
   return (
-    <aside className="w-full sm:w-[380px] lg:w-[420px] bg-slate-50/50 border-r border-slate-200 flex flex-col h-full shrink-0 relative font-sans transition-all">
+    <aside className="w-full sm:w-[380px] lg:w-[420px] bg-[#FAFAF7] flex flex-col h-full shrink-0 relative font-sans transition-all px-2 pt-2">
       
       {/* HEADER */}
-      <div className="p-3.5 bg-white border-b border-slate-200 sticky top-0 z-20 space-y-3 shadow-2xs">
+      <div className="p-4 bg-white sticky top-0 z-20 space-y-4 clay-card mb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-black text-slate-900 tracking-tight">
-              Payout Ledger &amp; Invoices
-            </h2>
-            <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300">
-              {sortedItems.length}
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black tracking-widest text-emerald-800 uppercase block font-mono mb-1">
+              MODE: PAYOUT LEDGER
             </span>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-black text-slate-950 tracking-tight leading-none">
+                Payout Ledger &amp; Invoices
+              </h2>
+              <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-950 shadow-[inset_1px_1px_3px_rgba(163,163,140,0.2)]">
+                {sortedItems.length}
+              </span>
+            </div>
           </div>
 
           <button
             onClick={onToggleCollapse}
             title="Collapse Panel"
-            className="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors"
+            className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors shadow-xs"
           >
             <ChevronLeft size={16} />
           </button>
@@ -144,18 +149,18 @@ export function LedgerSidePanel({
 
         {/* Search */}
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+          <Search size={14} className="absolute left-3.5 top-4 text-slate-400" />
           <Input
             type="text"
             placeholder="Search E-Way Bill, crop, UTR..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 pr-8 h-9 text-xs rounded-xl border-slate-200 bg-slate-50/80 focus:bg-white focus:ring-emerald-500"
+            className="pl-9 pr-8 h-12 text-sm rounded-xl clay-input focus:ring-emerald-500"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+              className="absolute right-3 top-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             >
               <X size={12} />
             </button>
@@ -164,11 +169,11 @@ export function LedgerSidePanel({
 
         {/* Sort selector */}
         <div className="relative flex items-center">
-          <ArrowUpDown size={12} className="absolute left-2.5 text-slate-400 pointer-events-none" />
+          <ArrowUpDown size={12} className="absolute left-3 text-slate-400 pointer-events-none" />
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as any)}
-            className="w-full h-8 pl-7 pr-2 rounded-xl border border-slate-200 bg-white font-sans text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+            className="w-full h-12 pl-8 pr-2 rounded-xl bg-white font-sans text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 cursor-pointer border-none shadow-[3px_3px_8px_rgba(163,163,140,0.15),-3px_-3px_8px_rgba(255,255,255,0.8)]"
           >
             <option value="total_high">Sort: Highest Total Payout</option>
             <option value="newest">Sort: E-Way Bill Reference</option>
@@ -177,9 +182,9 @@ export function LedgerSidePanel({
       </div>
 
       {/* LIST */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+      <div className="flex-1 overflow-y-auto space-y-3">
         {sortedItems.length === 0 ? (
-          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 my-4 text-xs text-slate-500">
+          <div className="p-8 text-center clay-card my-4 text-sm text-slate-500">
             No ledger records match search.
           </div>
         ) : (
@@ -197,10 +202,10 @@ export function LedgerSidePanel({
                     onSelectLedgerItem(item);
                   }
                 }}
-                className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-xs space-y-2 relative group outline-none ${
+                className={`p-4 rounded-2xl transition-all cursor-pointer text-xs space-y-3 relative group outline-none ${
                   isSelected
-                    ? 'bg-emerald-50/70 border-emerald-600 shadow-md shadow-emerald-600/10 ring-1 ring-emerald-600'
-                    : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50/80 shadow-2xs'
+                    ? 'clay-pressed bg-[#FAFAF7]'
+                    : 'clay-card hover:translate-y-[-1px]'
                 }`}
               >
                 {isSelected && (
@@ -209,31 +214,31 @@ export function LedgerSidePanel({
 
                 {/* Top row */}
                 <div className="flex items-center justify-between gap-2 font-mono">
-                  <span className="font-bold text-slate-900 text-[11px]">
+                  <span className="font-bold text-slate-950 text-xs">
                     {item.ewayBillNumber}
                   </span>
-                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                  <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${
                     item.status === 'SETTLED'
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                      : 'bg-blue-100 text-blue-900 border border-blue-200'
+                      ? 'clay-pill-green'
+                      : 'bg-blue-50 text-blue-900 shadow-xs'
                   }`}>
                     {item.status}
                   </span>
                 </div>
 
                 {/* Middle row */}
-                <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                <div className="p-3 rounded-xl clay-card-flat space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <strong className="text-slate-900 text-xs">{item.cropName} ({item.weightTons} MT)</strong>
-                    <strong className="text-slate-900 font-mono text-xs">₹{item.totalInr.toLocaleString('en-IN')}</strong>
+                    <strong className="text-slate-950 text-xs font-black">{item.cropName} ({item.weightTons} MT)</strong>
+                    <strong className="text-emerald-850 font-mono text-xs font-extrabold">₹{item.totalInr.toLocaleString('en-IN')}</strong>
                   </div>
-                  <div className="text-[10px] text-slate-500 truncate">{item.corridor}</div>
+                  <div className="text-[11px] text-slate-600 truncate font-mono">{item.corridor}</div>
                 </div>
 
                 {/* Bottom row */}
-                <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-0.5">
-                  <span className="text-emerald-800 font-bold">30% Adv: ₹{item.advanceInr.toLocaleString('en-IN')}</span>
-                  <span className="text-emerald-800 font-bold">70% Bal: ₹{item.settlementInr.toLocaleString('en-IN')}</span>
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 pt-0.5">
+                  <span className="text-emerald-850 font-bold">30% Adv: ₹{item.advanceInr.toLocaleString('en-IN')}</span>
+                  <span className="text-slate-700 font-bold">70% Bal: ₹{item.settlementInr.toLocaleString('en-IN')}</span>
                 </div>
               </div>
             );

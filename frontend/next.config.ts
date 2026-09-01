@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  devIndicators: {
+    appIsrStatus: false,
+    buildActivity: false,
+  },
   trailingSlash: isGithubPages ? true : false,
 };
 

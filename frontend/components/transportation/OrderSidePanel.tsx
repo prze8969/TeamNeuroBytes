@@ -168,25 +168,30 @@ export function OrderSidePanel({
   }
 
   return (
-    <aside className="w-full sm:w-[380px] lg:w-[420px] bg-slate-50/50 border-r border-slate-200 flex flex-col h-full shrink-0 relative font-sans transition-all">
+    <aside className="w-full sm:w-[380px] lg:w-[420px] bg-[#FAFAF7] flex flex-col h-full shrink-0 relative font-sans transition-all px-2 pt-2">
       
       {/* ========================================================================= */}
       {/* 1. STICKY PANEL HEADER */}
       {/* ========================================================================= */}
-      <div className="p-3.5 bg-white border-b border-slate-200 sticky top-0 z-20 space-y-3 shadow-2xs">
+      <div className="p-4 bg-white sticky top-0 z-20 space-y-4 clay-card mb-3">
         
         {/* Title & Counters & Collapse Toggle */}
         <div className="flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-black text-slate-900 tracking-tight">
-                Transportation Orders
-              </h2>
-              <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300">
-                {sortedOrders.length} / {orders.length}
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black tracking-widest text-emerald-800 uppercase block font-mono mb-1">
+                MODE: ACTIVE DISPATCHES
               </span>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-black text-slate-950 tracking-tight leading-none">
+                  Transportation Orders
+                </h2>
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-950 shadow-[inset_1px_1px_3px_rgba(163,163,140,0.2)]">
+                  {sortedOrders.length} / {orders.length}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono pt-0.5">
+            <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono pt-1.5">
               <span className="text-emerald-700 font-bold">{activeCount} Active Hauls</span>
               {delayedCount > 0 && (
                 <span className="text-rose-600 font-bold">• {delayedCount} Delayed</span>
@@ -197,7 +202,7 @@ export function OrderSidePanel({
           <button
             onClick={onToggleCollapse}
             title="Collapse Panel"
-            className="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors"
+            className="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors shadow-xs"
           >
             <ChevronLeft size={16} />
           </button>
@@ -205,18 +210,18 @@ export function OrderSidePanel({
 
         {/* Quick Search Input */}
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+          <Search size={14} className="absolute left-3.5 top-4 text-slate-400" />
           <Input
             type="text"
-            placeholder="Search order ID, driver, vehicle, origin..."
+            placeholder="Search order ID, driver, vehicle..."
             value={filters.searchQuery}
             onChange={(e) => setFilters(prev => ({ ...prev, searchQuery: e.target.value }))}
-            className="pl-8 pr-8 h-9 text-xs rounded-xl border-slate-200 bg-slate-50/80 focus:bg-white focus:ring-emerald-500"
+            className="pl-9 pr-8 h-12 text-sm rounded-xl clay-input focus:ring-emerald-500"
           />
           {filters.searchQuery && (
             <button
               onClick={() => setFilters(prev => ({ ...prev, searchQuery: '' }))}
-              className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700 cursor-pointer"
+              className="absolute right-3 top-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             >
               <X size={12} />
             </button>
@@ -228,19 +233,18 @@ export function OrderSidePanel({
           {/* Filter Toggle Button */}
           <Button
             type="button"
-            variant="outline"
-            size="sm"
+            variant="claySecondary"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`h-8 px-3 rounded-xl font-bold text-xs flex items-center gap-1.5 cursor-pointer ${
+            className={`h-12 px-4 rounded-xl text-xs flex items-center gap-2 cursor-pointer ${
               activeFilterCount > 0 
-                ? 'bg-emerald-100 text-emerald-950 border-emerald-300' 
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                ? 'clay-pressed text-emerald-950' 
+                : ''
             }`}
           >
             <SlidersHorizontal size={13} />
             <span>Filter</span>
             {activeFilterCount > 0 && (
-              <span className="w-4 h-4 rounded-full bg-emerald-700 text-white text-[9px] font-mono flex items-center justify-center font-bold">
+              <span className="w-5 h-5 rounded-full bg-emerald-700 text-white text-[9px] font-mono flex items-center justify-center font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -248,11 +252,11 @@ export function OrderSidePanel({
 
           {/* Sort Selector */}
           <div className="flex-1 relative flex items-center">
-            <ArrowUpDown size={12} className="absolute left-2.5 text-slate-400 pointer-events-none" />
+            <ArrowUpDown size={12} className="absolute left-3 text-slate-400 pointer-events-none" />
             <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value as OrderSortOption)}
-              className="w-full h-8 pl-7 pr-2 rounded-xl border border-slate-200 bg-white font-sans text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 cursor-pointer text-ellipsis overflow-hidden"
+              className="w-full h-12 pl-8 pr-2 rounded-xl bg-white font-sans text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 cursor-pointer text-ellipsis overflow-hidden shadow-[3px_3px_8px_rgba(163,163,140,0.15),-3px_-3px_8px_rgba(255,255,255,0.8)] border-none"
             >
               <option value="eta_earliest">Sort: ETA (Earliest First)</option>
               <option value="eta_latest">Sort: ETA (Latest First)</option>
@@ -271,7 +275,7 @@ export function OrderSidePanel({
         {activeFilterCount > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[10px] font-mono">
             {filters.status !== 'ALL' && (
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-950 shadow-xs flex items-center gap-1">
                 Status: {filters.status}
                 <X 
                   size={10} 
@@ -282,7 +286,7 @@ export function OrderSidePanel({
             )}
 
             {filters.deliveryStatus !== 'ALL' && (
-              <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 border border-rose-200 flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-rose-50 text-rose-950 shadow-xs flex items-center gap-1">
                 Alert: {filters.deliveryStatus}
                 <X 
                   size={10} 
@@ -293,7 +297,7 @@ export function OrderSidePanel({
             )}
 
             {filters.transportMode !== 'ALL' && (
-              <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-200 flex items-center gap-1">
+              <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-950 shadow-xs flex items-center gap-1">
                 Mode: {filters.transportMode}
                 <X 
                   size={10} 
@@ -327,26 +331,26 @@ export function OrderSidePanel({
       {/* ========================================================================= */}
       {/* 2. ORDER LIST SCROLLABLE AREA */}
       {/* ========================================================================= */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+      <div className="flex-1 overflow-y-auto p-2 space-y-3">
         {orders.length === 0 ? (
           /* Empty Orders Initial State */
-          <div className="p-6 text-center bg-white rounded-2xl border border-slate-200 space-y-3 my-4">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto font-bold border border-emerald-200 text-lg">
+          <div className="p-6 text-center clay-card space-y-3 my-4">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-750 flex items-center justify-center mx-auto font-bold text-lg shadow-[inset_1px_1px_3px_rgba(46,125,50,0.15)]">
               🚚
             </div>
             <div>
-              <h3 className="font-extrabold text-slate-900 text-xs">
+              <h3 className="font-extrabold text-slate-900 text-sm">
                 No active hauls assigned
               </h3>
-              <p className="text-[11px] text-slate-500 pt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 pt-1 leading-relaxed">
                 Accept open freight tenders from the Load Board to start tracking trips.
               </p>
             </div>
             {onBrowseTenders && (
               <Button
-                size="sm"
+                variant="clayPrimary"
                 onClick={onBrowseTenders}
-                className="h-8 rounded-xl font-bold text-xs bg-emerald-700 hover:bg-emerald-800 text-white cursor-pointer"
+                className="h-10 min-h-10 text-xs px-4"
               >
                 Browse Load Board →
               </Button>
@@ -354,25 +358,24 @@ export function OrderSidePanel({
           </div>
         ) : sortedOrders.length === 0 ? (
           /* Empty Filter State */
-          <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 space-y-3 my-4">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mx-auto font-bold border border-emerald-200">
+          <div className="p-8 text-center clay-card space-y-3 my-4">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-750 flex items-center justify-center mx-auto font-bold">
               <Filter size={20} />
             </div>
             <div>
-              <h3 className="font-extrabold text-slate-900 text-xs">
+              <h3 className="font-extrabold text-slate-900 text-sm">
                 No orders match the selected filters
               </h3>
-              <p className="text-[11px] text-slate-500 pt-1">
+              <p className="text-xs text-slate-500 pt-1">
                 Try adjusting your search criteria or resetting filters to view orders.
               </p>
             </div>
             <Button
-              size="sm"
-              variant="outline"
+              variant="claySecondary"
               onClick={handleResetFilters}
-              className="h-8 rounded-xl font-bold text-xs text-emerald-800 border-emerald-200 hover:bg-emerald-50"
+              className="h-10 min-h-10 text-xs px-4"
             >
-              <RotateCcw size={12} className="mr-1.5" />
+              <RotateCcw size={12} />
               Reset Filters
             </Button>
           </div>

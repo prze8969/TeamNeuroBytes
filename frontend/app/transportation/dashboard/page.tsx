@@ -456,7 +456,7 @@ export default function TransportationDashboardPage() {
 
   return (
     <ProtectedRoute allowedRoles={['TRANSPORTATION', 'ADMIN']}>
-      <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col font-sans">
+      <div className="min-h-screen bg-[#FAFAF7] text-slate-800 flex flex-col font-sans clay-base">
         <Navbar activeRole="TRANSPORTATION" />
 
         {/* ========================================================================= */}
@@ -475,94 +475,82 @@ export default function TransportationDashboardPage() {
         {/* ========================================================================= */}
         {/* 1. STICKY TOP FLEET COMMAND HEADER */}
         {/* ========================================================================= */}
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
-          <div className="max-w-[1700px] mx-auto px-4 sm:px-6 py-3 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <header className="sticky top-[108px] z-40 mx-4 sm:mx-6 mt-3 mb-2 px-6 py-4 clay-header text-slate-800">
+          <div className="max-w-[1700px] mx-auto flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             
-            {/* Fleet Profile & Dynamic Info */}
+            {/* Left: Carrier Identity */}
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-bold text-xl shadow-sm shadow-emerald-700/20 shrink-0">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#1B5E20] flex items-center justify-center font-bold text-xl shrink-0 shadow-[2px_2px_5px_rgba(46,125,50,0.1)]">
                 <Truck size={22} />
               </div>
-              <div>
+              <div className="space-y-0.5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                  <h1 className="text-base sm:text-lg font-black text-slate-950 tracking-tight">
                     {carrierProfile.carrier_name}
                   </h1>
-                  <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 font-mono">
-                    VERIFIED FLEET CARRIER
-                  </span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono">
-                    ★ {carrierProfile.rating} ({carrierProfile.total_trips_completed} Trips)
+                  <span className="clay-pill-green text-[10px] font-extrabold px-2.5 py-0.5 uppercase tracking-wider font-mono">
+                    VERIFIED FLEET
                   </span>
                 </div>
-                
-                <div className="flex flex-wrap items-center gap-2 pt-0.5 text-[11px] text-slate-500 font-mono">
-                  <span>GSTIN: <strong className="text-slate-800">{carrierProfile.gstin}</strong></span>
-                  <span>•</span>
-                  <span>Base Rate: <strong className="text-emerald-800">₹{carrierProfile.base_rate}/{carrierProfile.rate_unit === 'INR_PER_KG' ? 'kg' : 'tonne-km'}</strong></span>
-                  <span>•</span>
-                  <span className="text-slate-600">{carrierProfile.total_trucks} Trucks Managed</span>
-                </div>
+                <p className="text-xs text-slate-500 font-mono">
+                  GSTIN: <strong className="text-slate-800">{carrierProfile.gstin}</strong> • Rate: <strong className="text-emerald-800">₹{carrierProfile.base_rate}/{carrierProfile.rate_unit === 'INR_PER_KG' ? 'kg' : 't-km'}</strong>
+                </p>
               </div>
             </div>
 
-            {/* Escrow Balance, Fleet Actions & Setup Controls */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            {/* Right: Key Summary Metrics & Action Button */}
+            <div className="flex flex-wrap items-center gap-3">
               
               {/* Escrow Claim Pill */}
-              <div className="bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-2xl text-xs font-mono">
-                <span className="text-[9px] uppercase font-bold text-slate-500 block font-sans">Available Escrow Claim</span>
-                <strong className="text-emerald-800 font-black text-sm">
+              <div className="clay-card-flat px-4 py-2 text-xs font-mono">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block font-sans">Available Escrow</span>
+                <strong className="text-emerald-850 font-black text-sm">
                   ₹{carrierProfile.available_escrow_balance_inr.toLocaleString('en-IN')}
                 </strong>
               </div>
 
               {/* Active Trucks Pill */}
-              <div className="bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-2xl text-xs font-mono">
-                <span className="text-[9px] uppercase font-bold text-slate-500 block font-sans">Active Hauls</span>
+              <div className="clay-card-flat px-4 py-2 text-xs font-mono">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block font-sans">Active Hauls</span>
                 <strong className="text-emerald-900 font-black text-sm flex items-center gap-1.5">
-                  {orders.filter(o => o.status === 'IN_TRANSIT').length > 0 && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
-                  )}
-                  {orders.filter(o => o.status === 'IN_TRANSIT').length} On Highway
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                  {orders.filter(o => o.status === 'IN_TRANSIT').length || orders.length} Active
                 </strong>
               </div>
 
               {/* Edit Fleet Setup Button */}
               <Button
-                size="sm"
-                variant="outline"
+                variant="claySecondary"
                 onClick={() => {
                   setIsEditMode(true);
                   setIsOnboardingModalOpen(true);
                 }}
-                className="text-xs font-bold h-9 px-3 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="text-xs h-10 px-4 py-2 rounded-xl cursor-pointer"
                 title="Edit Fleet Profile & Rates"
               >
-                <Settings2 size={13} className="mr-1 text-emerald-700" />
-                Fleet &amp; Rates
+                <Settings2 size={14} className="mr-1 text-emerald-700" />
+                <span>Fleet Profile</span>
               </Button>
 
-              {/* Demo Toggle Options */}
+              {/* Reset/Demo quick button */}
               {orders.length === 0 ? (
                 <Button
-                  size="sm"
+                  variant="clayPrimary"
                   onClick={handleLoadDemoTrip}
-                  className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs h-9 px-3 rounded-xl shadow-xs cursor-pointer"
+                  className="text-xs h-10 px-4 py-2 rounded-xl cursor-pointer"
                 >
-                  <Sparkles size={13} className="mr-1.5 text-amber-300" />
-                  Load Demo Haul
+                  <Sparkles size={14} className="mr-1 text-amber-300" />
+                  <span>Load Demo</span>
                 </Button>
               ) : (
                 <Button
-                  size="sm"
-                  variant="outline"
+                  variant="ghost"
                   onClick={handleResetToEmptyState}
-                  className="text-xs font-bold h-9 px-3 rounded-xl border-slate-200 text-slate-500 hover:text-slate-800 cursor-pointer"
+                  className="text-xs h-10 px-3 text-slate-500 hover:text-slate-800 cursor-pointer"
                   title="Clear orders to test empty state"
                 >
-                  <RotateCcw size={12} className="mr-1" />
-                  Reset to Empty
+                  <RotateCcw size={13} className="mr-1" />
+                  <span>Reset</span>
                 </Button>
               )}
 
@@ -571,56 +559,56 @@ export default function TransportationDashboardPage() {
           </div>
 
           {/* Sub-Navigation Tabs */}
-          <div className="max-w-[1700px] mx-auto px-4 sm:px-6 border-t border-slate-100">
-            <nav className="flex space-x-2 sm:space-x-4 py-1.5 overflow-x-auto">
+          <div className="mt-4 pt-3 border-t border-slate-100/60">
+            <nav className="flex space-x-3 overflow-x-auto py-0.5">
               
               <button
                 type="button"
                 onClick={() => setActiveTab('active_trips')}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                className={`h-11 px-5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
                   activeTab === 'active_trips'
-                    ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-700/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'clay-pressed text-emerald-950 font-black'
+                    : 'clay-card text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Navigation size={14} />
-                <span>Transportation Orders &amp; Map</span>
+                <span>Active Dispatches &amp; Map</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
-                  activeTab === 'active_trips' ? 'bg-emerald-900 text-white' : 'bg-slate-200 text-slate-700'
+                  activeTab === 'active_trips' ? 'clay-pressed text-emerald-950' : 'clay-card-flat text-slate-600'
                 }`}>
-                  {orders.length} Active
+                  {orders.length}
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('load_board')}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                className={`h-11 px-5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
                   activeTab === 'load_board'
-                    ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-700/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'clay-pressed text-emerald-950 font-black'
+                    : 'clay-card text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <PackageCheck size={14} />
-                <span>Freight Load Board (Open Tenders)</span>
+                <span>Freight Tenders</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
-                  activeTab === 'load_board' ? 'bg-emerald-900 text-white' : 'bg-emerald-100 text-emerald-900 font-bold'
+                  activeTab === 'load_board' ? 'clay-pressed text-emerald-950' : 'clay-card-flat text-emerald-800'
                 }`}>
-                  {openTenders.length} Available
+                  {openTenders.length}
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('ledger')}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                className={`h-11 px-5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
                   activeTab === 'ledger'
-                    ? 'bg-emerald-700 text-white shadow-sm shadow-emerald-700/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'clay-pressed text-emerald-950 font-black'
+                    : 'clay-card text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <DollarSign size={14} />
-                <span>Payout Ledger &amp; Invoices</span>
+                <span>Payout Ledger</span>
               </button>
 
             </nav>
@@ -649,7 +637,7 @@ export default function TransportationDashboardPage() {
           {/* TAB 1: TRANSPORTATION ORDERS & MAP (SPLIT SIDE PANEL + MAP + INLINE DETAIL) */}
           {/* ========================================================================= */}
           {activeTab === 'active_trips' && (
-            <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-130px)] min-h-[650px] overflow-hidden">
+            <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 max-w-[1700px] mx-auto w-full h-[calc(100vh-230px)] min-h-[650px] overflow-hidden">
               
               {/* LEFT SIDE PANEL */}
               <OrderSidePanel
@@ -669,40 +657,40 @@ export default function TransportationDashboardPage() {
                 <div className="flex-1 flex flex-col p-6 overflow-y-auto space-y-6 justify-center max-w-4xl mx-auto w-full">
                   
                   {/* Hero Empty State Card */}
-                  <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200/90 shadow-sm text-center space-y-5">
+                  <div className="p-8 sm:p-10 clay-card text-center space-y-6">
                     
-                    <div className="mx-auto w-20 h-20 rounded-3xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center text-4xl shadow-inner animate-in zoom-in duration-300">
+                    <div className="mx-auto w-20 h-20 rounded-3xl bg-[#E8F5E9] text-emerald-800 flex items-center justify-center text-4xl shadow-[inset_2px_2px_5px_rgba(46,125,50,0.1),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] animate-in zoom-in duration-300">
                       🚚
                     </div>
 
-                    <div className="space-y-2 max-w-lg mx-auto">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-mono font-bold">
-                        <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                        Fleet Ready for Dispatch • 0 Active Hauls
+                    <div className="space-y-3 max-w-lg mx-auto">
+                      <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full clay-pill-green text-xs font-bold">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+                        <span>Fleet Ready for Dispatch • 0 Active Hauls</span>
                       </div>
                       <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                         No Active Hauls Currently Assigned
                       </h2>
-                      <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-medium">
+                      <p className="text-sm text-slate-500 leading-relaxed font-medium">
                         Your transporter profile for <strong className="text-slate-800">{carrierProfile.carrier_name}</strong> is verified with <strong>{carrierProfile.total_trucks} commercial trucks</strong>. Browse available farmgate harvest lots &amp; bulk FPO tenders to start accepting corridor freight.
                       </p>
                     </div>
 
                     {/* Fleet Stats Pill Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto pt-2 text-xs font-mono">
-                      <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                      <div className="p-3 rounded-2xl clay-card-flat text-center">
                         <span className="text-[10px] text-slate-400 block font-sans font-bold">Fleet Size</span>
                         <strong className="text-slate-900 text-sm">{carrierProfile.total_trucks} Trucks</strong>
                       </div>
-                      <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                      <div className="p-3 rounded-2xl clay-card-flat text-center">
                         <span className="text-[10px] text-slate-400 block font-sans font-bold">Base Rate</span>
                         <strong className="text-emerald-800 text-sm">₹{carrierProfile.base_rate}/{carrierProfile.rate_unit === 'INR_PER_KG' ? 'kg' : 't-km'}</strong>
                       </div>
-                      <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                      <div className="p-3 rounded-2xl clay-card-flat text-center">
                         <span className="text-[10px] text-slate-400 block font-sans font-bold">Min Freight</span>
                         <strong className="text-slate-900 text-sm">₹{carrierProfile.min_freight_charge}</strong>
                       </div>
-                      <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-center">
+                      <div className="p-3 rounded-2xl clay-card-flat text-center">
                         <span className="text-[10px] text-slate-400 block font-sans font-bold">Fuel Advance</span>
                         <strong className="text-emerald-800 text-sm">30% Instant</strong>
                       </div>
@@ -711,34 +699,33 @@ export default function TransportationDashboardPage() {
                     {/* Actions */}
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
                       <Button
-                        size="lg"
+                        variant="clayPrimary"
                         onClick={() => setActiveTab('load_board')}
-                        className="w-full sm:w-auto h-12 px-8 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full sm:w-auto h-12 min-h-12 px-8 rounded-full flex items-center justify-center gap-2 cursor-pointer"
                       >
                         <PackageCheck size={16} />
                         <span>Browse Open Freight Load Board ({openTenders.length} Available) →</span>
                       </Button>
 
                       <Button
-                        size="lg"
-                        variant="outline"
+                        variant="claySecondary"
                         onClick={handleLoadDemoTrip}
-                        className="w-full sm:w-auto h-12 px-6 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50 font-bold text-xs cursor-pointer"
+                        className="w-full sm:w-auto h-12 min-h-12 px-6 rounded-full flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        <Sparkles size={14} className="mr-1.5 text-amber-500" />
-                        Load Demo Active Trip
+                        <Sparkles size={14} className="text-amber-550" />
+                        <span>Load Demo Active Trip</span>
                       </Button>
                     </div>
 
                   </div>
 
                   {/* Telemetry Map Placeholder */}
-                  <div className="p-6 rounded-3xl bg-slate-50 border border-dashed border-slate-300 text-center space-y-2">
-                    <div className="flex items-center justify-center gap-2 text-slate-400 text-xs font-mono font-bold">
-                      <Compass size={16} className="animate-spin text-emerald-600" />
+                  <div className="p-6 rounded-3xl clay-card bg-slate-50/50 text-center space-y-2">
+                    <div className="flex items-center justify-center gap-2 text-slate-550 text-xs font-mono font-bold">
+                      <Compass size={16} className="animate-spin text-emerald-600 animate-duration-[4s]" />
                       <span>AIS-140 GPS Corridor Telemetry &amp; Cold-Chain Sensor Hub</span>
                     </div>
-                    <p className="text-[11px] text-slate-500 max-w-md mx-auto">
+                    <p className="text-xs text-slate-500 max-w-md mx-auto">
                       Interactive Leaflet route maps, speed monitors, temperature telemetry, and 4-digit farmgate OTP handshakes activate automatically as soon as an open tender is accepted from the Load Board.
                     </p>
                   </div>
@@ -748,39 +735,40 @@ export default function TransportationDashboardPage() {
                 /* ========================================================================= */
                 /* ACTIVE ORDERS MAP & CONTROLS VIEW */
                 /* ========================================================================= */
-                <div className="flex-1 flex flex-col p-4 overflow-y-auto space-y-3">
+                <div className="flex-1 flex flex-col overflow-y-auto space-y-3">
                   {selectedOrder && (
-                    <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shrink-0">
+                    <div className="p-4 rounded-2xl clay-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shrink-0">
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-extrabold text-slate-900 text-sm">{selectedOrder.id}</span>
-                          <span className="font-mono text-emerald-950 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px] font-bold">
-                            {selectedOrder.shipment.cropName} ({selectedOrder.shipment.weightTons} MT)
+                          <span className="font-extrabold text-slate-950 text-sm font-mono">{selectedOrder.id}</span>
+                          <span className="font-mono text-emerald-950 clay-pill-green text-[11px] font-bold">
+                            {selectedOrder.shipment.cropName} • {selectedOrder.shipment.weightTons} MT
                           </span>
-                          <span className="font-mono text-emerald-800 text-[11px] font-bold">
-                            Vehicle: {selectedOrder.vehicle.registrationNumber}
+                          <span className="font-mono text-slate-600 text-[11px]">
+                            {selectedOrder.vehicle.registrationNumber}
                           </span>
-                          <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                          <span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full clay-card-flat text-slate-700">
                             {selectedOrder.status}
                           </span>
                         </div>
-                        <p className="text-slate-500 text-[11px] pt-0.5">
-                          Route: <strong>{selectedOrder.origin.name}</strong> ➔ <strong className="text-emerald-800">{selectedOrder.destination.name}</strong>
+                        <p className="text-slate-600 text-xs pt-1 font-sans">
+                          Corridor: <strong className="text-slate-950">{selectedOrder.origin.name}</strong> ➔ <strong className="text-emerald-800">{selectedOrder.destination.name}</strong>
                         </p>
                       </div>
 
                       <Button
-                        size="sm"
+                        variant={isDetailDrawerOpen ? 'claySecondary' : 'clayPrimary'}
                         onClick={() => setIsDetailDrawerOpen(!isDetailDrawerOpen)}
-                        className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs h-8 px-3 rounded-xl shadow-xs cursor-pointer shrink-0"
+                        className="text-xs h-10 px-4 rounded-xl cursor-pointer shrink-0"
                       >
-                        {isDetailDrawerOpen ? 'Hide Order Details' : 'Show Order Details'}
+                        <SlidersHorizontal size={14} className="mr-1.5" />
+                        <span>{isDetailDrawerOpen ? 'Close Telemetry' : 'Telemetry & Actions'}</span>
                       </Button>
                     </div>
                   )}
 
                   {/* Embedded Live Map */}
-                  <div className="flex-1 rounded-3xl overflow-hidden border border-slate-200 shadow-sm relative min-h-[420px]">
+                  <div className="flex-1 rounded-3xl overflow-hidden clay-card relative min-h-[420px]">
                     <ShipmentTracker
                       lotId={selectedOrder?.lotId || 'LOT-1'}
                       cropName={selectedOrder?.shipment.cropName || 'Sharbati Wheat'}
@@ -816,7 +804,7 @@ export default function TransportationDashboardPage() {
           {/* TAB 2: FREIGHT LOAD BOARD (TENDER SIDE PANEL + DETAIL VIEW - NO MAP) */}
           {/* ========================================================================= */}
           {activeTab === 'load_board' && (
-            <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-130px)] min-h-[650px] overflow-hidden">
+            <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 max-w-[1700px] mx-auto w-full h-[calc(100vh-230px)] min-h-[650px] overflow-hidden">
               
               {/* TENDER SIDE PANEL */}
               <TenderSidePanel
@@ -842,7 +830,7 @@ export default function TransportationDashboardPage() {
           {/* TAB 3: PAYOUT LEDGER (LEDGER SIDE PANEL + INVOICE DETAIL VIEW - NO MAP) */}
           {/* ========================================================================= */}
           {activeTab === 'ledger' && (
-            <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-130px)] min-h-[650px] overflow-hidden">
+            <div className="flex-1 flex flex-col md:flex-row gap-4 p-4 max-w-[1700px] mx-auto w-full h-[calc(100vh-230px)] min-h-[650px] overflow-hidden">
               
               {/* LEDGER SIDE PANEL */}
               <LedgerSidePanel

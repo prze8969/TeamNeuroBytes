@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Building2, 
   ShieldCheck, 
@@ -9,14 +9,15 @@ import {
   LayoutGrid, 
   Truck, 
   Receipt,
-  Search,
   CheckCircle2,
-  Lock,
-  Fuel,
   ArrowRight,
-  AlertTriangle,
   PackageCheck,
-  Layers
+  ChevronDown,
+  User,
+  MapPin,
+  Hash,
+  LogOut,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CropListingListItem } from '@/components/dashboard/CropListingListItem';
@@ -34,14 +35,56 @@ import { EmptyListingState } from '@/components/dashboard/EmptyListingState';
 import { useBuyerState, BuyerTabType } from '@/lib/useBuyerState';
 import { CropLot } from '@/lib/types';
 
-const MANDI_TICKER_ITEMS = [
-  { mandi: 'Nashik APMC', crop: 'Sharbati Wheat', price: '₹2,450/qtl', trend: '+1.8%' },
-  { mandi: 'Lasalgaon Hub', crop: 'Red Onion', price: '₹1,800/qtl', trend: '+2.4%' },
-  { mandi: 'Pune Mandi', crop: 'Hybrid Tomato', price: '₹1,450/qtl', trend: '-0.9%' },
-  { mandi: 'Karnal Yard', crop: '1121 Basmati', price: '₹6,800/qtl', trend: '+3.1%' },
-  { mandi: 'Latur APMC', crop: 'Yellow Soybean', price: '₹4,400/qtl', trend: '+0.5%' },
-  { mandi: 'Vashi Terminal', crop: 'Lok-1 Wheat', price: '₹2,580/qtl', trend: '+1.2%' }
-];
+/* ─────────────────────────────────────────────────────────────
+   Badge primitives — 3 types, no exceptions
+   ───────────────────────────────────────────────────────────── */
+
+/** Status badge: green = verified/good, amber = pending/active, red = alert */
+function StatusBadge({ 
+  label, 
+  variant = 'green', 
+  icon 
+}: { 
+  label: string; 
+  variant?: 'green' | 'amber' | 'red'; 
+  icon?: React.ReactNode; 
+}) {
+  const colors = {
+    green:  'bg-emerald-100 text-emerald-800 border-emerald-200',
+    amber:  'bg-amber-100  text-amber-800  border-amber-200',
+    red:    'bg-rose-100   text-rose-800   border-rose-200',
+  };
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full border font-mono ${colors[variant]}`}>
+      {icon}
+      {label}
+    </span>
+  );
+}
+
+/** Count badge: neutral gray, always same shape */
+function CountBadge({ count, label }: { count: number; label?: string }) {
+  return (
+    <span className="inline-flex items-center gap-0.5 text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 font-mono">
+      {count}{label ? ` ${label}` : ''}
+    </span>
+  );
+}
+
+/** Price-change badge: always with an arrow icon, never text-color alone */
+function PriceChangeBadge({ trend }: { trend: string }) {
+  const isUp = trend.startsWith('+');
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[10px] font-black px-1.5 py-0.5 rounded-full font-mono ${
+      isUp 
+        ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+        : 'bg-rose-100 text-rose-700 border border-rose-200'
+    }`}>
+      <span>{isUp ? '▲' : '▼'}</span>
+      {trend}
+    </span>
+  );
+}
 
 export function BuyerDashboardLayout() {
   const {
@@ -94,187 +137,184 @@ export function BuyerDashboardLayout() {
   } = useBuyerState();
 
   const [selectedDetailLot, setSelectedDetailLot] = React.useState<CropLot | null>(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       
       {/* ========================================================================= */}
-      {/* 1. STICKY TOP COMMAND HEADER */}
+      {/* 1. STICKY TOP COMMAND HEADER — consolidated, single visual weight tier    */}
       {/* ========================================================================= */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
         
-        {/* Top Profile & Live Mandi Ticker Row */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        {/* Single row: profile pill + tabs + account menu */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
           
-          {/* Buyer Profile Pill */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shadow-xs shadow-emerald-700/20">
-              <Building2 size={16} />
+          {/* LEFT: compact company identity */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-emerald-700 text-white flex items-center justify-center shadow-xs shadow-emerald-700/20">
+              <Building2 size={14} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm font-black text-slate-900 tracking-tight">
+            <div className="hidden sm:block">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-black text-slate-900 tracking-tight">
                   {buyerProfile.business_name}
-                </h1>
-                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1 font-mono">
-                  <ShieldCheck size={11} className="text-emerald-700" />
-                  VERIFIED BUYER
                 </span>
-              </div>
-              <p className="text-[11px] text-slate-500 font-mono">
-                GSTIN: <strong className="text-slate-800">{buyerProfile.gstin}</strong> • Hub: <strong className="text-slate-800">{buyerProfile.preferred_apmc_mandi}</strong>
-              </p>
-            </div>
-          </div>
-
-          {/* Continuous Stock Market Live Mandi Price Ticker */}
-          <div className="hidden md:flex items-center gap-2.5 bg-slate-900 text-slate-100 px-3.5 py-1.5 rounded-2xl border border-slate-800 shadow-inner flex-1 max-w-xl overflow-hidden relative group">
-            
-            {/* Live Indicator Dot */}
-            <div className="flex items-center gap-1.5 shrink-0 z-10 pr-2 border-r border-slate-700 bg-slate-900">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-              <span className="text-[9px] font-black uppercase tracking-wider text-emerald-400 font-mono whitespace-nowrap">
-                LIVE TICKER
-              </span>
-            </div>
-
-            {/* Seamless Infinite Running Ticker Track */}
-            <div 
-              className="flex-1 overflow-hidden relative"
-              style={{
-                maskImage: 'linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent)',
-                WebkitMaskImage: 'linear-gradient(to right, transparent, black 12px, black calc(100% - 12px), transparent)'
-              }}
-            >
-              <div className="animate-ticker flex items-center gap-6 text-[11px] font-mono whitespace-nowrap select-none">
-                {/* 1st Loop Copy */}
-                {MANDI_TICKER_ITEMS.map((item, idx) => (
-                  <div key={`ticker-1-${idx}`} className="flex items-center gap-1.5">
-                    <span className="text-slate-400 text-[10px] font-sans font-medium">{item.crop}:</span>
-                    <strong className="text-white font-bold">{item.price}</strong>
-                    <span className={`text-[10px] font-black px-1 rounded ${
-                      item.trend.startsWith('+') ? 'text-emerald-400 bg-emerald-950/60' : 'text-rose-400 bg-rose-950/60'
-                    }`}>
-                      {item.trend}
-                    </span>
-                    <span className="text-slate-600 pl-2">•</span>
-                  </div>
-                ))}
-
-                {/* 2nd Loop Copy for Seamless Loop */}
-                {MANDI_TICKER_ITEMS.map((item, idx) => (
-                  <div key={`ticker-2-${idx}`} className="flex items-center gap-1.5">
-                    <span className="text-slate-400 text-[10px] font-sans font-medium">{item.crop}:</span>
-                    <strong className="text-white font-bold">{item.price}</strong>
-                    <span className={`text-[10px] font-black px-1 rounded ${
-                      item.trend.startsWith('+') ? 'text-emerald-400 bg-emerald-950/60' : 'text-rose-400 bg-rose-950/60'
-                    }`}>
-                      {item.trend}
-                    </span>
-                    <span className="text-slate-600 pl-2">•</span>
-                  </div>
-                ))}
+                {/* Status badge — green = verified */}
+                <StatusBadge
+                  label="VERIFIED"
+                  variant="green"
+                  icon={<ShieldCheck size={9} />}
+                />
+                {isDemoMode && (
+                  <StatusBadge label="DEMO" variant="amber" icon={<Sparkles size={9} />} />
+                )}
               </div>
             </div>
-
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setIsDemoMode(!isDemoMode)}
-              className={`h-8 px-3 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer border ${
-                isDemoMode
-                  ? 'bg-amber-400 text-slate-950 border-amber-500 ring-2 ring-amber-300 shadow-xs'
-                  : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
-              }`}
-            >
-              <Sparkles size={13} className={isDemoMode ? 'text-slate-950 animate-spin' : 'text-amber-500'} />
-              <span>{isDemoMode ? '⚡ Demo Mode: ON' : '⚡ Demo Mode: OFF'}</span>
-            </button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchLiveMarketplaceData}
-              className="h-8 text-xs font-bold gap-1.5 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer"
-            >
-              <RefreshCw size={13} className="text-slate-500" />
-              Sync Mandi Live
-            </Button>
-          </div>
-
-        </div>
-
-        {/* 3-Tab Command Center Navigation Bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100">
-          <nav className="flex items-center gap-2 py-2 overflow-x-auto no-scrollbar">
-            
-            {/* Tab 1: Marketplace & Discovery */}
+          {/* CENTER: 3-tab navigation */}
+          <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            {/* Tab 1: Marketplace */}
             <button
               type="button"
               onClick={() => setActiveTab('marketplace')}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'marketplace'
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <LayoutGrid size={15} />
-              <span>Verified Lots Marketplace</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                activeTab === 'marketplace' ? 'bg-emerald-800 text-white' : 'bg-slate-200 text-slate-700'
-              }`}>
-                {lots.length} Lots
-              </span>
+              <LayoutGrid size={14} />
+              <span className="hidden sm:inline">Verified Lots</span>
+              <span className="sm:hidden">Lots</span>
+              {/* Count badge — neutral gray */}
+              <CountBadge count={lots.length} label="Lots" />
             </button>
 
-            {/* Tab 2: Active Procurement Corridors (Multi-Deal Collection) */}
+            {/* Tab 2: Active Procurement */}
             <button
               type="button"
               onClick={() => setActiveTab('active_deals')}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'active_deals'
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Truck size={15} />
-              <span>Active Procurement &amp; Fulfillment</span>
-              {activeDealsCount > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono bg-amber-400 text-slate-950 font-bold animate-pulse">
-                  {activeDealsCount} Active
-                </span>
+              <Truck size={14} />
+              <span className="hidden sm:inline">Procurement</span>
+              <span className="sm:hidden">Orders</span>
+              {/* Count badge for active deals — amber if >0 = active/pending */}
+              {activeDealsCount > 0 ? (
+                <StatusBadge label={`${activeDealsCount} Active`} variant="amber" />
+              ) : (
+                <CountBadge count={0} label="Active" />
               )}
             </button>
 
-            {/* Tab 3: Settled Ledger & Tax Invoices */}
+            {/* Tab 3: Settled Ledger */}
             <button
               type="button"
               onClick={() => setActiveTab('ledger')}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
                 activeTab === 'ledger'
                   ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Receipt size={15} />
-              <span>Settled Ledger &amp; Tax Invoices</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                activeTab === 'ledger' ? 'bg-emerald-800 text-white' : 'bg-slate-200 text-slate-700'
-              }`}>
-                {orders.length} Settled
-              </span>
+              <Receipt size={14} />
+              <span className="hidden sm:inline">Ledger</span>
+              <CountBadge count={orders.length} label="Settled" />
+            </button>
+          </nav>
+
+          {/* RIGHT: account/profile dropdown — hides all secondary info */}
+          <div className="relative shrink-0" ref={profileMenuRef}>
+            <button
+              type="button"
+              onClick={() => setProfileMenuOpen(prev => !prev)}
+              className="flex items-center gap-1.5 h-8 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              aria-label="Account menu"
+              aria-expanded={profileMenuOpen}
+            >
+              <User size={13} className="text-slate-500" />
+              <span className="hidden sm:inline">Account</span>
+              <ChevronDown size={12} className={`text-slate-400 transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
-          </nav>
+            {/* Dropdown panel */}
+            {profileMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl border border-slate-200 shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+                {/* Profile header */}
+                <div className="px-4 py-3 border-b border-slate-100 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-slate-900">{buyerProfile.business_name}</span>
+                    <StatusBadge label="VERIFIED BUYER" variant="green" icon={<ShieldCheck size={9} />} />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-mono">
+                    <Hash size={10} className="text-slate-400" />
+                    <span>GSTIN: <strong className="text-slate-700">{buyerProfile.gstin}</strong></span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
+                    <MapPin size={10} className="text-emerald-600" />
+                    <span>Hub: <strong className="text-slate-700">{buyerProfile.preferred_apmc_mandi}</strong></span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="p-2 space-y-1">
+                  {/* Demo mode toggle */}
+                  <button
+                    type="button"
+                    onClick={() => { setIsDemoMode(!isDemoMode); setProfileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isDemoMode
+                        ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                        : 'hover:bg-slate-50 text-slate-700 border border-transparent'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles size={13} className={isDemoMode ? 'text-amber-600 animate-spin' : 'text-slate-400'} />
+                      Demo Mode
+                    </span>
+                    {isDemoMode 
+                      ? <StatusBadge label="ON" variant="amber" /> 
+                      : <StatusBadge label="OFF" variant="green" />
+                    }
+                  </button>
+
+                  {/* Sync button */}
+                  <button
+                    type="button"
+                    onClick={() => { fetchLiveMarketplaceData(); setProfileMenuOpen(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 border border-transparent transition-all cursor-pointer"
+                  >
+                    <RefreshCw size={13} className="text-slate-400" />
+                    Sync Mandi Prices
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
       </header>
 
       {/* ========================================================================= */}
-      {/* 2. MAIN VIEW CONTAINER */}
+      {/* 2. MAIN VIEW CONTAINER                                                    */}
       {/* ========================================================================= */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         
@@ -292,34 +332,35 @@ export function BuyerDashboardLayout() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 1: MARKETPLACE & LIVE FEED */}
+        {/* VIEW 1: MARKETPLACE & LIVE FEED                                          */}
         {/* ========================================================================= */}
         {activeTab === 'marketplace' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="space-y-5 animate-in fade-in duration-200">
             
-            {/* Marketplace Grid Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {/* Marketplace section header — muted, secondary visual weight */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>🌾</span> Verified Institutional Crop Lots
+                <h2 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  🌾 Verified Institutional Crop Lots
                 </h2>
-                <p className="text-xs text-slate-500">
-                  Real-time harvest lots inspected by YOLOv8 Computer Vision with PostGIS freight pooling
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  YOLOv8 computer-vision graded • PostGIS freight pooling • 100% escrow backed
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-mono">
-                <span className="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold flex items-center gap-1">
-                  <ShieldCheck size={13} /> 100% Escrow Guaranteed
-                </span>
-              </div>
+              {/* Status badge only — green = guaranteed */}
+              <StatusBadge
+                label="100% Escrow Guaranteed"
+                variant="green"
+                icon={<ShieldCheck size={10} />}
+              />
             </div>
 
-            {/* Crop Listing List Format */}
+            {/* Crop Listing — DOMINANT FOCAL ELEMENT: larger spacing, full width */}
             {lots.length === 0 ? (
               <EmptyListingState onResetFilters={fetchLiveMarketplaceData} />
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {lots.map((lot, idx) => (
                   <CropListingListItem
                     key={`marketplace-lot-${lot.id}-${idx}`}
@@ -337,7 +378,7 @@ export function BuyerDashboardLayout() {
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 2: ACTIVE PROCUREMENT & FULFILLMENT (MULTI-DEAL SELECTION) */}
+        {/* VIEW 2: ACTIVE PROCUREMENT & FULFILLMENT (MULTI-DEAL SELECTION)         */}
         {/* ========================================================================= */}
         {activeTab === 'active_deals' && (
           <div className="space-y-6 animate-in fade-in duration-200">
@@ -369,14 +410,13 @@ export function BuyerDashboardLayout() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 font-mono">
-                        Active Procurement Deals ({activeVaults.length})
+                        Active Procurement Deals
                       </span>
-                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
-                        Click deal to focus
-                      </span>
+                      {/* Count badge — neutral gray */}
+                      <CountBadge count={activeVaults.length} />
                     </div>
                     <span className="text-[11px] font-mono text-slate-500">
-                      Total Capital Locked: <strong className="text-emerald-800">₹{activeVaults.reduce((acc, v) => acc + (v.total_locked_amount || 0), 0).toLocaleString('en-IN')}</strong>
+                      Capital Locked: <strong className="text-emerald-800">₹{activeVaults.reduce((acc, v) => acc + (v.total_locked_amount || 0), 0).toLocaleString('en-IN')}</strong>
                     </span>
                   </div>
 
@@ -396,10 +436,10 @@ export function BuyerDashboardLayout() {
                           key={`deal-tab-${deal.id}-${idx}`}
                           type="button"
                           onClick={() => setSelectedDealId(deal.id)}
-                          className={`p-4 rounded-2xl text-left transition-all border cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-2.5 shadow-2xs ${
+                          className={`p-4 rounded-2xl text-left transition-all duration-200 border cursor-pointer relative overflow-hidden flex flex-col justify-between space-y-2.5 ${
                             isSelected
-                              ? 'bg-gradient-to-br from-emerald-50 via-teal-50 to-white border-emerald-500 ring-2 ring-emerald-400 shadow-md'
-                              : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/60'
+                              ? 'bg-emerald-50/80 border-emerald-400 ring-2 ring-emerald-300 shadow-md'
+                              : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-md hover:bg-slate-50/60'
                           }`}
                         >
                           {isSelected && (
@@ -420,19 +460,15 @@ export function BuyerDashboardLayout() {
                             </p>
                           </div>
 
-                          <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
-                            <span className="font-mono font-black text-emerald-900">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-mono font-bold text-slate-700">
                               ₹{(deal.total_locked_amount || 0).toLocaleString('en-IN')}
                             </span>
-                            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full font-mono ${
-                              deal.current_milestone === 'DISPUTED'
-                                ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                                : deal.current_milestone === 'IN_TRANSIT'
-                                ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                                : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                            }`}>
-                              {milestoneLabel}
-                            </span>
+                            {/* Status badge for milestone */}
+                            <StatusBadge 
+                              label={milestoneLabel} 
+                              variant={deal.current_milestone === 'DISPUTED' ? 'red' : deal.current_milestone === 'SETTLED' ? 'green' : 'amber'} 
+                            />
                           </div>
                         </button>
                       );
@@ -440,86 +476,46 @@ export function BuyerDashboardLayout() {
                   </div>
                 </div>
 
-                {/* 2. Focused Deal Status Banner */}
-                {selectedVault && (
-                  <div className="p-4 rounded-3xl bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-0.5">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 font-mono">
-                        ● Focused Procurement Corridor • Vault #{selectedVault.id}
-                      </span>
-                      <h3 className="text-base font-extrabold text-slate-900">
-                        {selectedVault.crop_name} • {selectedVault.carrier_name || 'Kisan Express Logistics'}
-                      </h3>
-                      <p className="text-xs text-slate-600">
-                        Farmer: <strong>{selectedVault.farmer_name}</strong> • Total Escrow Locked: <strong className="font-mono text-emerald-800">₹{(selectedVault.total_locked_amount || 0).toLocaleString('en-IN')}</strong>
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-emerald-100 text-emerald-900 border border-emerald-300 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping shrink-0" />
-                        Vehicle: {selectedVault.vehicle_number || 'MH-15-EG-4421'} • {selectedVault.status || 'IN_TRANSIT'}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {/* 3. Milestone Escrow Rails (4-Stage State Machine for selected deal) */}
+                {/* 2. Full EscrowRails Detail Panel for the selected deal */}
                 {selectedVault && (
                   <EscrowRails
                     key={`escrow-rails-${selectedVault.id}`}
                     initialVault={selectedVault}
                     isDemoMode={isDemoMode}
-                    onToggleDemoMode={() => setIsDemoMode(!isDemoMode)}
                     onOpenWeighbridge={openWeighbridge}
-                    onRefresh={fetchLiveMarketplaceData}
-                    onReturnToMarketplace={() => setActiveTab('marketplace')}
-                    onVaultUpdate={(updated) => updateDealMilestone(selectedVault.id, updated)}
-                  />
-                )}
-
-                {/* 4. In-Transit Geospatial Logistics Map (Leaflet) */}
-                {selectedVault && (
-                  <ShipmentTracker
-                    key={`shipment-tracker-${selectedVault.id}-${selectedVault.lot_id || 'default'}`}
-                    lotId={`LOT-${selectedVault.lot_id || 1}`}
-                    cropName={selectedVault.crop_name || 'Sharbati Wheat'}
-                    farmerName={selectedVault.farmer_name || 'Ramesh Patil'}
-                    carrierName={selectedVault.carrier_name || 'Kisan Express Logistics'}
-                    vehicleNumber={selectedVault.vehicle_number || 'MH-15-EG-4421'}
-                    originName={selectedVault.farmer_district || 'Nashik Farm Gate Cluster'}
-                    destinationName="Vashi APMC Mandi Yard (Navi Mumbai)"
-                    onArriveAtTerminal={() => {
-                      openWeighbridge();
-                      triggerToast('🚛 Mandi Arrival Confirmed! Opening Certified APMC Weighbridge Pass & Settlement.');
-                    }}
                   />
                 )}
               </>
             )}
-
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 3: SETTLED LEDGER & TAX INVOICES */}
+        {/* VIEW 3: SETTLED LEDGER & TAX INVOICES                                   */}
         {/* ========================================================================= */}
         {activeTab === 'ledger' && (
           <div className="space-y-6 animate-in fade-in duration-200">
             
-            {/* Procurement Analytics KPI Cards */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-black text-slate-900 tracking-tight">Settled Ledger & Tax Invoices</h2>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Completed purchases, GST invoices, and full transaction history
+                </p>
+              </div>
+              {/* Count badge — neutral gray */}
+              <CountBadge count={orders.length} label="Settled" />
+            </div>
+
             <BuyerAnalyticsCards data={analytics} />
-
-            {/* Historical Order Ledger Table */}
             <OrderHistoryTable orders={orders} />
-
           </div>
         )}
 
       </main>
 
       {/* ========================================================================= */}
-      {/* 3. MODAL & DRAWER CONTAINER MOUNTS */}
+      {/* 3. MODALS & DRAWERS                                                       */}
       {/* ========================================================================= */}
 
       {/* 1. YOLOv8 AI Inspection Modal */}
@@ -528,10 +524,6 @@ export function BuyerDashboardLayout() {
           isOpen={isInspectionOpen}
           onClose={closeInspection}
           lot={inspectionLot}
-          onInstantBid={(lot) => {
-            closeInspection();
-            openBidding(lot);
-          }}
         />
       )}
 
@@ -541,49 +533,32 @@ export function BuyerDashboardLayout() {
           isOpen={!!selectedDetailLot}
           onClose={() => setSelectedDetailLot(null)}
           lot={selectedDetailLot}
-          onInspect={(lot) => {
-            setSelectedDetailLot(null);
-            openInspection(lot);
-          }}
-          onPlaceBid={(lot) => {
-            setSelectedDetailLot(null);
-            openBidding(lot);
-          }}
+          onInspect={openInspection}
+          onPlaceBid={openBidding}
         />
       )}
 
-      {/* 3. 3-Tier Bidding & Logistics Drawer */}
+      {/* 3. Bidding & Logistics Drawer */}
       {isBiddingOpen && biddingLot && (
         <BiddingDrawer
           isOpen={isBiddingOpen}
           onClose={closeBidding}
           lot={biddingLot}
           onConfirmBidAndEscrow={handleConfirmBidAndEscrow}
+          isSubmitting={!!loadingBidLotId}
         />
       )}
 
-      {/* 4. Certified Weighbridge Gross/Tare Settlement Modal */}
+      {/* 4. Weighbridge Settlement Modal */}
       {isWeighbridgeOpen && selectedVault && (
         <WeighbridgeSettlement
           isOpen={isWeighbridgeOpen}
           onClose={closeWeighbridge}
           vaultId={selectedVault.id}
-          lotId={`LOT-${selectedVault.lot_id || 1}`}
-          cropName={selectedVault.crop_name}
-          variety={selectedVault.variety}
-          farmerName={selectedVault.farmer_name}
-          carrierName={selectedVault.carrier_name}
-          vehicleNumber={selectedVault.vehicle_number}
-          listedQuantityKg={5000}
-          cropTotalAmount={selectedVault.crop_total_amount}
-          balanceFreightAmount={selectedVault.balance_freight_amount}
-          totalEscrowAmount={selectedVault.total_locked_amount}
-          onSettlementComplete={handleSettlementComplete}
-          onDisputeRaised={handleDisputeRaised}
         />
       )}
 
-      {/* 5. Statutory Tax Invoice Modal */}
+      {/* 5. Tax Invoice Modal */}
       {isInvoiceOpen && selectedInvoiceOrder && (
         <TaxInvoiceModal
           isOpen={isInvoiceOpen}

@@ -262,13 +262,13 @@ export function TransporterOnboardingModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
       
-      <div className="w-full max-w-3xl bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div className="w-full max-w-3xl bg-white rounded-3xl overflow-hidden flex flex-col my-auto max-h-[92vh] clay-card border-none">
         
         {/* Modal Top Header */}
-        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 text-white p-6 sm:p-7 relative shrink-0">
+        <div className="bg-emerald-800 text-white p-6 sm:p-7 relative shrink-0 shadow-[inset_3px_3px_6px_rgba(255,255,255,0.3),inset_-3px_-3px_6px_rgba(0,0,0,0.2)] border-none">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-white flex items-center justify-center text-2xl shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-900 text-white flex items-center justify-center text-2xl shadow-[inset_1px_1px_3px_rgba(0,0,0,0.2)] border-none">
                 🚚
               </div>
               <div>
@@ -277,7 +277,7 @@ export function TransporterOnboardingModal({
                     {isEditMode ? 'Fleet Profile & Rate Configuration' : 'Transporter Onboarding & Fleet Setup'}
                   </h2>
                 </div>
-                <p className="text-xs text-emerald-200/80 mt-0.5">
+                <p className="text-xs text-emerald-100 mt-0.5 font-medium">
                   Configure fleet capacity, pricing rates, and target corridors to unlock live freight load matching.
                 </p>
               </div>
@@ -287,7 +287,7 @@ export function TransporterOnboardingModal({
               <button
                 type="button"
                 onClick={handleQuickFillDemo}
-                className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-xl bg-emerald-800/90 hover:bg-emerald-700 text-emerald-200 border border-emerald-600/60 transition-colors cursor-pointer"
+                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl bg-emerald-900 text-white hover:bg-emerald-950 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.2)] transition-colors cursor-pointer border-none"
               >
                 <Sparkles size={12} className="text-amber-300" />
                 Demo Quick-Fill
@@ -297,7 +297,7 @@ export function TransporterOnboardingModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-8 h-8 rounded-full bg-emerald-900/80 hover:bg-emerald-800 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-emerald-900/60 hover:bg-emerald-900 text-emerald-100 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X size={16} />
                 </button>
@@ -306,47 +306,50 @@ export function TransporterOnboardingModal({
           </div>
 
           {/* 3 Step Tabs Navigation */}
-          <div className="grid grid-cols-3 gap-2 mt-5 pt-4 border-t border-emerald-800/60 text-xs">
+          <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-emerald-900/40 text-xs">
             <button
               type="button"
               onClick={() => setActiveStep(1)}
-              className={`py-2 px-3 rounded-xl font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`py-2 px-2 sm:px-3 rounded-xl font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer border-none text-center ${
                 activeStep === 1 
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20' 
-                  : 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900'
+                  ? 'clay-pressed bg-emerald-950 text-white shadow-none' 
+                  : 'clay-card bg-emerald-700 text-emerald-100 shadow-none hover:bg-emerald-600'
               }`}
             >
-              <span>1. Fleet Capacity</span>
+              <span>1. Fleet</span>
+              <span className="hidden sm:inline">Capacity</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveStep(2)}
-              className={`py-2 px-3 rounded-xl font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`py-2 px-2 sm:px-3 rounded-xl font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer border-none text-center ${
                 activeStep === 2 
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20' 
-                  : 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900'
+                  ? 'clay-pressed bg-emerald-950 text-white shadow-none' 
+                  : 'clay-card bg-emerald-700 text-emerald-100 shadow-none hover:bg-emerald-600'
               }`}
             >
-              <span>2. Rates &amp; Pricing</span>
+              <span>2. Rates</span>
+              <span className="hidden sm:inline">&amp; Pricing</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveStep(3)}
-              className={`py-2 px-3 rounded-xl font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`py-2 px-2 sm:px-3 rounded-xl font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer border-none text-center ${
                 activeStep === 3 
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20' 
-                  : 'bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900'
+                  ? 'clay-pressed bg-emerald-950 text-white shadow-none' 
+                  : 'clay-card bg-emerald-700 text-emerald-100 shadow-none hover:bg-emerald-600'
               }`}
             >
-              <span>3. Corridors &amp; Targets</span>
+              <span>3. Routes</span>
+              <span className="hidden sm:inline">&amp; Targets</span>
             </button>
           </div>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 sm:p-7 overflow-y-auto space-y-6 flex-1 text-slate-800">
+        <div className="p-6 sm:p-7 overflow-y-auto space-y-6 flex-1 text-slate-800 bg-[#FAFAF7]">
           
           {/* ========================================================================= */}
           {/* STEP 1: FLEET CAPACITY DETAILS */}
@@ -365,7 +368,7 @@ export function TransporterOnboardingModal({
                     value={carrierName}
                     onChange={(e) => setCarrierName(e.target.value)}
                     placeholder="e.g. Kisan Express Fleet Logistics"
-                    className="h-11 text-xs rounded-xl bg-slate-50 border-slate-300 focus:bg-white focus:border-emerald-600"
+                    className="clay-input h-12 text-sm rounded-xl bg-white focus:ring-emerald-500"
                   />
                 </div>
 
@@ -379,7 +382,7 @@ export function TransporterOnboardingModal({
                     value={gstin}
                     onChange={(e) => setGstin(e.target.value.toUpperCase())}
                     placeholder="e.g. 27AABCK9981F1Z2"
-                    className="h-11 text-xs font-mono rounded-xl bg-slate-50 border-slate-300 uppercase focus:bg-white focus:border-emerald-600"
+                    className="clay-input h-12 text-sm font-mono rounded-xl bg-white uppercase focus:ring-emerald-500"
                   />
                 </div>
               </div>
@@ -396,9 +399,9 @@ export function TransporterOnboardingModal({
                     max="500"
                     value={totalTrucks}
                     onChange={(e) => setTotalTrucks(parseInt(e.target.value, 10) || 1)}
-                    className="h-11 text-xs rounded-xl bg-slate-50 border-slate-300 font-mono focus:bg-white focus:border-emerald-600"
+                    className="clay-input h-12 text-sm rounded-xl bg-white font-mono focus:ring-emerald-500"
                   />
-                  <p className="text-[11px] text-slate-400">Total active commercial haulers in your operating fleet.</p>
+                  <p className="text-[11px] text-slate-500 font-medium">Total active commercial haulers in your fleet.</p>
                 </div>
 
                 <div className="space-y-1.5">
@@ -412,9 +415,9 @@ export function TransporterOnboardingModal({
                     max="500"
                     value={totalDrivers}
                     onChange={(e) => setTotalDrivers(parseInt(e.target.value, 10) || 1)}
-                    className="h-11 text-xs rounded-xl bg-slate-50 border-slate-300 font-mono focus:bg-white focus:border-emerald-600"
+                    className="clay-input h-12 text-sm rounded-xl bg-white font-mono focus:ring-emerald-500"
                   />
-                  <p className="text-[11px] text-slate-400">Verified commercial drivers with valid heavy transport licenses.</p>
+                  <p className="text-[11px] text-slate-500 font-medium">Verified commercial drivers with valid heavy transport licenses.</p>
                 </div>
               </div>
 
@@ -432,21 +435,21 @@ export function TransporterOnboardingModal({
                         role="button"
                         tabIndex={0}
                         onClick={() => toggleVehicleType(item.label)}
-                        className={`p-3.5 rounded-2xl border transition-all cursor-pointer select-none flex items-start justify-between ${
+                        className={`p-4 rounded-3xl transition-all cursor-pointer select-none flex items-start justify-between ${
                           isSelected
-                            ? 'bg-emerald-50 border-emerald-600 text-emerald-950 shadow-xs'
-                            : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                            ? 'clay-pressed bg-[#FAFAF7]'
+                            : 'clay-card hover:translate-y-[-1px]'
                         }`}
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="text-xl">{item.icon}</span>
-                            <strong className="text-xs font-black">{item.label}</strong>
+                            <strong className="text-xs font-black text-slate-900">{item.label}</strong>
                           </div>
                           <p className="text-[11px] text-slate-500 pl-7">{item.desc}</p>
                         </div>
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center border shrink-0 mt-0.5 ${
-                          isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'
+                          isSelected ? 'bg-emerald-600 border-none text-white shadow-[inset_1px_1px_2px_rgba(0,0,0,0.2)]' : 'border-slate-300 bg-white'
                         }`}>
                           {isSelected && <Check size={12} strokeWidth={3} />}
                         </div>
@@ -466,7 +469,7 @@ export function TransporterOnboardingModal({
             <div className="space-y-5 animate-in fade-in duration-200">
               
               {/* Base Rate & Unit Toggle */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="p-4 rounded-3xl clay-card-flat space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <span className="text-xs font-black text-slate-800 block">Base Freight Rate</span>
@@ -474,12 +477,12 @@ export function TransporterOnboardingModal({
                   </div>
 
                   {/* Unit Toggle */}
-                  <div className="inline-flex rounded-xl bg-slate-200 p-1 border border-slate-300 text-xs font-bold shrink-0">
+                  <div className="inline-flex rounded-xl bg-slate-100 p-1 shadow-[inset_1px_1px_3px_rgba(0,0,0,0.1)] text-xs font-bold shrink-0">
                     <button
                       type="button"
                       onClick={() => setRateUnit('INR_PER_KG')}
-                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                        rateUnit === 'INR_PER_KG' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900'
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer border-none ${
+                        rateUnit === 'INR_PER_KG' ? 'clay-pressed bg-white text-emerald-950 font-black' : 'text-slate-700 font-bold hover:text-slate-900'
                       }`}
                     >
                       ₹/kg
@@ -487,8 +490,8 @@ export function TransporterOnboardingModal({
                     <button
                       type="button"
                       onClick={() => setRateUnit('INR_PER_TON_KM')}
-                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                        rateUnit === 'INR_PER_TON_KM' ? 'bg-emerald-700 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900'
+                      className={`px-3 py-1 rounded-lg transition-all cursor-pointer border-none ${
+                        rateUnit === 'INR_PER_TON_KM' ? 'clay-pressed bg-white text-emerald-950 font-black' : 'text-slate-700 font-bold hover:text-slate-900'
                       }`}
                     >
                       ₹/tonne-km
@@ -509,7 +512,7 @@ export function TransporterOnboardingModal({
                         min="0.1"
                         value={baseRate}
                         onChange={(e) => setBaseRate(parseFloat(e.target.value) || 1.0)}
-                        className="pl-7 h-11 text-xs rounded-xl bg-white border-slate-300 font-mono font-bold focus:border-emerald-600"
+                        className="clay-input h-12 pl-7 text-sm rounded-xl bg-white font-mono font-bold focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -526,7 +529,7 @@ export function TransporterOnboardingModal({
                         min="500"
                         value={minFreightCharge}
                         onChange={(e) => setMinFreightCharge(parseInt(e.target.value, 10) || 500)}
-                        className="pl-7 h-11 text-xs rounded-xl bg-white border-slate-300 font-mono font-bold focus:border-emerald-600"
+                        className="clay-input h-12 pl-7 text-sm rounded-xl bg-white font-mono font-bold focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -534,7 +537,7 @@ export function TransporterOnboardingModal({
               </div>
 
               {/* Cold-Chain / Reefer Surcharge Configuration */}
-              <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+              <div className="p-4 rounded-3xl bg-emerald-50/40 space-y-3 shadow-[3px_3px_8px_rgba(46,125,50,0.08)] border-none">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">❄️</span>
@@ -544,14 +547,14 @@ export function TransporterOnboardingModal({
                     </div>
                   </div>
 
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer select-none">
                     <input 
                       type="checkbox" 
                       checked={reeferSurchargeEnabled} 
                       onChange={(e) => setReeferSurchargeEnabled(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+                    <div className="w-9 h-5 bg-slate-350 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
                   </label>
                 </div>
 
@@ -562,7 +565,7 @@ export function TransporterOnboardingModal({
                       <select
                         value={reeferSurchargeType}
                         onChange={(e) => setReeferSurchargeType(e.target.value as any)}
-                        className="w-full h-11 text-xs px-3 rounded-xl bg-white border border-slate-300 font-bold focus:border-emerald-600 focus:outline-none"
+                        className="w-full h-12 text-sm px-3 rounded-xl bg-white border-none shadow-[3px_3px_8px_rgba(163,163,140,0.15),-3px_-3px_8px_rgba(255,255,255,0.8)] font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
                       >
                         <option value="PERCENTAGE">Percentage Markup (% on Base Rate)</option>
                         <option value="FIXED">Fixed Additional Amount (₹)</option>
@@ -578,7 +581,7 @@ export function TransporterOnboardingModal({
                         min="0"
                         value={reeferSurchargeValue}
                         onChange={(e) => setReeferSurchargeValue(parseFloat(e.target.value) || 0)}
-                        className="h-11 text-xs rounded-xl bg-white border-slate-300 font-mono font-bold focus:border-emerald-600"
+                        className="clay-input h-12 text-sm rounded-xl bg-white font-mono font-bold focus:ring-emerald-500"
                       />
                     </div>
                   </div>
@@ -586,8 +589,8 @@ export function TransporterOnboardingModal({
               </div>
 
               {/* Escrow Guarantee Highlight */}
-              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium flex items-center gap-2.5">
-                <span className="text-xl">⚡</span>
+              <div className="p-4 rounded-3xl bg-amber-50/50 text-amber-950 text-xs font-bold flex items-center gap-2.5 shadow-[3px_3px_8px_rgba(245,158,11,0.08)] border-none">
+                <span className="text-xl shrink-0">⚡</span>
                 <p>
                   <strong>KisanSetu Escrow Guarantee:</strong> 30% fuel advance is disbursed automatically to your Fastag / Fuel account the moment farm-gate OTP is verified at loading!
                 </p>
@@ -615,7 +618,7 @@ export function TransporterOnboardingModal({
                     max="1000"
                     value={preferredTargetTrips}
                     onChange={(e) => setPreferredTargetTrips(parseInt(e.target.value, 10) || 1)}
-                    className="h-11 text-xs rounded-xl bg-slate-50 border-slate-300 font-mono focus:bg-white focus:border-emerald-600"
+                    className="clay-input h-12 text-sm rounded-xl bg-white font-mono focus:ring-emerald-500"
                   />
                 </div>
 
@@ -624,7 +627,7 @@ export function TransporterOnboardingModal({
                   <select
                     value={targetFrequency}
                     onChange={(e) => setTargetFrequency(e.target.value as any)}
-                    className="w-full h-11 text-xs px-3 rounded-xl bg-slate-50 border border-slate-300 font-bold focus:bg-white focus:border-emerald-600 focus:outline-none"
+                    className="w-full h-12 text-sm px-3 rounded-xl bg-white border-none shadow-[3px_3px_8px_rgba(163,163,140,0.15),-3px_-3px_8px_rgba(255,255,255,0.8)] font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
                   >
                     <option value="PER_WEEK">Trips Per Week</option>
                     <option value="PER_MONTH">Trips Per Month</option>
@@ -633,7 +636,7 @@ export function TransporterOnboardingModal({
               </div>
 
               {/* Operating Corridors Multi-Select */}
-              <div className="space-y-2 pt-1">
+              <div className="space-y-3 pt-1">
                 <label className="text-xs font-black text-slate-800 uppercase tracking-wider block">
                   Preferred Operating Freight Corridors (Select all that apply):
                 </label>
@@ -645,10 +648,10 @@ export function TransporterOnboardingModal({
                         key={corridor}
                         type="button"
                         onClick={() => toggleCorridor(corridor)}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                        className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border-none ${
                           isSelected
-                            ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
-                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                            ? 'clay-pill-green'
+                            : 'bg-white text-slate-700 shadow-[2px_2px_5px_rgba(163,163,140,0.12),-2px_-2px_5px_rgba(255,255,255,0.8)] hover:bg-slate-50'
                         }`}
                       >
                         <span>{corridor}</span>
@@ -667,13 +670,14 @@ export function TransporterOnboardingModal({
                       value={customCorridorInput}
                       onChange={(e) => setCustomCorridorInput(e.target.value)}
                       onKeyDown={handleAddCustomCorridor}
-                      className="h-10 text-xs rounded-xl bg-slate-50 border-slate-300"
+                      className="clay-input h-12 text-sm rounded-xl bg-white focus:ring-emerald-500 flex-1"
                     />
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="claySecondary"
+                      size="clay"
                       onClick={handleAddCustomCorridor}
-                      className="h-10 px-4 text-xs font-bold rounded-xl border-slate-300 shrink-0"
+                      className="shrink-0 cursor-pointer text-xs font-bold"
                     >
                       + Add Route
                     </Button>
@@ -682,18 +686,18 @@ export function TransporterOnboardingModal({
               </div>
 
               {/* Selected Summary Card */}
-              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2 text-xs font-mono">
+              <div className="p-5 rounded-3xl bg-[#1E293B] text-white space-y-3 text-xs font-mono shadow-[5px_5px_12px_rgba(30,41,59,0.22),inset_2px_2px_4px_rgba(255,255,255,0.2),inset_-2px_-2px_4px_rgba(0,0,0,0.3)] border-none">
                 <div className="flex items-center justify-between text-emerald-400 font-bold">
                   <span>⚡ Onboarding Profile Summary:</span>
                   <span>{selectedCorridors.length} Active Corridors</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-300 text-[11px] pt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-slate-350 text-[11px] pt-1">
                   <div>Trucks: <strong>{totalTrucks} Units</strong></div>
                   <div>Base Rate: <strong>₹{baseRate}/{rateUnit === 'INR_PER_KG' ? 'kg' : 't-km'}</strong></div>
                   <div>Min Charge: <strong>₹{minFreightCharge}</strong></div>
                   <div>Drivers: <strong>{totalDrivers} Active</strong></div>
-                  <div>Capacity Target: <strong>{preferredTargetTrips} / {targetFrequency === 'PER_WEEK' ? 'Wk' : 'Mo'}</strong></div>
-                  <div>Reefer Surcharge: <strong>{reeferSurchargeEnabled ? `${reeferSurchargeValue}%` : 'None'}</strong></div>
+                  <div>Capacity: <strong>{preferredTargetTrips} / {targetFrequency === 'PER_WEEK' ? 'Wk' : 'Mo'}</strong></div>
+                  <div>Reefer Charge: <strong>{reeferSurchargeEnabled ? `${reeferSurchargeValue}%` : 'None'}</strong></div>
                 </div>
               </div>
 
@@ -703,14 +707,14 @@ export function TransporterOnboardingModal({
         </div>
 
         {/* Modal Bottom Footer Actions */}
-        <div className="p-5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+        <div className="p-4 sm:p-5 bg-[#FAFAF7] border-t border-slate-200/55 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2">
             {activeStep > 1 && (
               <Button
                 type="button"
-                variant="outline"
+                variant="claySecondary"
                 onClick={() => setActiveStep((prev) => (prev - 1) as any)}
-                className="h-11 px-5 rounded-xl text-xs font-bold text-slate-700 border-slate-300 cursor-pointer"
+                className="h-12 px-5 rounded-2xl cursor-pointer text-xs font-bold"
               >
                 ← Back
               </Button>
@@ -721,7 +725,7 @@ export function TransporterOnboardingModal({
                 type="button"
                 variant="ghost"
                 onClick={onClose}
-                className="h-11 px-4 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
+                className="h-12 px-5 text-sm font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
               >
                 Cancel
               </Button>
@@ -732,8 +736,9 @@ export function TransporterOnboardingModal({
             {activeStep < 3 ? (
               <Button
                 type="button"
+                variant="clayPrimary"
                 onClick={() => setActiveStep((prev) => (prev + 1) as any)}
-                className="w-full sm:w-auto h-11 px-7 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md shadow-emerald-700/20 cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto h-12 px-6 rounded-2xl cursor-pointer text-xs font-black flex items-center justify-center gap-2 shadow-md"
               >
                 <span>Continue to Step {activeStep + 1}</span>
                 <ArrowRight size={14} />
@@ -741,11 +746,12 @@ export function TransporterOnboardingModal({
             ) : (
               <Button
                 type="button"
+                variant="clayPrimary"
                 onClick={handleSaveAndLaunch}
-                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shadow-lg shadow-emerald-600/30 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full sm:w-auto h-12 px-6 rounded-2xl cursor-pointer text-xs font-black flex items-center justify-center gap-2 shadow-md"
               >
                 <Check size={16} />
-                <span>Save Fleet Profile &amp; Launch Dashboard</span>
+                <span>Save Profile &amp; Launch Dashboard</span>
               </Button>
             )}
           </div>

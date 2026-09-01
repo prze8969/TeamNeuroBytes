@@ -27,21 +27,21 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
     switch (status) {
       case 'IN_TRANSIT':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300">
+          <span className="clay-pill-green inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse shrink-0" />
             In Transit
           </span>
         );
       case 'ARRIVED_AT_MANDI':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
+          <span className="clay-pill-green inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1">
             <CheckCircle2 size={11} className="text-emerald-700 shrink-0" />
             Arrived at Mandi
           </span>
         );
       case 'ASSIGNED':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1 rounded-full bg-blue-50 text-blue-900 shadow-[inset_1px_1px_3px_rgba(0,0,255,0.1)] border-none">
             <Truck size={11} className="text-blue-700 shrink-0" />
             Assigned
           </span>
@@ -49,21 +49,21 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
       case 'DELIVERED':
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-300">
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1 rounded-full bg-slate-50 text-slate-800 shadow-[inset_1px_1px_3px_rgba(163,163,140,0.1)] border-none">
             <ShieldCheck size={11} className="text-slate-600 shrink-0" />
             Completed
           </span>
         );
       case 'CANCELLED':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 border border-rose-300">
+          <span className="clay-pill-red inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1">
             Cancelled
           </span>
         );
       case 'PENDING':
       default:
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+          <span className="clay-pill-amber inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1">
             <Clock size={11} className="text-amber-700 shrink-0" />
             Pending Dispatch
           </span>
@@ -75,22 +75,22 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
   const getDeliveryStatusBadge = (deliveryStatus: DeliveryStatus, delayMins: number) => {
     if (deliveryStatus === 'DELAYED' || delayMins > 0) {
       return (
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
-          <AlertTriangle size={11} className="text-rose-600" />
+        <span className="clay-pill-red inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2.5 py-0.5">
+          <AlertTriangle size={11} className="text-rose-600 animate-bounce" />
           Delayed ({delayMins > 0 ? `${delayMins}m` : 'Alert'})
         </span>
       );
     }
     if (deliveryStatus === 'AT_RISK') {
       return (
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-          <AlertCircle size={11} className="text-amber-600" />
+        <span className="clay-pill-amber inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2.5 py-0.5">
+          <AlertCircle size={11} className="text-amber-600 animate-pulse" />
           At Risk
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+      <span className="clay-pill-green inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2.5 py-0.5">
         On Time
       </span>
     );
@@ -100,7 +100,7 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
   const getPriorityBadge = (priority: PriorityLevel) => {
     if (priority === 'HIGH') {
       return (
-        <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-950 border border-emerald-300">
+        <span className="clay-pill-green text-[9px] font-black uppercase tracking-wider px-2 py-0.5">
           High Priority
         </span>
       );
@@ -129,10 +129,10 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
           onSelect(order);
         }
       }}
-      className={`p-3.5 rounded-2xl border transition-all cursor-pointer text-xs space-y-2.5 relative group outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1 ${
+      className={`p-4 rounded-2xl transition-all cursor-pointer text-xs space-y-3 relative group outline-none ${
         isSelected
-          ? 'bg-emerald-50/70 border-emerald-600 shadow-md shadow-emerald-600/10 ring-1 ring-emerald-600'
-          : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50/80 shadow-2xs'
+          ? 'clay-pressed bg-[#FAFAF7]'
+          : 'clay-card hover:translate-y-[-1px]'
       }`}
     >
       {/* Selected Indicator Bar on Left */}
@@ -143,11 +143,8 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
       {/* TOP ROW: Order ID, Status, Priority */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="font-mono font-black text-slate-900 text-xs truncate">
+          <span className="font-mono font-black text-slate-950 text-xs truncate">
             {order.id}
-          </span>
-          <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
-            ({order.ewayBillNumber})
           </span>
           {getPriorityBadge(order.priority)}
         </div>
@@ -157,18 +154,18 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
       </div>
 
       {/* MIDDLE ROW: Destination & Route Summary */}
-      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
-        <div className="flex items-center justify-between text-[11px] font-bold text-slate-800">
-          <span className="truncate flex items-center gap-1 text-slate-900 font-black">
-            <Truck size={12} className="text-emerald-600 shrink-0" />
-            {order.shipment.cropName} ({order.shipment.weightTons} MT)
+      <div className="p-3 rounded-xl clay-card-flat space-y-1.5">
+        <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+          <span className="truncate flex items-center gap-1.5 text-slate-950 font-black">
+            <Truck size={13} className="text-emerald-700 shrink-0" />
+            {order.shipment.cropName} • {order.shipment.weightTons} MT
           </span>
-          <span className="font-mono text-emerald-800 shrink-0">
+          <span className="font-mono text-emerald-850 shrink-0 font-extrabold text-xs">
             ₹{order.totalFreightInr.toLocaleString('en-IN')}
           </span>
         </div>
         <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-mono truncate">
-          <MapPin size={11} className="text-emerald-600 shrink-0" />
+          <MapPin size={11} className="text-emerald-700 shrink-0" />
           <span className="truncate">{order.origin.name}</span>
           <span className="text-slate-400 font-bold shrink-0">➔</span>
           <Building2 size={11} className="text-blue-600 shrink-0" />
@@ -176,25 +173,20 @@ export function OrderItem({ order, isSelected, onSelect }: OrderItemProps) {
         </div>
       </div>
 
-      {/* BOTTOM ROW: ETA, Delay State & Driver/Vehicle Summary */}
+      {/* BOTTOM ROW: ETA, Delay State & Driver Summary */}
       <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 pt-0.5">
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 font-bold text-slate-800">
-            <Clock size={12} className="text-slate-500 shrink-0" />
-            ETA {formatEta(order.estimatedArrivalTime)}
-          </span>
+        <div className="flex items-center gap-1.5 font-bold text-slate-900">
+          <Clock size={12} className="text-emerald-700 shrink-0" />
+          <span>ETA {formatEta(order.estimatedArrivalTime)}</span>
           {order.distanceRemainingKm > 0 && (
-            <span className="text-slate-500 text-[10px]">
-              • {order.distanceRemainingKm} km left
+            <span className="text-slate-500 text-[10px] font-normal">
+              ({order.distanceRemainingKm} km left)
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-1.5">
           {getDeliveryStatusBadge(order.deliveryStatus, order.delayMinutes)}
-          <span className="text-[10px] text-slate-500 font-sans truncate max-w-[90px] sm:max-w-[120px]">
-            {order.driver.name}
-          </span>
         </div>
       </div>
     </div>
