@@ -4,11 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
-import { Clock, TrendingUp } from 'lucide-react';
 import { KisanSetuLogo } from '@/components/layout/KisanSetuLogo';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import { ThemeSwitcher } from '@/components/layout/ThemeSwitcher';
-import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { useTranslations } from '@/lib/LocaleContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useAppTheme } from '@/lib/ThemeContext';
 
@@ -17,7 +16,6 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   const { logout } = useAuth();
   const { config } = useAppTheme();
   const t = useTranslations('nav');
-  const tCrop = useCropTranslation();
 
   const links = [
     { label: t('farmerPortal'), href: '/farmer/dashboard', allowedRoles: ['FARMER'] },
@@ -35,29 +33,6 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
 
   return (
     <header className={`sticky top-0 z-50 w-full shadow-md ${config.navBg} border-b ${config.navBorder} text-white transition-colors duration-300`}>
-      {/* Live Mandi Ticker Bar - Hidden for Farmers */}
-      {!isFarmer && (
-        <div className="bg-emerald-950 px-4 py-1.5 text-[11px] text-emerald-200 overflow-x-auto flex items-center justify-between gap-4 font-sans border-b border-emerald-800/60">
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-extrabold uppercase tracking-wider text-emerald-300 flex items-center gap-1">
-              <TrendingUp size={12} className="text-emerald-400" />
-              {t('liveMandiFeed')}
-            </span>
-          </div>
-          <div className="flex gap-6 font-medium">
-            <span>🌾 {tCrop('Wheat')} (Nashik): <strong className="text-white font-bold font-mono">₹25.50/kg</strong> (+₹1.20)</span>
-            <span>🧅 {tCrop('Onion')} (Lasalgaon): <strong className="text-white font-bold font-mono">₹21.50/kg</strong> (+₹0.80)</span>
-            <span>🍅 {tCrop('Tomato')} (Pune): <strong className="text-white font-bold font-mono">₹19.00/kg</strong> (-₹0.50)</span>
-            <span>🌾 {tCrop('Sharbati Wheat')} (Vashi): <strong className="text-white font-bold font-mono">₹28.50/kg</strong> (+₹2.10)</span>
-          </div>
-          <div className="hidden lg:flex items-center gap-1.5 shrink-0 text-emerald-300/90 font-mono text-[10px]">
-            <Clock size={11} className="text-emerald-400" />
-            <span>{t('lastUpdated')} {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-          </div>
-        </div>
-      )}
-
       {/* Main Navigation Bar */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-8 md:space-x-12">
