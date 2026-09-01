@@ -970,6 +970,7 @@ export function FarmerDashboardLayout() {
             {/* Live Bids Table from Institutional Buyers */}
             <BidTable
               bids={bids}
+              lots={myLots}
               isFarmerView={true}
               onAcceptBid={handleAcceptBid}
               onRejectBid={handleRejectBid}

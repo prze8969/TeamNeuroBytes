@@ -331,7 +331,7 @@ export function BuyerDashboardLayout() {
             )}
 
             {/* Active Bids Table */}
-            <BidTable bids={bids} isFarmerView={false} />
+            <BidTable bids={bids} lots={lots} isFarmerView={false} />
 
           </div>
         )}

@@ -1,21 +1,36 @@
 'use client';
 
 import React from 'react';
-import { Bid } from '@/lib/types';
+import { Bid, CropLot } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ShieldCheck, Lock, Clock, XCircle } from 'lucide-react';
-import { useTranslations } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
 
 interface BidTableProps {
   bids: Bid[];
+  lots?: CropLot[];
   onAcceptBid?: (bidId: string) => void;
   onRejectBid?: (bidId: string) => void;
   onTrackOrder?: (bidId: string) => void;
   isFarmerView?: boolean;
 }
 
-export function BidTable({ bids, onAcceptBid, onRejectBid, onTrackOrder, isFarmerView = false }: BidTableProps) {
+const getCropEmoji = (name: string) => {
+  const n = (name || '').toLowerCase();
+  if (n.includes('potato') || n.includes('aloo') || n.includes('batata')) return '🥔';
+  if (n.includes('wheat') || n.includes('gehu') || n.includes('sharbati')) return '🌾';
+  if (n.includes('onion') || n.includes('pyaz') || n.includes('kanda')) return '🧅';
+  if (n.includes('tomato') || n.includes('tamatar')) return '🍅';
+  if (n.includes('soybean')) return '🌱';
+  if (n.includes('chana') || n.includes('gram') || n.includes('chickpea')) return '🫘';
+  if (n.includes('rice') || n.includes('basmati')) return '🍚';
+  if (n.includes('banana')) return '🍌';
+  return '🌾';
+};
+
+export function BidTable({ bids, lots = [], onAcceptBid, onRejectBid, onTrackOrder, isFarmerView = false }: BidTableProps) {
   const t = useTranslations('bidTable');
+  const tCrop = useCropTranslation();
 
   return (
     <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs space-y-5">
@@ -43,7 +58,8 @@ export function BidTable({ bids, onAcceptBid, onRejectBid, onTrackOrder, isFarme
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="border-b border-slate-100 text-[10px] uppercase font-bold text-slate-400 bg-slate-50/70">
-              <th className="py-3.5 px-4 rounded-l-xl">Institutional Buyer</th>
+              <th className="py-3.5 px-4 rounded-l-xl">Produce &amp; Lot</th>
+              <th className="py-3.5 px-4">Institutional Buyer</th>
               <th className="py-3.5 px-4">Offer Rate</th>
               <th className="py-3.5 px-4">Total Amount</th>
               <th className="py-3.5 px-4">Escrow Status</th>
@@ -57,6 +73,14 @@ export function BidTable({ bids, onAcceptBid, onRejectBid, onTrackOrder, isFarme
               const isReleased = bid.escrowStatus === 'RELEASED';
               const isRejected = bid.escrowStatus === 'REJECTED';
               
+              // Resolve target produce lot & crop name
+              const targetLot = lots.find(l => l.id === bid.lotId);
+              const rawCropName = targetLot?.cropName || (bid.lotId === 'LOT-101' ? 'Potato' : bid.lotId === 'LOT-102' ? 'Sharbati Wheat' : 'Agricultural Produce');
+              const displayCropName = tCrop(rawCropName);
+              const emoji = getCropEmoji(rawCropName);
+              const quantityKg = targetLot?.quantityKg || (bid.totalAmount && bid.amountPerKg ? Math.round(bid.totalAmount / bid.amountPerKg) : 5000);
+              const quantityText = `${(quantityKg / 1000).toFixed(1)} MT`;
+
               // Clean buyer name
               const cleanBuyerName = isFarmerView
                 ? bid.buyerName.replace(/\(Your Bid\)/gi, '').trim()
@@ -69,6 +93,22 @@ export function BidTable({ bids, onAcceptBid, onRejectBid, onTrackOrder, isFarme
                     isLocked ? 'bg-emerald-50/40' : isRejected ? 'opacity-50 bg-slate-50/40' : ''
                   }`}
                 >
+                  {/* Produce & Lot Column */}
+                  <td className="py-4 px-4 font-bold text-slate-900">
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-1.5 font-black text-slate-900 text-xs">
+                        <span className="text-base">{emoji}</span>
+                        <span>{displayCropName}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+                        <span className="bg-slate-100 text-slate-800 font-bold px-1.5 py-0.2 rounded border border-slate-200">
+                          {bid.lotId || 'LOT-101'}
+                        </span>
+                        <span className="font-bold text-slate-400">• {quantityText}</span>
+                      </div>
+                    </div>
+                  </td>
+
                   {/* Buyer Name */}
                   <td className="py-4 px-4 font-bold text-slate-900">
                     <div className="flex items-center gap-2">
