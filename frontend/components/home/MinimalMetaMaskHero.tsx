@@ -1,139 +1,89 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import { useLocaleContext } from '@/lib/LocaleContext';
-import { useAppTheme } from '@/lib/ThemeContext';
-import { LANDING_TRANSLATIONS } from '@/lib/landingTranslations';
-import { MessageSquare, ArrowRight, ChevronDown } from 'lucide-react';
 
 export function MinimalMetaMaskHero() {
   const { currentLocale } = useLocaleContext();
-  const { config } = useAppTheme();
-  const t = LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en;
+  const [mounted, setMounted] = useState(false);
 
-  const scrollToNext = () => {
-    const nextSection = document.getElementById('how-it-works-preview');
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <section className={`relative w-full min-h-[calc(100vh-80px)] flex flex-col justify-between items-center text-center px-4 sm:px-6 py-12 sm:py-20 overflow-hidden ${config.heroBgGradient} transition-colors duration-500`}>
+    <section className="relative w-screen h-[100dvh] min-h-[100dvh] snap-start shrink-0 flex flex-col justify-end overflow-hidden bg-[#04130c] m-0 p-0 border-none left-[calc(-50vw+50%)] outline-none">
       
-      {/* Background Ambient Mesh Grid & Subtle Glows */}
-      <div className="absolute inset-0 bg-[radial-gradient(#ffffff12_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
-      <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] ${config.heroGlow1} rounded-full blur-3xl pointer-events-none transition-colors duration-500`} />
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 w-[450px] h-[350px] ${config.heroGlow2} rounded-full blur-3xl pointer-events-none transition-colors duration-500`} />
-
-      {/* Top Spacer for Vertical Centering */}
-      <div className="w-full h-2"></div>
-
-      {/* Center Group: Tagline + Single Dominant CTA */}
-      <div className="max-w-5xl mx-auto space-y-10 sm:space-y-14 relative z-10 my-auto">
-        
-        {/* Tagline: Large, Bold, Clean for all 8 languages */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black font-display font-heading tracking-tight text-white leading-[1.08] max-w-4xl mx-auto">
-          {currentLocale === 'hi' ? (
-            <>
-              फसल बेचें। <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                सही दाम पाएं।
-              </span> <br />
-              सुरक्षित भुगतान लें।
-            </>
-          ) : currentLocale === 'mr' ? (
-            <>
-              पीक विका. <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                योग्य भाव मिळवा.
-              </span> <br />
-              सुरक्षित पैसे मिळवा.
-            </>
-          ) : currentLocale === 'pa' ? (
-            <>
-              ਫ਼ਸਲ ਵੇਚੋ। <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                ਸਹੀ ਮੁੱਲ ਪਾਓ।
-              </span> <br />
-              ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਲਓ।
-            </>
-          ) : currentLocale === 'gu' ? (
-            <>
-              પાક વેચો. <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                સાચો ભાવ મેળવો.
-              </span> <br />
-              સુરક્ષિત ચુકવણી મેળવો.
-            </>
-          ) : currentLocale === 'ta' ? (
-            <>
-              பயிரை விற்கவும். <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                சரியான விலை பெறுங்கள்.
-              </span> <br />
-              பாதுகாப்பாக பணம் பெறுங்கள்.
-            </>
-          ) : currentLocale === 'te' ? (
-            <>
-              పంటను అమ్మండి. <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                సరైన ధర పొందండి.
-              </span> <br />
-              సురక్షితంగా చెల్లింపు పొందండి.
-            </>
-          ) : currentLocale === 'kn' ? (
-            <>
-              ಬೆಳೆ ಮಾರಾಟ ಮಾಡಿ. <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                ಸರಿಯಾದ ಬೆಲೆ ಪಡೆಯಿರಿ.
-              </span> <br />
-              ಸುರಕ್ಷಿತವಾಗಿ ಹಣ ಪಡೆಯಿರಿ.
-            </>
-          ) : (
-            <>
-              Sell Your Crop. <br />
-              <span className={`${config.heroTextGradient} bg-clip-text text-transparent transition-all duration-500`}>
-                Get Fair Price.
-              </span> <br />
-              Get Paid Safely.
-            </>
-          )}
-        </h1>
-
-        {/* Single Dominant CTA Button */}
-        <div className="flex flex-col items-center justify-center pt-2">
-          <a
-            href="https://wa.me/918000000000?text=Hi%20Krishi%20Niti%20I%20want%20to%20sell%20my%20crop"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`w-full sm:w-auto px-10 sm:px-14 py-5 sm:py-6 rounded-full ${config.heroCtaButton} font-black text-xl sm:text-2xl transition-all duration-300 transform hover:scale-[1.04] shadow-2xl flex items-center justify-center gap-3.5 cursor-pointer group`}
-          >
-            <div className={`h-10 w-10 rounded-full ${config.heroCtaIconBg} ${config.heroCtaIconColor} flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform`}>
-              <MessageSquare size={22} className="fill-current" />
-            </div>
-            <span>{t.hero.farmerCta}</span>
-            <ArrowRight size={24} className="group-hover:translate-x-1.5 transition-transform ml-1" />
-          </a>
-        </div>
-
+      {/* 1. Background Image Layer */}
+      <div className={`absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-[2000ms] ease-out ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="absolute inset-0 bg-[url('/krishi_niti_hero_bg.jpg')] bg-cover bg-[center_top_30%] md:bg-center animate-ken-burns" />
+        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
       </div>
 
-      {/* Bottom Scroll Indicator */}
-      <div className="relative z-10 pt-6 pb-2">
-        <button
-          onClick={scrollToNext}
-          className="flex flex-col items-center gap-1.5 text-xs font-mono text-white/70 hover:text-white transition-colors cursor-pointer group"
-          title="Scroll down to explore"
-        >
-          <span className="text-[11px] tracking-wider uppercase opacity-75 group-hover:opacity-100">
-            Scroll to explore
-          </span>
-          <div className="h-8 w-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center group-hover:border-white/40 backdrop-blur-sm">
-            <ChevronDown size={18} className="animate-bounce text-white/80 group-hover:text-white" />
-          </div>
-        </button>
+      {/* 2. Cinematic Gradient Overlays */}
+      <div className="absolute inset-y-0 right-0 w-full md:w-[60%] lg:w-[50%] bg-gradient-to-l from-black/85 via-black/45 md:via-black/25 to-transparent pointer-events-none z-10" />
+      <div className="absolute bottom-0 left-0 w-full h-32 md:h-48 bg-gradient-to-t from-[#04130c] via-[#04130c]/80 to-transparent pointer-events-none z-10" />
+
+      {/* 3. Foreground Content Container */}
+      <div className="relative z-20 w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 pt-24 pb-12 sm:pb-16 md:pb-20 flex flex-col-reverse md:flex-row justify-between items-end gap-10 md:gap-16 border-none outline-none h-full md:h-auto overflow-y-auto overflow-x-hidden md:overflow-visible scrollbar-hide">
+        
+        <div className="hidden md:block w-full md:w-auto border-none outline-none" />
+
+        {/* Right Area: Editorial Headline */}
+        <div className={`w-full text-right max-w-2xl lg:mr-8 drop-shadow-2xl transition-all duration-1000 delay-300 ease-out transform ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} border-none outline-none mb-4 md:mb-0`}>
+          <h2 className="text-[2.75rem] sm:text-[3.5rem] md:text-5xl lg:text-[5rem] font-bold font-display tracking-tight text-white leading-[1.05] md:leading-[1.1]" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+            {currentLocale === 'hi' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">फसल बेचें।</span>
+                <span className="block text-amber-400 drop-shadow-xl">सही दाम पाएं।</span>
+                <span className="block opacity-95">सुरक्षित भुगतान लें।</span>
+              </div>
+            ) : currentLocale === 'mr' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">पीक विका.</span>
+                <span className="block text-amber-400 drop-shadow-xl">योग्य भाव मिळवा.</span>
+                <span className="block opacity-95">सुरक्षित पैसे मिळवा.</span>
+              </div>
+            ) : currentLocale === 'pa' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">ਫ਼ਸਲ ਵੇਚੋ।</span>
+                <span className="block text-amber-400 drop-shadow-xl">ਸਹੀ ਮੁੱਲ ਪਾਓ।</span>
+                <span className="block opacity-95">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਲਓ।</span>
+              </div>
+            ) : currentLocale === 'gu' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">પાક વેચો.</span>
+                <span className="block text-amber-400 drop-shadow-xl">સાચો ભાવ મેળવો.</span>
+                <span className="block opacity-95">સુરક્ષિત ચુકવણી મેળવો.</span>
+              </div>
+            ) : currentLocale === 'ta' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">பயிரை விற்கவும்.</span>
+                <span className="block text-amber-400 drop-shadow-xl">சரியான விலை பெறுங்கள்.</span>
+                <span className="block opacity-95">பாதுகாப்பாக பணம் பெறுங்கள்.</span>
+              </div>
+            ) : currentLocale === 'te' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">పంటను అమ్మండి.</span>
+                <span className="block text-amber-400 drop-shadow-xl">సరైన ధర పొందండి.</span>
+                <span className="block opacity-95">సురక్షિતంగా చెల్లింపు పొందండి.</span>
+              </div>
+            ) : currentLocale === 'kn' ? (
+              <div className="flex flex-col items-end gap-1.5 md:gap-2">
+                <span className="block opacity-95">ಬೆಳೆ ಮಾರಾಟ ಮಾಡಿ.</span>
+                <span className="block text-amber-400 drop-shadow-xl">ಸರಿಯಾದ ಬೆಲೆ ಪಡೆಯಿರಿ.</span>
+                <span className="block opacity-95">ಸುರಕ್ಷಿತವಾಗಿ ಹಣ ಪಡೆಯಿರಿ.</span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-end gap-1 sm:gap-2">
+                <span className="block opacity-95">Sell Your Crop.</span>
+                <span className="block text-amber-400 drop-shadow-xl">Get Fair Price.</span>
+                <span className="block opacity-95">Get Paid Safely.</span>
+              </div>
+            )}
+          </h2>
+        </div>
+
       </div>
 
     </section>
