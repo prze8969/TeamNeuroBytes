@@ -106,7 +106,15 @@ export default function RootLayout({
               {children}
             </LocaleProvider>
           </AuthProvider>
-          <Toaster position="top-right" richColors />
+          <Toaster 
+            position="bottom-right" 
+            richColors 
+            closeButton
+            duration={4000}
+            toastOptions={{
+              className: 'rounded-2xl border border-slate-200/90 shadow-2xl backdrop-blur-xl p-4 font-sans text-xs font-semibold',
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>

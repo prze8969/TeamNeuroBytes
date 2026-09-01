@@ -147,7 +147,7 @@ function LoginContent() {
         }
         
         toast.success(`Welcome back, ${data.full_name || 'Stakeholder'}!`, {
-          description: `Logged in as ${resolvedRole} • Session secured via JWT`,
+          description: `Signed in as ${resolvedRole.charAt(0) + resolvedRole.slice(1).toLowerCase()} • Verified DigiLocker Active`,
         });
 
         // Safely resolve destination dashboard matching the authenticated role
