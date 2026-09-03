@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const isGithubPages = process.env.GITHUB_PAGES === 'true';
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || (isGithubPages ? '/TeamNeuroBytes' : '');
@@ -15,4 +12,4 @@ const nextConfig: NextConfig = {
   trailingSlash: isGithubPages ? true : false,
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;
