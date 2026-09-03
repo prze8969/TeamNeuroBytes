@@ -9,11 +9,13 @@ import { Button } from '@/components/ui/button';
 export interface CropListingListItemProps {
   lot: CropLot;
   onOpenDetails: (lot: CropLot) => void;
+  onBuyNow?: (lot: CropLot) => void;
 }
 
 export function CropListingListItem({
   lot,
-  onOpenDetails
+  onOpenDetails,
+  onBuyNow,
 }: CropListingListItemProps) {
   const floorPrice = lot.askingFloorPerKg ?? lot.basePricePerKg ?? 24.50;
 
@@ -71,6 +73,7 @@ export function CropListingListItem({
             <span className="text-xs font-bold text-slate-500 font-sans">/kg</span>
           </div>
         </div>
+
 
         {/* Action Button */}
         <Button

@@ -10,6 +10,7 @@ import {
   Noto_Sans_Gurmukhi
 } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 import { LocaleProvider } from "@/lib/LocaleContext";
 import { AuthProvider } from "@/lib/AuthContext";
 import { ThemeProvider } from "@/lib/ThemeContext";
@@ -100,6 +101,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white font-sans">
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
         <ThemeProvider>
           <AuthProvider>
             <LocaleProvider>

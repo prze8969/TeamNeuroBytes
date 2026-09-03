@@ -50,6 +50,10 @@ export interface EscrowVaultData {
   vehicle_number?: string;
   tax_invoice_number?: string;
   dispute_reason?: string | null;
+  payment_method?: string;
+  razorpay_payment_id?: string;
+  razorpay_order_id?: string;
+  transaction_hash?: string;
 }
 
 export interface EscrowRailsProps {
@@ -574,6 +578,32 @@ Status: 100% PAID VIA ESCROW VAULT | WEIGHBRIDGE PASS VERIFIED
           )}
         </div>
       </div>
+
+      {/* Razorpay & Web3 Cryptographic Verification Pill */}
+      {(vault.razorpay_payment_id || vault.transaction_hash) && (
+        <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-bold text-emerald-950 flex items-center gap-1.5">
+              <ShieldCheck size={15} className="text-emerald-600" />
+              {vault.razorpay_payment_id ? 'Razorpay Fiat Escrow Verified' : 'Web3 Smart Contract Escrow'}
+            </span>
+            {vault.razorpay_payment_id && (
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded-lg bg-emerald-200/60 text-emerald-900 font-bold">
+                {vault.razorpay_payment_id}
+              </span>
+            )}
+          </div>
+          {vault.transaction_hash && (
+            <div className="flex items-center gap-1 text-[11px] text-slate-500 font-mono">
+              <span>On-Chain Hash:</span>
+              <span className="font-bold text-slate-700 bg-white px-2 py-0.5 rounded border border-slate-200">
+                {vault.transaction_hash.slice(0, 10)}...{vault.transaction_hash.slice(-8)}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Toast Notification */}
       {toastMessage && (

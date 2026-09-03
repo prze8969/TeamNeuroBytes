@@ -7,7 +7,7 @@ import { Users, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export function ImpactMetricsBanner() {
   const { currentLocale } = useLocaleContext();
-  const t = (LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en).metrics;
+  const t = (LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en).stats;
 
   return (
     <section className="w-full bg-emerald-950/95 border-y border-emerald-800/80 py-8 sm:py-10 shadow-inner">
@@ -26,9 +26,6 @@ export function ImpactMetricsBanner() {
               <div className="text-sm sm:text-base font-bold text-amber-300 leading-snug mt-0.5">
                 {t.stat1Label}
               </div>
-              <div className="text-xs text-emerald-300/80 font-medium leading-tight mt-1">
-                {t.stat1Detail}
-              </div>
             </div>
           </div>
 
@@ -43,9 +40,6 @@ export function ImpactMetricsBanner() {
               </div>
               <div className="text-sm sm:text-base font-bold text-emerald-300 leading-snug mt-0.5">
                 {t.stat2Label}
-              </div>
-              <div className="text-xs text-emerald-300/80 font-medium leading-tight mt-1">
-                {t.stat2Detail}
               </div>
             </div>
           </div>

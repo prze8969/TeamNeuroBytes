@@ -58,7 +58,7 @@ export interface Bid {
   buyerName: string;
   amountPerKg: number;
   totalAmount: number;
-  escrowStatus: 'INITIATED' | 'LOCKED' | 'RELEASED';
+  escrowStatus: 'INITIATED' | 'LOCKED' | 'RELEASED' | 'REJECTED' | 'CANCELLED';
   createdAt: string;
 }
 
