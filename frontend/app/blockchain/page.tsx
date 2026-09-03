@@ -81,11 +81,11 @@ const LIFECYCLE_STEPS = [
   },
   {
     step: '02',
-    actor: 'Buyer (MetaMask)',
-    action: 'Token Deposit & Escrow Lock',
+    actor: 'Buyer (Razorpay & MetaMask)',
+    action: 'Dual Escrow Lock (Fiat & Web3)',
     status: 'IMPLEMENTED',
-    desc: 'Buyer approves TestToken and locks crop value + freight charges + 1.5% APMC cess into the EscrowManager contract.',
-    contract: 'EscrowManager',
+    desc: 'Buyer locks escrow using Razorpay Standard Checkout (UPI/Cards) with instant HMAC-SHA256 verification and on-chain hash anchoring, or approves TestToken directly via MetaMask.',
+    contract: 'EscrowManager & Razorpay',
     icon: '🔒',
     glow: 'from-blue-500/20 to-indigo-500/20'
   },
@@ -174,16 +174,16 @@ export default function BlockchainPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl relative z-10">
               
-              {/* Box 1: Client Actions */}
+              {/* Box 1: Client Signing (MetaMask & Razorpay) */}
               <div className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 text-center space-y-3 relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl opacity-10 group-hover:opacity-20 transition" />
-                <div className="text-2xl">🦊</div>
-                <h4 className="text-sm font-extrabold text-white">1. Client Signing (MetaMask)</h4>
+                <div className="text-2xl">🦊 💳</div>
+                <h4 className="text-sm font-extrabold text-white">1. Dual Client Rail (MetaMask + Razorpay)</h4>
                 <p className="text-xs text-slate-400 leading-normal">
-                  User authorizes payments & order locking using client wallets.
+                  User authorizes payments via MetaMask Web3 wallet or Razorpay Standard Checkout with cryptographic on-chain hash anchoring.
                 </p>
                 <div className="inline-flex text-[9px] font-mono px-2 py-0.5 rounded bg-blue-950 border border-blue-900/60 text-blue-400 font-bold uppercase">
-                  Approved & Tested
+                  Razorpay & Web3 Active
                 </div>
               </div>
 

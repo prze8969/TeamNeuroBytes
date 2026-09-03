@@ -88,6 +88,16 @@ export function KrishiNitiNav() {
             >
               <span>{t.forJudges}</span>
             </Link>
+
+            {/* Razorpay Checkout Demo */}
+            <Link 
+              href="/checkout" 
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-300 hover:text-white bg-emerald-800/50 hover:bg-emerald-800 transition-colors flex items-center gap-1"
+              title="Razorpay Standard Checkout"
+            >
+              <ShieldCheck size={14} className="text-emerald-300" />
+              <span>Checkout</span>
+            </Link>
           </nav>
 
           {/* Right Action Group */}
@@ -186,6 +196,14 @@ export function KrishiNitiNav() {
                 <HelpCircle size={16} className="text-amber-400" />
                 <span>{t.help}</span>
               </button>
+              <Link 
+                href="/checkout" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-700/70 text-emerald-100 flex items-center gap-2"
+              >
+                <ShieldCheck size={16} className="text-emerald-300" />
+                <span>Razorpay Checkout</span>
+              </Link>
             </div>
 
             <div className="pt-2 border-t border-emerald-800/60 flex items-center justify-between text-xs">

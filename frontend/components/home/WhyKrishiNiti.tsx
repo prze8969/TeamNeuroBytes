@@ -25,7 +25,7 @@ const ICONS = [
 
 export function WhyKrishiNiti() {
   const { currentLocale } = useLocaleContext();
-  const t = (LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en).why;
+  const t = (LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en).workflow;
 
   return (
     <section id="why-krishiniti" className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-16 sm:py-20 space-y-12">
@@ -37,7 +37,7 @@ export function WhyKrishiNiti() {
           <span>{t.badge}</span>
         </div>
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-white tracking-tight leading-tight">
-          {t.title} <br className="hidden sm:inline" />
+          {t.title1} <br className="hidden sm:inline" />
           <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text text-transparent">
             {t.titleHighlight}
           </span>
@@ -49,12 +49,12 @@ export function WhyKrishiNiti() {
 
       {/* 6 Grid Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {t.pillars.map((pillar, idx) => {
+        {t.steps.map((step, idx: number) => {
           const style = ICONS[idx] || ICONS[0];
           const Icon = style.icon;
           return (
             <div
-              key={pillar.title}
+              key={step.title}
               className="group p-6 sm:p-7 rounded-3xl bg-emerald-950/60 border border-emerald-800/80 hover:border-emerald-600/90 hover:bg-emerald-900/60 transition-all duration-300 shadow-xl hover:shadow-2xl backdrop-blur-xl flex flex-col justify-between space-y-5"
             >
               <div className="space-y-4">
@@ -63,26 +63,26 @@ export function WhyKrishiNiti() {
                     <Icon size={24} />
                   </div>
                   <span className="text-xs font-mono font-bold text-emerald-400/90 px-2.5 py-1 rounded-full bg-emerald-900/70 border border-emerald-800">
-                    0{idx + 1}
+                    {step.step}
                   </span>
                 </div>
 
                 <div>
                   <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-300/90 block mb-1">
-                    {pillar.tagline}
+                    {step.badge}
                   </span>
                   <h3 className="text-lg sm:text-xl font-bold font-heading text-white group-hover:text-emerald-200 transition-colors">
-                    {pillar.title}
+                    {step.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed mt-2.5 font-normal">
-                    {pillar.description}
+                    {step.description}
                   </p>
                 </div>
               </div>
 
               <div className="pt-3 border-t border-emerald-800/60 flex items-center gap-1.5 text-xs font-mono text-emerald-400">
                 <CheckCircle2 size={14} className="text-emerald-400" />
-                <span>{t.verifiedBadge}</span>
+                <span>Verified Rail</span>
               </div>
             </div>
           );
@@ -92,3 +92,4 @@ export function WhyKrishiNiti() {
     </section>
   );
 }
+

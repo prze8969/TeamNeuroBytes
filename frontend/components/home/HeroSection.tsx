@@ -32,17 +32,15 @@ export function HeroSection() {
 
             {/* Short, Concrete Headline with Mukta font-display */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-display font-heading tracking-tight text-white leading-[1.15]">
-              {t.title1} <br className="hidden sm:inline" />
+              {t.title} <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-amber-300 via-emerald-300 to-teal-200 bg-clip-text text-transparent">
                 {t.titleHighlight}
-              </span> <br className="hidden sm:inline" />
-              {t.title2}
+              </span>
             </h1>
 
             {/* Short Plain Sentences (No Jargon) */}
             <div className="space-y-1 text-base sm:text-xl text-emerald-100/90 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              <p>{t.subtitle1}</p>
-              <p className="text-emerald-200/80">{t.subtitle2}</p>
+              <p>{t.subtitle}</p>
             </div>
 
             {/* Action Group: Dominant WhatsApp Primary CTA */}
@@ -71,54 +69,15 @@ export function HeroSection() {
                   href="/buyer/dashboard"
                   className="w-full sm:w-auto px-5 py-4 rounded-2xl bg-emerald-900/40 border border-emerald-700/60 hover:bg-emerald-800/60 hover:border-emerald-500 text-emerald-200 hover:text-white font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>{t.buyerCta}</span>
+                  <span>{t.buyerLink}</span>
                 </Link>
 
               </div>
             </div>
 
-            {/* Large, Simple Trust Badges (Icon-First with Simple 1-2 Word Labels) */}
-            <div className="pt-3 border-t border-emerald-800/60 grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0">
-              
-              {/* Trust Badge 1 */}
-              <div className="p-3 rounded-2xl bg-emerald-900/50 border border-emerald-700/70 text-center space-y-1 shadow-sm">
-                <div className="h-8 w-8 rounded-xl bg-emerald-500/20 border border-emerald-400/30 mx-auto flex items-center justify-center text-teal-300">
-                  <ShieldCheck size={18} />
-                </div>
-                <div className="font-bold text-xs sm:text-sm text-white leading-tight">
-                  {t.trustKyc}
-                </div>
-                <div className="text-[10px] text-emerald-400 font-mono leading-tight">
-                  {t.trustKycSub}
-                </div>
-              </div>
-
-              {/* Trust Badge 2 */}
-              <div className="p-3 rounded-2xl bg-emerald-900/50 border border-emerald-700/70 text-center space-y-1 shadow-sm">
-                <div className="h-8 w-8 rounded-xl bg-amber-500/20 border border-amber-400/30 mx-auto flex items-center justify-center text-amber-300">
-                  <Lock size={18} />
-                </div>
-                <div className="font-bold text-xs sm:text-sm text-white leading-tight">
-                  {t.trustEscrow}
-                </div>
-                <div className="text-[10px] text-emerald-400 font-mono leading-tight">
-                  {t.trustEscrowSub}
-                </div>
-              </div>
-
-              {/* Trust Badge 3 */}
-              <div className="p-3 rounded-2xl bg-emerald-900/50 border border-emerald-700/70 text-center space-y-1 shadow-sm">
-                <div className="h-8 w-8 rounded-xl bg-teal-500/20 border border-teal-400/30 mx-auto flex items-center justify-center text-teal-300">
-                  <TrendingUp size={18} />
-                </div>
-                <div className="font-bold text-xs sm:text-sm text-white leading-tight">
-                  {t.trustMandi}
-                </div>
-                <div className="text-[10px] text-emerald-400 font-mono leading-tight">
-                  {t.trustMandiSub}
-                </div>
-              </div>
-
+            {/* Micro Trust Text */}
+            <div className="pt-3 border-t border-emerald-800/60 text-xs font-mono text-emerald-300/80">
+              {t.microTrust}
             </div>
 
           </div>

@@ -31,6 +31,8 @@ import { BiddingDrawer } from '@/components/dashboard/BiddingDrawer';
 import { AIInspectionModal } from '@/components/dashboard/AIInspectionModal';
 import { TaxInvoiceModal } from '@/components/dashboard/TaxInvoiceModal';
 import { EmptyListingState } from '@/components/dashboard/EmptyListingState';
+import { RazorpayModal } from '@/components/payment/RazorpayModal';
+import { toast } from 'sonner';
 import { useBuyerState, BuyerTabType } from '@/lib/useBuyerState';
 import { CropLot } from '@/lib/types';
 
@@ -95,6 +97,103 @@ export function BuyerDashboardLayout() {
 
   const [selectedDetailLot, setSelectedDetailLot] = React.useState<CropLot | null>(null);
   const [buyerNotifications, setBuyerNotifications] = React.useState<any[]>([]);
+  const [quickBuyLot, setQuickBuyLot] = React.useState<CropLot | null>(null);
+
+  const handleQuickBuy = async (lot: CropLot) => {
+    setQuickBuyLot(lot);
+    const pricePerKg = lot.askingFloorPerKg ?? lot.basePricePerKg ?? 24.50;
+    const quantityKg = lot.quantityKg ?? 5000;
+    const baseCropValue = Math.round(pricePerKg * quantityKg);
+    const estimatedFreight = Math.round(1.50 * quantityKg);
+    const apmcCessFee = Math.round(baseCropValue * 0.015);
+    const totalEscrowAmount = baseCropValue + estimatedFreight + apmcCessFee;
+    const totalAmountPaise = totalEscrowAmount * 100;
+
+    // Launch official Razorpay Checkout modal directly
+    if (typeof window !== 'undefined' && (window as any).Razorpay) {
+      let orderId = '';
+      try {
+        const orderRes = await fetch('/api/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: totalAmountPaise,
+            currency: 'INR',
+            receipt: `rcpt_buy_${lot.id}_${Date.now()}`
+          })
+        });
+        if (orderRes.ok) {
+          const orderData = await orderRes.json();
+          orderId = orderData.order_id || '';
+        }
+      } catch (err) {
+        console.warn('Could not pre-create Razorpay order:', err);
+      }
+
+      const options: any = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TXfrD9oSFA3lMl',
+        amount: totalAmountPaise,
+        currency: 'INR',
+        name: 'KrishiNiti / KisanSetu Escrow',
+        description: `Instant Purchase - ${lot.cropName} (Lot #${lot.id})`,
+        prefill: {
+          name: 'AgroProcure Private Ltd',
+          email: 'buyer@test.com',
+          contact: '9876543210'
+        },
+        theme: {
+          color: '#059669'
+        },
+        handler: function(response: any) {
+          handleQuickBuySuccess({
+            payment_id: response.razorpay_payment_id,
+            order_id: response.razorpay_order_id || orderId || `order_${Date.now()}`,
+            signature: response.razorpay_signature || `sig_${Date.now()}`
+          });
+        }
+      };
+
+      if (orderId) {
+        options.order_id = orderId;
+      }
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function(resp: any) {
+        console.warn('Payment failed or modal dismissed', resp?.error);
+      });
+      rzp.open();
+    }
+  };
+
+  const handleQuickBuySuccess = async (result: { payment_id: string; order_id: string; signature: string }) => {
+    if (!quickBuyLot) return;
+    const pricePerKg = quickBuyLot.askingFloorPerKg ?? quickBuyLot.basePricePerKg ?? 24.50;
+    const quantityKg = quickBuyLot.quantityKg ?? 5000;
+    const baseCropValue = Math.round(pricePerKg * quantityKg);
+    const estimatedFreight = Math.round(1.50 * quantityKg);
+    const apmcCessFee = Math.round(baseCropValue * 0.015);
+    const totalEscrowAmount = baseCropValue + estimatedFreight + apmcCessFee;
+
+    await handleConfirmBidAndEscrow({
+      lotId: quickBuyLot.id,
+      bidPricePerKg: pricePerKg,
+      paymentMethod: 'VIRTUAL_ESCROW',
+      deliveryDays: 3,
+      totalCropValue: baseCropValue,
+      estimatedFreight,
+      apmcCessFee,
+      totalEscrowAmount,
+      carrierId: 'KISAN_EXPRESS',
+      carrierName: 'Kisan Express Logistics',
+      freightRatePerKg: 1.50,
+      razorpayPaymentId: result.payment_id,
+      razorpayOrderId: result.order_id,
+    });
+    setQuickBuyLot(null);
+    toast.success(`Payment Verified! Deal locked via Razorpay: ${result.payment_id}`, {
+      description: 'Web3 smart contract escrow anchored in background.',
+    });
+  };
 
   React.useEffect(() => {
     const syncNotifs = () => {

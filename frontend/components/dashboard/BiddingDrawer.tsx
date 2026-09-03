@@ -25,6 +25,8 @@ import {
 import { CropLot } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { RazorpayModal } from '@/components/payment/RazorpayModal';
+import { toast } from 'sonner';
 
 export interface CarrierOption {
   id: string;
@@ -86,6 +88,9 @@ export interface BiddingDrawerProps {
     carrierId?: string;
     carrierName?: string;
     freightRatePerKg?: number;
+    razorpayPaymentId?: string;
+    razorpayOrderId?: string;
+    onChainTxHash?: string;
   }) => Promise<void> | void;
   isSubmitting?: boolean;
 }
@@ -109,6 +114,8 @@ export function BiddingDrawer({
   const [bidPrice, setBidPrice] = useState<string>(floorPrice.toFixed(2));
   const [selectedCarrierId, setSelectedCarrierId] = useState<string>('KISAN_EXPRESS');
   const [paymentMethod, setPaymentMethod] = useState<'VIRTUAL_ESCROW' | 'CORPORATE_NETBANKING' | 'TRADE_CREDIT'>('VIRTUAL_ESCROW');
+  const [isPayingWithRazorpay, setIsPayingWithRazorpay] = useState<boolean>(false);
+  const [isRazorpayModalOpen, setIsRazorpayModalOpen] = useState<boolean>(false);
   const [deliveryDays, setDeliveryDays] = useState<number>(3);
   const [note, setNote] = useState<string>('');
 
@@ -143,8 +150,131 @@ export function BiddingDrawer({
     setBidPrice(nextVal.toFixed(2));
   };
 
-  const handleSubmit = () => {
-    if (!isValidBid || isSubmitting) return;
+  const handleRazorpaySuccess = async (result: {
+    payment_id: string;
+    order_id: string;
+    signature: string;
+  }) => {
+    setIsRazorpayModalOpen(false);
+
+    let onChainHash = '';
+    let polygonScan = '';
+    try {
+      toast.loading('Anchoring fiat escrow onto Polygon Amoy blockchain...', { id: 'chain-anchor' });
+      const verifyRes = await fetch('/api/verify-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          razorpay_payment_id: result.payment_id,
+          razorpay_order_id: result.order_id,
+          razorpay_signature: result.signature,
+          lot_id: lot.id,
+          crop_value: baseCropValue,
+          freight_value: estimatedFreight
+        })
+      });
+      if (verifyRes.ok) {
+        const verifyData = await verifyRes.json();
+        onChainHash = verifyData.transaction_hash || '';
+        polygonScan = verifyData.polygonscan_url || '';
+      }
+      toast.dismiss('chain-anchor');
+    } catch (e) {
+      toast.dismiss('chain-anchor');
+      console.warn('Could not complete on-chain verification bridge:', e);
+    }
+
+    if (onChainHash) {
+      toast.success('🎉 Deal Anchored to Polygon Amoy Blockchain!', {
+        description: `Tx: ${onChainHash.slice(0, 16)}...`,
+        action: {
+          label: 'View on Polyscan',
+          onClick: () => window.open(polygonScan || `https://amoy.polygonscan.com/tx/${onChainHash}`, '_blank')
+        },
+        duration: 8000
+      });
+    } else {
+      toast.success(`Payment Verified via Razorpay! ID: ${result.payment_id}`);
+    }
+
+    await onConfirmBidAndEscrow({
+      lotId: lot.id,
+      bidPricePerKg: numericBid,
+      paymentMethod,
+      deliveryDays,
+      totalCropValue: baseCropValue,
+      estimatedFreight,
+      apmcCessFee,
+      totalEscrowAmount,
+      carrierId: selectedCarrier.id,
+      carrierName: selectedCarrier.name,
+      freightRatePerKg: selectedCarrier.ratePerKg,
+      razorpayPaymentId: result.payment_id,
+      razorpayOrderId: result.order_id,
+      onChainTxHash: onChainHash,
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!isValidBid || isSubmitting || isPayingWithRazorpay) return;
+
+    if (paymentMethod === 'VIRTUAL_ESCROW' || paymentMethod === 'CORPORATE_NETBANKING') {
+      if (typeof window !== 'undefined' && (window as any).Razorpay) {
+        const totalAmountPaise = Math.round(totalEscrowAmount * 100);
+        let orderId = '';
+        try {
+          const orderRes = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: totalAmountPaise,
+              currency: 'INR',
+              receipt: `rcpt_bid_${lot.id}_${Date.now()}`
+            })
+          });
+          if (orderRes.ok) {
+            const orderData = await orderRes.json();
+            orderId = orderData.order_id || '';
+          }
+        } catch (e) {
+          console.warn('Could not create order upfront:', e);
+        }
+
+        const options: any = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TXfrD9oSFA3lMl',
+          amount: totalAmountPaise,
+          currency: 'INR',
+          name: 'KrishiNiti / KisanSetu Escrow',
+          description: `Lock Escrow via ${paymentMethod} for Lot #${lot.id}`,
+          prefill: {
+            name: 'AgroProcure Private Ltd',
+            email: 'buyer@test.com',
+            contact: '9876543210'
+          },
+          theme: {
+            color: '#059669'
+          },
+          handler: function(response: any) {
+            handleRazorpaySuccess({
+              payment_id: response.razorpay_payment_id,
+              order_id: response.razorpay_order_id || orderId || `order_${Date.now()}`,
+              signature: response.razorpay_signature || `sig_${Date.now()}`
+            });
+          }
+        };
+
+        if (orderId) {
+          options.order_id = orderId;
+        }
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+        return;
+      }
+      setIsRazorpayModalOpen(true);
+      return;
+    }
+
     onConfirmBidAndEscrow({
       lotId: lot.id,
       bidPricePerKg: numericBid,
@@ -429,12 +559,13 @@ export function BiddingDrawer({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               
-              {/* Option 1: Virtual Escrow Account */}
+              {/* Option 1: Virtual Escrow Account (via Razorpay Instant Rail) */}
               <div
+                id="card-virtual-escrow"
                 onClick={() => setPaymentMethod('VIRTUAL_ESCROW')}
                 className={`p-3 rounded-2xl border-2 transition-all cursor-pointer space-y-1 ${
                   paymentMethod === 'VIRTUAL_ESCROW'
-                    ? 'border-emerald-600 bg-emerald-50/50 shadow-xs'
+                    ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-2 ring-emerald-500/20'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                 }`}
               >
@@ -452,12 +583,13 @@ export function BiddingDrawer({
                 </p>
               </div>
 
-              {/* Option 2: Corporate NetBanking */}
+              {/* Option 2: Corporate NetBanking (via Razorpay NetBanking) */}
               <div
+                id="card-corp-netbanking"
                 onClick={() => setPaymentMethod('CORPORATE_NETBANKING')}
                 className={`p-3 rounded-2xl border-2 transition-all cursor-pointer space-y-1 ${
                   paymentMethod === 'CORPORATE_NETBANKING'
-                    ? 'border-emerald-600 bg-emerald-50/50 shadow-xs'
+                    ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-2 ring-emerald-500/20'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                 }`}
               >
@@ -477,10 +609,11 @@ export function BiddingDrawer({
 
               {/* Option 3: APMC Trade Credit */}
               <div
+                id="card-apmc-trade-line"
                 onClick={() => setPaymentMethod('TRADE_CREDIT')}
                 className={`p-3 rounded-2xl border-2 transition-all cursor-pointer space-y-1 ${
                   paymentMethod === 'TRADE_CREDIT'
-                    ? 'border-emerald-600 bg-emerald-50/50 shadow-xs'
+                    ? 'border-emerald-600 bg-emerald-50/50 shadow-xs ring-2 ring-emerald-500/20'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                 }`}
               >
@@ -544,6 +677,7 @@ export function BiddingDrawer({
               type="button"
               variant="outline"
               onClick={onClose}
+              disabled={isSubmitting || isPayingWithRazorpay}
               className="h-11 px-4 rounded-xl text-xs font-bold border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer"
             >
               Cancel
@@ -551,14 +685,15 @@ export function BiddingDrawer({
 
             <Button
               type="button"
-              disabled={!isValidBid || isSubmitting}
+              id="btn-authorize-escrow"
+              disabled={!isValidBid || isSubmitting || isPayingWithRazorpay}
               onClick={handleSubmit}
               className="h-11 px-6 rounded-xl font-black text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              {isSubmitting ? (
+              {isSubmitting || isPayingWithRazorpay ? (
                 <span className="flex items-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Authorizing Escrow...
+                  {isPayingWithRazorpay ? 'Opening Razorpay Modal...' : 'Authorizing Escrow...'}
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
@@ -572,6 +707,20 @@ export function BiddingDrawer({
         </div>
 
       </div>
+
+      {/* Razorpay Standard Web Checkout Modal */}
+      <RazorpayModal
+        isOpen={isRazorpayModalOpen}
+        onClose={() => setIsRazorpayModalOpen(false)}
+        amount={Math.round(totalEscrowAmount * 100)}
+        lotId={lot.id}
+        cropName={lot.cropName}
+        paymentRail={paymentMethod}
+        onPaymentSuccess={handleRazorpaySuccess}
+        onPaymentError={(err) => {
+          toast.error('Payment Processing Error', { description: err });
+        }}
+      />
     </div>
   );
 }

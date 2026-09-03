@@ -9,7 +9,7 @@ from app.db.engine import create_db_and_tables, get_session
 from app.services.apmc_data import AgmarknetSyncService
 
 # Import all API Routers
-from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo
+from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo, payment
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,7 @@ app.include_router(decision.router, prefix="/api/decision", tags=["APMC Decision
 app.include_router(escrow.router, prefix="/api/escrow", tags=["Milestone Escrow & Settlements"])
 app.include_router(transporter.router, prefix="/api/transporter", tags=["Transporter & Fleet Portal"])
 app.include_router(fpo.router, prefix="/api/fpo", tags=["FPO & Aggregator Collective Portal"])
+app.include_router(payment.router, prefix="/api", tags=["Razorpay Checkout"])
 
 @app.get("/", tags=["System Health"])
 def root():

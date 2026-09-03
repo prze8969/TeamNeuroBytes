@@ -14,31 +14,31 @@ import {
 
 export function HeroProductPreview() {
   const { currentLocale } = useLocaleContext();
-  const t = (LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en).story;
+  const t = (LANDING_TRANSLATIONS[currentLocale] || LANDING_TRANSLATIONS.en).showcaseVisual;
 
   const steps = [
     {
-      num: t.step1Num,
+      num: '01',
       title: t.step1Title,
-      desc: t.step1Desc,
+      desc: t.step1Sub,
       icon: MessageSquare,
       color: 'text-emerald-300',
       bg: 'bg-emerald-500/20 border-emerald-400/30',
       numBg: 'bg-emerald-400 text-slate-950',
     },
     {
-      num: t.step2Num,
+      num: '02',
       title: t.step2Title,
-      desc: t.step2Desc,
+      desc: t.step2Sub,
       icon: CheckCircle2,
       color: 'text-teal-300',
       bg: 'bg-teal-500/20 border-teal-400/30',
       numBg: 'bg-teal-400 text-slate-950',
     },
     {
-      num: t.step3Num,
+      num: '03',
       title: t.step3Title,
-      desc: t.step3Desc,
+      desc: t.step3Sub,
       icon: Wallet,
       color: 'text-amber-300',
       bg: 'bg-amber-500/20 border-amber-400/30',
@@ -56,11 +56,11 @@ export function HeroProductPreview() {
           <div className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <h3 className="font-extrabold text-base sm:text-lg text-white font-heading tracking-tight">
-              {t.title}
+              KisanSetu Flow
             </h3>
           </div>
           <span className="text-xs font-mono font-bold text-amber-300 bg-emerald-900/90 px-3 py-1 rounded-full border border-emerald-700">
-            {t.badge}
+            3-Step
           </span>
         </div>
 
@@ -100,7 +100,7 @@ export function HeroProductPreview() {
         {/* Bottom Guarantee Banner */}
         <div className="pt-3 border-t border-emerald-800/80 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold text-amber-300 text-center font-mono">
           <ShieldCheck size={18} className="text-emerald-400 shrink-0" />
-          <span>{t.guarantee}</span>
+          <span>100% Escrow Guaranteed &amp; Verified</span>
         </div>
 
       </div>
