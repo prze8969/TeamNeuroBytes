@@ -6,7 +6,7 @@ import { locales, Locale, localeNames } from '@/i18n/routing';
 import { useLocaleContext } from '@/lib/LocaleContext';
 
 export function LanguageSwitcher() {
-  const { currentLocale, setLocale } = useLocaleContext();
+  const { currentLocale, setLocale, isTransitioning } = useLocaleContext();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -22,8 +22,10 @@ export function LanguageSwitcher() {
   }, []);
 
   const handleSelectLanguage = (loc: Locale) => {
-    setLocale(loc);
     setIsOpen(false);
+    if (loc !== currentLocale) {
+      setLocale(loc);
+    }
   };
 
   const currentConfig = localeNames[currentLocale] || localeNames.en;
@@ -38,7 +40,7 @@ export function LanguageSwitcher() {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <Globe size={14} className="text-amber-400 shrink-0" />
+        <Globe size={14} className={`text-amber-400 shrink-0 transition-transform ${isTransitioning ? 'animate-spin' : ''}`} />
         <span className="font-medium tracking-wide">
           {currentConfig.native}
         </span>

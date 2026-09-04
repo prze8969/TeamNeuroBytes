@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Locale, locales } from '@/i18n/routing';
+import { Globe } from 'lucide-react';
+import { Locale, locales, localeNames } from '@/i18n/routing';
 import enMessages from '@/messages/en.json';
 import hiMessages from '@/messages/hi.json';
 import mrMessages from '@/messages/mr.json';
@@ -347,6 +348,7 @@ interface LocaleContextValue {
   t: (key: string, namespace?: string) => string;
   tCrop: (cropName: string) => string;
   tNum: (val: string | number) => string;
+  isTransitioning: boolean;
 }
 
 const LocaleContext = createContext<LocaleContextValue>({
@@ -356,6 +358,7 @@ const LocaleContext = createContext<LocaleContextValue>({
   t: (key: string) => key,
   tCrop: (cropName: string) => cropName,
   tNum: (val: string | number) => String(val),
+  isTransitioning: false,
 });
 
 export function LocaleProvider({
@@ -366,6 +369,8 @@ export function LocaleProvider({
   initialLocale?: Locale;
 }) {
   const [currentLocale, setCurrentLocaleState] = useState<Locale>(initialLocale);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [targetLocaleName, setTargetLocaleName] = useState<string>('');
 
   useEffect(() => {
     try {
@@ -378,11 +383,25 @@ export function LocaleProvider({
 
   const setLocale = (newLocale: Locale) => {
     if (!locales.includes(newLocale)) return;
-    setCurrentLocaleState(newLocale);
-    try {
-      localStorage.setItem('kisansetu_locale', newLocale);
-      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-    } catch {}
+    if (newLocale === currentLocale) return;
+
+    const targetInfo = localeNames[newLocale];
+    setTargetLocaleName(targetInfo?.native || newLocale);
+    setIsTransitioning(true);
+
+    // Phase 1: Gracefully fade out and soften DOM (120ms)
+    setTimeout(() => {
+      setCurrentLocaleState(newLocale);
+      try {
+        localStorage.setItem('kisansetu_locale', newLocale);
+        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+      } catch {}
+
+      // Phase 2: Fade back in with newly rendered language (180ms)
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 180);
+    }, 120);
   };
 
   const messages = allMessages[currentLocale] || allMessages.en;
@@ -443,9 +462,52 @@ export function LocaleProvider({
 
   const tNum = (val: string | number) => toLocalizedDigits(val, currentLocale);
 
+  const getSwitchNotificationText = () => {
+    switch (currentLocale) {
+      case 'hi': return `${targetLocaleName || 'भाषा'} में बदला जा रहा है...`;
+      case 'mr': return `${targetLocaleName || 'भाषा'} मध्ये बदलत आहे...`;
+      case 'pa': return `${targetLocaleName || 'ਭਾਸ਼ਾ'} ਵਿੱਚ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ...`;
+      case 'gu': return `${targetLocaleName || 'ભાષા'}માં બદલાઈ રહ્યું છે...`;
+      case 'ta': return `${targetLocaleName || 'மொழி'}க்கு மாற்றப்படுகிறது...`;
+      case 'te': return `${targetLocaleName || 'భాష'}లోకి మారుతోంది...`;
+      case 'kn': return `${targetLocaleName || 'ಭಾಷೆ'}ಗೆ ಬದಲಾಯಿಸಲಾಗುತ್ತಿದೆ...`;
+      default: return `Switching to ${targetLocaleName || 'selected language'}...`;
+    }
+  };
+
   return (
-    <LocaleContext.Provider value={{ currentLocale, setLocale, messages, t, tCrop, tNum }}>
-      {children}
+    <LocaleContext.Provider value={{ currentLocale, setLocale, messages, t, tCrop, tNum, isTransitioning }}>
+      {/* 1. Sleek Top Progress Glow Bar during Language Switch */}
+      <div 
+        className={`fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-amber-400 via-yellow-300 to-emerald-400 z-[99999] shadow-[0_0_15px_rgba(251,191,36,0.9)] pointer-events-none transition-all duration-300 ${
+          isTransitioning ? 'opacity-100 w-full animate-pulse' : 'opacity-0 w-0'
+        }`} 
+      />
+
+      {/* 2. Floating Subtle Notification Toast */}
+      <div 
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] pointer-events-none transition-all duration-300 ease-out transform ${
+          isTransitioning 
+            ? 'opacity-100 translate-y-0 scale-100' 
+            : 'opacity-0 translate-y-4 scale-95'
+        }`}
+      >
+        <div className="bg-slate-950/95 border border-amber-400/60 text-amber-200 text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] backdrop-blur-2xl flex items-center gap-2.5">
+          <Globe size={15} className="text-amber-400 animate-spin" style={{ animationDuration: '1.2s' }} />
+          <span>{getSwitchNotificationText()}</span>
+        </div>
+      </div>
+
+      {/* 3. Global Silky Smooth Crossfade Container */}
+      <div 
+        className={`w-full transition-all duration-300 ease-in-out ${
+          isTransitioning 
+            ? 'opacity-65 scale-[0.998] filter blur-[0.75px]' 
+            : 'opacity-100 scale-100 filter blur-0'
+        }`}
+      >
+        {children}
+      </div>
     </LocaleContext.Provider>
   );
 }

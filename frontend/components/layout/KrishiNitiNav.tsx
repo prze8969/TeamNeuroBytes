@@ -35,7 +35,7 @@ const LANGUAGES: Array<{ code: Locale; name: string; native: string }> = [
 
 export function KrishiNitiNav() {
   const { role, isAuthenticated } = useAuth();
-  const { currentLocale, setLocale } = useLocaleContext();
+  const { currentLocale, setLocale, isTransitioning } = useLocaleContext();
   const { config } = useAppTheme();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
@@ -45,8 +45,10 @@ export function KrishiNitiNav() {
   const activeLangObj = LANGUAGES.find((l) => l.code === currentLocale) || LANGUAGES[0];
 
   const handleLanguageChange = (code: Locale) => {
-    setLocale(code);
     setIsLangDropdownOpen(false);
+    if (code !== currentLocale) {
+      setLocale(code);
+    }
   };
 
   return (
@@ -122,7 +124,7 @@ export function KrishiNitiNav() {
                 title="Change Language"
                 aria-label="Change Language"
               >
-                <Globe size={14} className="text-amber-300 shrink-0" />
+                <Globe size={14} className={`text-amber-300 shrink-0 transition-transform ${isTransitioning ? 'animate-spin' : ''}`} />
                 <span className="max-w-[50px] sm:max-w-none truncate">{activeLangObj.native}</span>
                 <ChevronDown size={12} className={`transition-transform duration-200 shrink-0 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
