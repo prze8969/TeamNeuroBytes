@@ -4,7 +4,7 @@ import React from 'react';
 import { Trash2, Users, Truck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { CropLot } from '@/lib/types';
 import { resolveCropImageUrl } from '@/lib/assayData';
-import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation, useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 
 export interface ProduceCardProps {
   lot: CropLot;
@@ -13,14 +13,57 @@ export interface ProduceCardProps {
 }
 
 export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
+  const { currentLocale } = useLocaleContext();
   const tList = useTranslations('listings');
   const tCrop = useCropTranslation();
   const isPooled = Boolean(lot.is_fpo_pooled || (lot as any).isPooled || lot.status === 'POOLED');
   const isRejected = lot.grade === 'REJECTED' || lot.qualityGrade === 'REJECTED' || (lot.qualityScore && lot.qualityScore < 50);
-  const tonnage = (lot.quantityTons || (lot.quantityKg / 1000)).toFixed(1);
-  const totalValuation = ((lot.quantityKg || (Number(tonnage) * 1000)) * (lot.basePricePerKg || lot.askingFloorPerKg || 20)).toLocaleString('en-IN');
+  const rawTonnage = (lot.quantityTons || (lot.quantityKg / 1000)).toFixed(1);
+  const tonnage = toLocalizedDigits(rawTonnage, currentLocale);
 
   const tradeStatus = lot.status === 'POOLED' ? 'LISTED' : (lot.status || 'LISTED');
+
+  const getLocalizedTradeStatus = (status: string) => {
+    switch (currentLocale) {
+      case 'hi':
+        if (status === 'BID_ACCEPTED') return 'बोली स्वीकृत';
+        if (status === 'SOLD') return 'बिक गया';
+        if (status === 'IN_TRANSIT') return 'पारगमन में';
+        return 'सूचीबद्ध';
+      case 'mr':
+        if (status === 'BID_ACCEPTED') return 'बोली स्वीकारली';
+        if (status === 'SOLD') return 'विकले';
+        if (status === 'IN_TRANSIT') return 'वाहतुकीत';
+        return 'सूचीबद्ध';
+      case 'pa':
+        if (status === 'BID_ACCEPTED') return 'ਬੋਲੀ ਪ੍ਰਵਾਨਿਤ';
+        if (status === 'SOLD') return 'ਵਿਕ ਗਿਆ';
+        if (status === 'IN_TRANSIT') return 'ਰਸਤੇ ਵਿੱਚ';
+        return 'ਸੂਚੀਬੱਧ';
+      case 'gu':
+        if (status === 'BID_ACCEPTED') return 'બોલી સ્વીકૃત';
+        if (status === 'SOLD') return 'વેચાઈ ગયું';
+        if (status === 'IN_TRANSIT') return 'ટ્રાન્ઝિટમાં';
+        return 'સૂચિબદ્ધ';
+      case 'ta':
+        if (status === 'BID_ACCEPTED') return 'ஏலம் ஏற்கப்பட்டது';
+        if (status === 'SOLD') return 'விற்கப்பட்டது';
+        if (status === 'IN_TRANSIT') return 'வழியில்';
+        return 'பட்டியலிடப்பட்டது';
+      case 'te':
+        if (status === 'BID_ACCEPTED') return 'బిడ్ ఆమోదించబడింది';
+        if (status === 'SOLD') return 'అమ్మబడింది';
+        if (status === 'IN_TRANSIT') return 'రవాణాలో';
+        return 'జాబితా చేయబడింది';
+      case 'kn':
+        if (status === 'BID_ACCEPTED') return 'ಬಿಡ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ';
+        if (status === 'SOLD') return 'ಮಾರಾಟವಾಗಿದೆ';
+        if (status === 'IN_TRANSIT') return 'ಸಾಗಣೆಯಲ್ಲಿ';
+        return 'ಪಟ್ಟಿಮಾಡಲಾಗಿದೆ';
+      default:
+        return status;
+    }
+  };
 
   return (
     <div
@@ -59,7 +102,12 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
             ? 'bg-rose-950/85 text-rose-200 border-rose-500/50'
             : 'bg-slate-950/80 text-emerald-300 border-emerald-400/40'
         }`}>
-          <span>{lot.qualityGrade || (isRejected ? 'REJECTED' : 'Grade A')} ({lot.qualityScore || 95}%)</span>
+          <span>
+            {lot.qualityGrade || (isRejected 
+              ? (currentLocale === 'hi' ? 'अस्वीकृत' : currentLocale === 'pa' ? 'ਰੱਦ' : currentLocale === 'mr' ? 'नाकारले' : 'REJECTED') 
+              : (currentLocale === 'hi' ? 'ग्रेड ए' : currentLocale === 'pa' ? 'ਗ੍ਰੇਡ ਏ' : currentLocale === 'mr' ? 'दर्जा अ' : 'Grade A')
+            )} ({toLocalizedDigits(lot.qualityScore || 95, currentLocale)}%)
+          </span>
         </div>
       </div>
 
@@ -72,10 +120,10 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
           {/* Header Row: Lot ID & Date */}
           <div className="flex items-center justify-between text-xs">
             <span className="font-mono font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80">
-              {lot.id}
+              {toLocalizedDigits(lot.id, currentLocale)}
             </span>
             <span className="text-slate-400 font-mono text-[11px]">
-              {lot.harvestDate || '2026-08-24'}
+              {toLocalizedDigits(lot.harvestDate || '2026-08-24', currentLocale)}
             </span>
           </div>
 
@@ -99,7 +147,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
                 ? 'bg-amber-50 text-amber-800 border-amber-200'
                 : 'bg-blue-50 text-blue-700 border-blue-200'
             }`}>
-              {tradeStatus}
+              {getLocalizedTradeStatus(tradeStatus)}
             </span>
 
             {/* Badge 2: FPO Logistics Pooling Mode */}
@@ -145,7 +193,7 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
               {tList('askingPrice')}
             </span>
             <span className="text-sm font-black text-emerald-900 font-mono">
-              ₹{Number(lot.basePricePerKg || lot.askingFloorPerKg || 25.5).toFixed(2)}/kg
+              ₹{toLocalizedDigits(Number(lot.basePricePerKg || lot.askingFloorPerKg || 25.5).toFixed(2), currentLocale)}/kg
             </span>
           </div>
         </div>

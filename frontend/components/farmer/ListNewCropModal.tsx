@@ -34,7 +34,7 @@ import {
   getCropBySearch
 } from '@/lib/assayData';
 import { CropLot } from '@/lib/types';
-import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation, useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 import { useAuth } from '@/lib/AuthContext';
 
 export interface ListNewCropModalProps {
@@ -49,6 +49,7 @@ export function ListNewCropModal({
   onLotPublished
 }: ListNewCropModalProps) {
   const { user } = useAuth();
+  const { currentLocale } = useLocaleContext();
   const tCrop = useCropTranslation();
   
   // Wizard state
@@ -659,18 +660,31 @@ export function ListNewCropModal({
                   📦
                 </span>
                 <h2 className="text-lg sm:text-xl font-black tracking-tight text-white">
-                  List Your Crop for Sale
+                  {currentLocale === 'hi' ? 'बिक्री के लिए अपनी फसल सूचीबद्ध करें' 
+                    : currentLocale === 'mr' ? 'विक्रीसाठी आपले पीक सूचीबद्ध करा' 
+                    : currentLocale === 'pa' ? 'ਵਿਕਰੀ ਲਈ ਆਪਣੀ ਫ਼ਸਲ ਸੂਚੀਬੱਧ ਕਰੋ' 
+                    : currentLocale === 'gu' ? 'વેચાણ માટે તમારો પાક સૂચિબદ્ધ કરો' 
+                    : currentLocale === 'ta' ? 'விற்பனைக்கு உங்கள் பயிரை பட்டியலிடுங்கள்' 
+                    : currentLocale === 'te' ? 'అమ్మకం కోసం మీ పంటను జాబితా చేయండి' 
+                    : currentLocale === 'kn' ? 'ಮಾರಾಟಕ್ಕಾಗಿ ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಪಟ್ಟಿ ಮಾಡಿ' 
+                    : 'List Your Crop for Sale'}
                 </h2>
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 font-mono">
-                  Live Prices
+                  {currentLocale === 'hi' ? 'लाइव मंडी भाव' 
+                    : currentLocale === 'mr' ? 'थेट बाजारभाव' 
+                    : currentLocale === 'pa' ? 'ਲਾਈਵ ਮੰਡੀ ਭਾਅ' 
+                    : 'Live Prices'}
                 </span>
               </div>
               <p className="text-xs text-slate-300">
-                Sell directly to buyers. We'll check your crop's quality automatically.
+                {currentLocale === 'hi' ? 'सीधे संस्थागत खरीदारों को बेचें। आपकी फसल की गुणवत्ता स्वचालित रूप से जांची जाएगी।' 
+                  : currentLocale === 'mr' ? 'थेट खरेदीदारांना विका. आपल्या पिकाची गुणवत्ता आपोआप तपासली जाईल.' 
+                  : currentLocale === 'pa' ? 'ਸਿੱਧੇ ਖਰੀਦਦਾਰਾਂ ਨੂੰ ਵੇਚੋ। ਤੁਹਾਡੀ ਫ਼ਸਲ ਦੀ ਗੁਣਵੱਤਾ ਆਪਣੇ ਆਪ ਜਾਂਚੀ ਜਾਵੇਗੀ।' 
+                  : "Sell directly to buyers. We'll check your crop's quality automatically."}
               </p>
               <div className="flex items-center gap-2 pt-1 text-[11px] text-emerald-300 font-mono">
                 <ShieldCheck size={13} className="text-emerald-400" />
-                <span>{user?.name || 'Ramesh Patil'} • Verified Farmer</span>
+                <span>{user?.name || 'Ramesh Patil'} • {currentLocale === 'hi' ? 'सत्यापित किसान' : currentLocale === 'mr' ? 'सत्यापित शेतकरी' : currentLocale === 'pa' ? 'ਪ੍ਰਮਾਣਿਤ ਕਿਸਾਨ' : 'Verified Farmer'}</span>
               </div>
             </div>
 
@@ -694,7 +708,7 @@ export function ListNewCropModal({
                     ? 'bg-emerald-500 text-white'
                     : 'bg-white/10 text-white/50 border border-white/20'
                 }`}>
-                  {currentStep > step ? <Check size={12} strokeWidth={4} /> : step}
+                  {currentStep > step ? <Check size={12} strokeWidth={4} /> : toLocalizedDigits(step, currentLocale)}
                 </div>
                 {step < 4 && (
                   <div className={`absolute top-3 left-[50%] right-[-50%] h-[2px] -z-0 ${
@@ -704,7 +718,10 @@ export function ListNewCropModal({
                 <span className={`text-[9px] uppercase font-bold tracking-wider ${
                   currentStep === step ? 'text-emerald-300' : 'text-white/50'
                 }`}>
-                  {step === 1 ? 'Crop' : step === 2 ? 'Details' : step === 3 ? 'Quality' : 'Price'}
+                  {step === 1 ? (currentLocale === 'hi' ? 'फसल' : currentLocale === 'mr' ? 'पीक' : currentLocale === 'pa' ? 'ਫ਼ਸਲ' : currentLocale === 'gu' ? 'પાક' : currentLocale === 'ta' ? 'பயிர்' : currentLocale === 'te' ? 'పంట' : currentLocale === 'kn' ? 'ಬೆಳೆ' : 'Crop')
+                    : step === 2 ? (currentLocale === 'hi' ? 'विवरण' : currentLocale === 'mr' ? 'तपशील' : currentLocale === 'pa' ? 'ਵੇਰਵੇ' : currentLocale === 'gu' ? 'વિગતો' : currentLocale === 'ta' ? 'விவரங்கள்' : currentLocale === 'te' ? 'వివరాలు' : currentLocale === 'kn' ? 'ವಿವರಗಳು' : 'Details')
+                    : step === 3 ? (currentLocale === 'hi' ? 'गुणवत्ता' : currentLocale === 'mr' ? 'गुणवत्ता' : currentLocale === 'pa' ? 'ਗੁਣਵੱਤਾ' : currentLocale === 'gu' ? 'ગુણવત્તા' : currentLocale === 'ta' ? 'தரம்' : currentLocale === 'te' ? 'నాణ్యత' : currentLocale === 'kn' ? 'ಗುಣಮಟ್ಟ' : 'Quality')
+                    : (currentLocale === 'hi' ? 'मूल्य' : currentLocale === 'mr' ? 'किंमत' : currentLocale === 'pa' ? 'ਮੁੱਲ' : currentLocale === 'gu' ? 'કિંમત' : currentLocale === 'ta' ? 'விலை' : currentLocale === 'te' ? 'ధర' : currentLocale === 'kn' ? 'ಬೆಲೆ' : 'Price')}
                 </span>
               </div>
             ))}

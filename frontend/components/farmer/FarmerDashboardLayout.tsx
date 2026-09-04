@@ -32,17 +32,181 @@ import { WhatsAppSimulatorModal } from '@/components/dashboard/WhatsAppSimulator
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { resolveCropImageUrl } from '@/lib/assayData';
 import { Bid, MandiPrice, GeoCluster, CropLot } from '@/lib/types';
-import { useTranslations, useCropTranslation } from '@/lib/LocaleContext';
+import { useTranslations, useCropTranslation, useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 import { useAuth } from '@/lib/AuthContext';
 
 export function FarmerDashboardLayout() {
   const { user } = useAuth();
+  const { currentLocale } = useLocaleContext();
   const tDash = useTranslations('dashboard');
   const tKpi = useTranslations('kpi');
   const tFpo = useTranslations('fpo');
   const tList = useTranslations('listings');
   const tEscrow = useTranslations('escrow');
   const tCrop = useCropTranslation();
+
+  const getCurrentLotsHeading = () => {
+    switch (currentLocale) {
+      case 'hi': return 'मौजूदा फसल लॉट';
+      case 'mr': return 'सध्याचे पीक लॉट्स';
+      case 'pa': return 'ਮੌਜੂਦਾ ਫ਼ਸਲ ਲਾਟ';
+      case 'gu': return 'વર્તમાન પાક લોટ';
+      case 'ta': return 'தற்போதைய பயிர் லாட்கள்';
+      case 'te': return 'ప్రస్తుత పంట లాట్లు';
+      case 'kn': return 'ಪ್ರಸ್ತುತ ಬೆಳೆ ಲಾಟ್‌ಗಳು';
+      default: return 'Current Lots';
+    }
+  };
+
+  const getNoLotsText = () => {
+    switch (currentLocale) {
+      case 'hi': return 'अभी कोई फसल लॉट सूचीबद्ध नहीं है। शुरू करने के लिए नीचे \'नया लॉट बनाएं\' पर क्लिक करें।';
+      case 'mr': return 'अद्याप कोणतेही पीक लॉट नोंदवले नाही. सुरू करण्यासाठी खाली \'नवीन लॉट तयार करा\' वर क्लिक करा.';
+      case 'pa': return 'ਅਜੇ ਕੋਈ ਫ਼ਸਲ ਲਾਟ ਸੂਚੀਬੱਧ ਨਹੀਂ ਹੈ। ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਹੇਠਾਂ \'ਨਵਾਂ ਲਾਟ ਬਣਾਓ\' ਤੇ ਕਲਿੱਕ ਕਰੋ।';
+      case 'gu': return 'હજુ સુધી કોઈ પાક લોટ સૂચિબદ્ધ નથી. શરૂ કરવા માટે નીચે \'નવો લોટ બનાવો\' પર ક્લિક કરો.';
+      case 'ta': return 'இன்னும் எந்த பயிர் லாட்டும் பட்டியலிடப்படவில்லை. தொடங்க கீழே உள்ள \'புதிய லாட்டை உருவாக்கு\' என்பதைக் கிளிக் செய்க.';
+      case 'te': return 'ఇంకా పంట లాట్లు ఏవీ జాబితా చేయబడలేదు. ప్రారంభించడానికి క్రింద \'కొత్త లాట్ సృష్టించండి\' క్లిక్ చేయండి.';
+      case 'kn': return 'ಇನ್ನೂ ಯಾವುದೇ ಬೆಳೆ ಲಾಟ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡಲಾಗಿಲ್ಲ. ಪ್ರಾರಂಭಿಸಲು ಕೆಳಗೆ \'ಹೊಸ ಲಾಟ್ ರಚಿಸಿ\' ಕ್ಲಿಕ್ ಮಾಡಿ.';
+      default: return "No produce lots listed yet. Click 'Create New Lot' below to get started.";
+    }
+  };
+
+  const getCreateLotTitle = () => {
+    switch (currentLocale) {
+      case 'hi': return 'नया लॉट बनाएं';
+      case 'mr': return 'नवीन लॉट तयार करा';
+      case 'pa': return 'ਨਵਾਂ ਲਾਟ ਬਣਾਓ';
+      case 'gu': return 'નવો લોટ બનાવો';
+      case 'ta': return 'புதிய லாட்டை உருவாக்குங்கள்';
+      case 'te': return 'కొత్త లాట్‌ను సృష్టించండి';
+      case 'kn': return 'ಹೊಸ ಲಾಟ್ ರಚಿಸಿ';
+      default: return 'Create New Lot';
+    }
+  };
+
+  const getCreateLotSubtitle = () => {
+    switch (currentLocale) {
+      case 'hi': return 'एगमार्कनेट-सत्यापित संस्थागत खरीदारों को तुरंत अपनी फसल बेचें';
+      case 'mr': return 'अ‍ॅगमार्कनेट-पडताळणी केलेल्या संस्थात्मक खरेदीदारांना आपले पीक त्वरित विका';
+      case 'pa': return 'ਐਗਮਾਰਕਨੈੱਟ-ਪ੍ਰਮਾਣਿਤ ਸੰਸਥਾਗਤ ਖਰੀਦਦਾਰਾਂ ਨੂੰ ਤੁਰੰਤ ਆਪਣੀ ਫ਼ਸਲ ਵੇਚੋ';
+      case 'gu': return 'એગમાર્કનેટ-ચકાસાયેલ સંસ્થાકીય ખરીદદારોને તરત જ તમારો પાક વેચો';
+      case 'ta': return 'அக்மார்க்நெட் சரிபார்க்கப்பட்ட நிறுவன வாங்குபவர்களுக்கு உடனடியாக உங்கள் பயிரை விற்கவும்';
+      case 'te': return 'ఆగ్మార్క్‌నెట్-ధృవీకరించబడిన సంస్థాగత కొనుగోలుదారులకు తక్షణమే మీ పంటను అమ్మండి';
+      case 'kn': return 'ಅಗ್ಮಾರ್ಕ್‌ನೆಟ್ ಪರಿಶೀಲಿಸಿದ ಸಾಂಸ್ಥಿಕ ಖರೀದಿದಾರರಿಗೆ ತಕ್ಷಣವೇ ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಮಾರಾಟ ಮಾಡಿ';
+      default: return 'List your crop instantly to agmarknet-verified institutional buyers';
+    }
+  };
+
+  const getSearchPlaceholder = () => {
+    switch (currentLocale) {
+      case 'hi': return 'फसल, खरीदार या लॉट खोजें...';
+      case 'mr': return 'पिके, खरेदीदार किंवा लॉट्स शोधा...';
+      case 'pa': return 'ਫ਼ਸਲਾਂ, ਖਰੀਦਦਾਰ ਜਾਂ ਲਾਟ ਖੋਜੋ...';
+      case 'gu': return 'પાક, ખરીદદાર અથવા લોટ શોધો...';
+      case 'ta': return 'பயிர்கள், வாங்குபவர்கள் அல்லது லாட்களைத் தேடுங்கள்...';
+      case 'te': return 'పంటలు, కొనుగోలుదారులు లేదా లాట్లను శోధించండి...';
+      case 'kn': return 'ಬೆಳೆಗಳು, ಖರೀದಿದಾರರು ಅಥವಾ ಲಾಟ್‌ಗಳನ್ನು ಹುಡುಕಿ...';
+      default: return 'Search items, buyers, lots...';
+    }
+  };
+
+  const getMarketPriceTitle = () => {
+    switch (currentLocale) {
+      case 'hi': return 'मंडी भाव';
+      case 'mr': return 'बाजारभाव';
+      case 'pa': return 'ਮੰਡੀ ਭਾਅ';
+      case 'gu': return 'બજાર ભાવ';
+      case 'ta': return 'சந்தை விலை';
+      case 'te': return 'మార్కెట్ ధర';
+      case 'kn': return 'ಮಾರುಕಟ್ಟೆ ದರ';
+      default: return 'Market Price';
+    }
+  };
+
+  const getCategoryLabel = (cat: string) => {
+    switch (cat) {
+      case 'vegetables':
+        switch (currentLocale) {
+          case 'hi': return 'सब्जियां';
+          case 'mr': return 'भाज्या';
+          case 'pa': return 'ਸਬਜ਼ੀਆਂ';
+          case 'gu': return 'શાકભાજી';
+          case 'ta': return 'காய்கறிகள்';
+          case 'te': return 'కూరగాయలు';
+          case 'kn': return 'ತರಕಾರಿಗಳು';
+          default: return 'Vegetables';
+        }
+      case 'fruits':
+        switch (currentLocale) {
+          case 'hi': return 'फल';
+          case 'mr': return 'फळे';
+          case 'pa': return 'ਫਲ';
+          case 'gu': return 'ફળો';
+          case 'ta': return 'பழங்கள்';
+          case 'te': return 'పండ్లు';
+          case 'kn': return 'ಹಣ್ಣುಗಳು';
+          default: return 'Fruits';
+        }
+      case 'grains':
+        switch (currentLocale) {
+          case 'hi': return 'अनाज';
+          case 'mr': return 'धान्ये';
+          case 'pa': return 'ਅਨਾਜ';
+          case 'gu': return 'અનાજ';
+          case 'ta': return 'தானியங்கள்';
+          case 'te': return 'ధాన్యాలు';
+          case 'kn': return 'ಧಾನ್ಯಗಳು';
+          default: return 'Grains';
+        }
+      case 'pulses':
+        switch (currentLocale) {
+          case 'hi': return 'दालें';
+          case 'mr': return 'कडधान्ये';
+          case 'pa': return 'ਦਾਲਾਂ';
+          case 'gu': return 'કઠોળ';
+          case 'ta': return 'பருப்பு வகைகள்';
+          case 'te': return 'పప్పుధాన్యాలు';
+          case 'kn': return 'ಕಾಳುಗಳು';
+          default: return 'Pulses';
+        }
+      case 'spices':
+        switch (currentLocale) {
+          case 'hi': return 'मसाले';
+          case 'mr': return 'मसाले';
+          case 'pa': return 'ਮਸਾਲੇ';
+          case 'gu': return 'મસાલા';
+          case 'ta': return 'மசாலாப் பொருட்கள்';
+          case 'te': return 'మసాలాలు';
+          case 'kn': return 'ಮಸಾಲೆಗಳು';
+          default: return 'Spices';
+        }
+      case 'flowers':
+        switch (currentLocale) {
+          case 'hi': return 'फूल';
+          case 'mr': return 'फुले';
+          case 'pa': return 'ਫੁੱਲ';
+          case 'gu': return 'ફૂલો';
+          case 'ta': return 'மலர்கள்';
+          case 'te': return 'పూలు';
+          case 'kn': return 'ಹೂವುಗಳು';
+          default: return 'Flowers';
+        }
+      default: return cat;
+    }
+  };
+
+  const getFpoLabel = () => {
+    switch (currentLocale) {
+      case 'hi': return 'एफपीओ';
+      case 'mr': return 'एफपीओ';
+      case 'pa': return 'ਐਫਪੀਓ';
+      case 'gu': return 'એફપીઓ';
+      case 'ta': return 'எஃப்பிஓ';
+      case 'te': return 'ఎఫ్‌పీఓ';
+      case 'kn': return 'ಎಫ್‌ಪಿಒ';
+      default: return 'FPO';
+    }
+  };
 
   const [activeTab, setActiveTab] = useState<'overview' | 'fpo-pooling' | 'decision-engine' | 'whatsapp-bot' | 'escrow'>('overview');
   const [isPooled, setIsPooled] = useState<boolean>(true);
@@ -647,7 +811,7 @@ export function FarmerDashboardLayout() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[20px] font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <Boxes size={20} className="text-[#3B38D0]" />
-              <span>Current Lots {totalLots > 0 ? `(${totalLots})` : ''}</span>
+              <span>{getCurrentLotsHeading()} {totalLots > 0 ? `(${toLocalizedDigits(totalLots, currentLocale)})` : ''}</span>
             </h2>
           </div>
           
@@ -657,7 +821,7 @@ export function FarmerDashboardLayout() {
             </div>
           ) : totalLots === 0 ? (
             <div className="py-8 text-center text-slate-500 text-sm">
-              No produce lots listed yet. Click 'Create New Lot' below to get started.
+              {getNoLotsText()}
             </div>
           ) : (
             <div className="flex items-start gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-1 px-1 pt-1">
@@ -688,7 +852,7 @@ export function FarmerDashboardLayout() {
                     </button>
                   </div>
                   <span className="text-xs font-bold text-slate-800 text-center leading-tight line-clamp-2">
-                    {lot.cropName}
+                    {tCrop(lot.cropName)}
                   </span>
                 </div>
               ))}
@@ -703,10 +867,10 @@ export function FarmerDashboardLayout() {
             <Plus size={48} strokeWidth={2.5} />
           </div>
           <h3 className="text-[28px] sm:text-[36px] font-black text-white leading-tight tracking-tight text-center">
-            Create New Lot
+            {getCreateLotTitle()}
           </h3>
           <p className="text-sm sm:text-base text-indigo-200 mt-2 text-center max-w-sm">
-            List your crop instantly to agmarknet-verified institutional buyers
+            {getCreateLotSubtitle()}
           </p>
         </button>
 
@@ -714,7 +878,7 @@ export function FarmerDashboardLayout() {
         <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
           <input 
             type="text" 
-            placeholder="Search items, buyers, lots..."
+            placeholder={getSearchPlaceholder()}
             className="w-full bg-[#FAFAFA] border border-slate-200 rounded-[20px] pl-12 pr-4 py-4 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B38D0]/30 transition-all shadow-sm"
           />
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
@@ -722,7 +886,7 @@ export function FarmerDashboardLayout() {
 
         {/* 4. MARKET PRICE GRID & FLOATING BUTTONS */}
         <section className="bg-white p-5 sm:p-6 rounded-[24px] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150 relative">
-          <h2 className="text-[20px] font-bold text-slate-900 tracking-tight mb-4">Market Price</h2>
+          <h2 className="text-[20px] font-bold text-slate-900 tracking-tight mb-4">{getMarketPriceTitle()}</h2>
           
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pb-4">
             {/* Card 1 */}
@@ -730,42 +894,42 @@ export function FarmerDashboardLayout() {
               <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
                  <div className="text-[60px] leading-none drop-shadow-md">🥦</div>
               </div>
-              <span className="font-bold text-slate-900 text-sm">Vegetables</span>
+              <span className="font-bold text-slate-900 text-sm">{getCategoryLabel('vegetables')}</span>
             </Link>
             {/* Card 2 */}
             <Link href="/farmer/market/fruits" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
               <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
                  <div className="text-[60px] leading-none drop-shadow-md">🍎</div>
               </div>
-              <span className="font-bold text-slate-900 text-sm">Fruits</span>
+              <span className="font-bold text-slate-900 text-sm">{getCategoryLabel('fruits')}</span>
             </Link>
             {/* Card 3 */}
             <Link href="/farmer/market/grains" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
               <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
                  <div className="text-[60px] leading-none drop-shadow-md">🌾</div>
               </div>
-              <span className="font-bold text-slate-900 text-sm">Grains</span>
+              <span className="font-bold text-slate-900 text-sm">{getCategoryLabel('grains')}</span>
             </Link>
             {/* Card 4 */}
             <Link href="/farmer/market/pulses" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
               <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
                  <div className="text-[60px] leading-none drop-shadow-md">🫘</div>
               </div>
-              <span className="font-bold text-slate-900 text-sm">Pulses</span>
+              <span className="font-bold text-slate-900 text-sm">{getCategoryLabel('pulses')}</span>
             </Link>
             {/* Card 5 */}
             <Link href="/farmer/market/spices" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
               <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
                  <div className="text-[60px] leading-none drop-shadow-md">🌶️</div>
               </div>
-              <span className="font-bold text-slate-900 text-sm">Spices</span>
+              <span className="font-bold text-slate-900 text-sm">{getCategoryLabel('spices')}</span>
             </Link>
             {/* Card 6 */}
             <Link href="/farmer/market/flowers" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
               <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
                  <div className="text-[60px] leading-none drop-shadow-md">🌻</div>
               </div>
-              <span className="font-bold text-slate-900 text-sm">Flowers</span>
+              <span className="font-bold text-slate-900 text-sm">{getCategoryLabel('flowers')}</span>
             </Link>
           </div>
 
@@ -773,7 +937,7 @@ export function FarmerDashboardLayout() {
           <div className="absolute top-[20%] -right-4 sm:-right-6 lg:-right-8 flex flex-col gap-3 z-30">
             <Link href="/farmer/fpo" className="w-16 h-20 bg-[#3B38D0] rounded-l-2xl shadow-xl flex flex-col items-center justify-center text-white hover:bg-[#2D2A9E] transition-transform hover:-translate-x-1 cursor-pointer">
               <Boxes size={20} className="mb-1" />
-              <span className="text-[10px] font-bold mb-1">FPO</span>
+              <span className="text-[10px] font-bold mb-1">{getFpoLabel()}</span>
               <ArrowRight size={12} />
             </Link>
           </div>
@@ -804,7 +968,7 @@ export function FarmerDashboardLayout() {
               ✕
             </button>
             <div className="p-4 sm:p-6">
-              <h2 className="text-xl font-black text-slate-900 mb-4">Lot Overview</h2>
+              <h2 className="text-xl font-black text-slate-900 mb-4">{currentLocale === 'hi' ? 'लॉट विवरण' : currentLocale === 'mr' ? 'लॉट तपशील' : currentLocale === 'pa' ? 'ਲਾਟ ਵੇਰਵਾ' : currentLocale === 'gu' ? 'લોટ વિગતો' : currentLocale === 'ta' ? 'லாட் கண்ணோட்டம்' : currentLocale === 'te' ? 'లాట్ వివరాలు' : currentLocale === 'kn' ? 'ಲಾಟ್ ಅವಲೋಕನ' : 'Lot Overview'}</h2>
               <ProduceCard
                 lot={selectedLot}
                 onDelete={handleDeleteLot}
