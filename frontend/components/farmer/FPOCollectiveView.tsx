@@ -46,6 +46,7 @@ export function FPOCollectiveView({
 }: FPOCollectiveViewProps) {
   const { currentLocale } = useLocaleContext();
   const tCrop = useCropTranslation();
+  
   // Constant FPO Collective Details
   const FPO_NAME = "Nashik East Farmers Producer Company";
   const FPO_CODE = "FPC #MH-NSK-4412";
@@ -69,6 +70,492 @@ export function FPOCollectiveView({
       default: return FPO_NAME;
     }
   }, [currentLocale]);
+
+  const tFpo = (key: string): string => {
+    const dict: Record<string, Record<string, string>> = {
+      certified_milk_run: {
+        en: 'SFAC & APMC Certified Milk-Run',
+        hi: 'एसएफएसी एवं एपीएमसी प्रमाणित मिल्क-रन',
+        mr: 'एसएफएसी आणि एपीएमसी प्रमाणित मिल्क-रन',
+        pa: 'ਐਸਐਫਏਸੀ ਅਤੇ ਏਪੀਐਮਸੀ ਪ੍ਰਮਾਣਿਤ ਮਿਲਕ-ਰਨ',
+        gu: 'એસએફએસી અને એપીએમસી પ્રમાણિત મિલ્ક-રન',
+        ta: 'SFAC மற்றும் APMC சான்றளிக்கப்பட்ட மில்க்-ரன்',
+        te: 'SFAC & APMC ధృవీకరించిన రవాణా',
+        kn: 'SFAC ಮತ್ತು APMC ಪ್ರಮಾಣೀಕೃತ ಮಿಲ್ಕ್-ರನ್',
+      },
+      leave_collective: {
+        en: 'Leave Collective',
+        hi: 'कलेक्टिव छोड़ें',
+        mr: 'समुदाय सोडा',
+        pa: 'ਸਮੂਹ ਛੱਡੋ',
+        gu: 'સામૂહિકમાંથી બહાર નીકળો',
+        ta: 'கூட்டமைப்பிலிருந்து வெளியேறு',
+        te: 'ఉమ్మడి సమూహం నుండి నిష్క్రమించండి',
+        kn: 'ಸಾಮೂಹಿಕದಿಂದ ನಿರ್ಗಮಿಸಿ',
+      },
+      active_dispatch: {
+        en: 'ACTIVE DISPATCH',
+        hi: 'सक्रिय प्रेषण',
+        mr: 'सक्रिय वाहतूक',
+        pa: 'ਸਰਗਰਮ ਡਿਸਪੈਚ',
+        gu: 'સક્રિય ડિસ્પેચ',
+        ta: 'செயலில் உள்ள அனுப்புதல்',
+        te: 'క్రియాశీల రవాణా',
+        kn: 'ಸಕ್ರಿಯ ರವಾನೆ',
+      },
+      enrollment: {
+        en: 'ENROLLMENT',
+        hi: 'नामांकन',
+        mr: 'नोंदणी',
+        pa: 'ਦਾਖਲਾ',
+        gu: 'નોંધણી',
+        ta: 'பதிவு',
+        te: 'నమోదు',
+        kn: 'ನೋಂದಣಿ',
+      },
+      select_lots_to_join: {
+        en: 'Select lots to join',
+        hi: 'जुड़ने के लिए लॉट चुनें',
+        mr: 'सामील होण्यासाठी लॉट निवडा',
+        pa: 'ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਲਾਟ ਚੁਣੋ',
+        gu: 'જોડાવા માટે લૉટ પસંદ કરો',
+        ta: 'சேர லாட்டுகளைத் தேர்ந்தெடுக்கவும்',
+        te: 'చేరడానికి లాట్లను ఎంచుకోండి',
+        kn: 'ಸೇರಲು ಲಾಟ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      },
+      capacity: {
+        en: 'CAPACITY',
+        hi: 'क्षमता',
+        mr: 'क्षमता',
+        pa: 'ਸਮਰੱਥਾ',
+        gu: 'ક્ષમતા',
+        ta: 'கொள்ளளவு',
+        te: 'సామర్థ్యం',
+        kn: 'ಸಾಮರ್ಥ್ಯ',
+      },
+      full: {
+        en: 'Full',
+        hi: 'भरी हुई',
+        mr: 'पूर्ण',
+        pa: 'ਭਰਿਆ',
+        gu: 'ભરેલું',
+        ta: 'நிரம்பியது',
+        te: 'నిండింది',
+        kn: 'ತುಂಬಿದೆ',
+      },
+      overflow: {
+        en: 'OVERFLOW',
+        hi: 'अतिरिक्त भार',
+        mr: 'अतिरिक्त भार',
+        pa: 'ਵਾਧੂ ਭਾਰ',
+        gu: 'વધારે પડતો ભાર',
+        ta: 'அதிக சுமை',
+        te: 'అదనపు భారం',
+        kn: 'ಅಧಿಕ ಹೊರೆ',
+      },
+      select_harvest_lots: {
+        en: 'Select Harvest Lots',
+        hi: 'फसल लॉट चुनें',
+        mr: 'पीक लॉट्स निवडा',
+        pa: 'ਫ਼ਸਲ ਲਾਟ ਚੁਣੋ',
+        gu: 'પાક લૉટ્સ પસંદ કરો',
+        ta: 'அறுவடை லாட்டுகளைத் தேர்ந்தெடுக்கவும்',
+        te: 'పంట లాట్లను ఎంచుకోండి',
+        kn: 'ಬೆಳೆ ಲಾಟ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      },
+      selected: {
+        en: 'Selected',
+        hi: 'चयनित',
+        mr: 'निवडलेले',
+        pa: 'ਚੁਣੇ ਗਏ',
+        gu: 'પસંદ કરેલ',
+        ta: 'தேர்ந்தெடுக்கப்பட்டது',
+        te: 'ఎంపిక చేయబడింది',
+        kn: 'ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ',
+      },
+      all_lots: {
+        en: 'All Lots',
+        hi: 'सभी लॉट',
+        mr: 'सर्व लॉट्स',
+        pa: 'ਸਾਰੇ ਲਾਟ',
+        gu: 'બધા લૉટ્સ',
+        ta: 'அனைத்து லாட்டுகள்',
+        te: 'అన్ని లాట్లు',
+        kn: 'ಎಲ್ಲಾ ಲಾಟ್‌ಗಳು',
+      },
+      dry_grains: {
+        en: 'Dry Grains',
+        hi: 'सूखे अनाज',
+        mr: 'सुके धान्य',
+        pa: 'ਸੁੱਕਾ ਅਨਾਜ',
+        gu: 'સૂકા અનાજ',
+        ta: 'உலர்ந்த தானியங்கள்',
+        te: 'పొడి ధాన్యాలు',
+        kn: 'ಒಣ ಧಾನ್ಯಗಳು',
+      },
+      perishables: {
+        en: 'Perishables',
+        hi: 'नाशवंत फसलें',
+        mr: 'नाशवंत पिके',
+        pa: 'ਨਾਸ਼ਵਾਨ',
+        gu: 'નાશવંત પાકો',
+        ta: 'அழுகக்கூடியவை',
+        te: 'త్వరగా పాడయ్యే పంటలు',
+        kn: 'ಬೇಗನೆ ಹಾಳಾಗುವ ಬೆಳೆಗಳು',
+      },
+      select_all_grains: {
+        en: '🌿 Select All Grains',
+        hi: '🌿 सभी अनाज चुनें',
+        mr: '🌿 सर्व धान्य निवडा',
+        pa: '🌿 ਸਾਰੇ ਅਨਾਜ ਚੁਣੋ',
+        gu: '🌿 બધા અનાજ પસંદ કરો',
+        ta: '🌿 அனைத்து தானியங்களையும் தேர்ந்தெடு',
+        te: '🌿 అన్ని ధాన్యాలను ఎంచుకోండి',
+        kn: '🌿 ಎಲ್ಲಾ ಧಾನ್ಯಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ',
+      },
+      select_all: {
+        en: 'Select All',
+        hi: 'सभी चुनें',
+        mr: 'सर्व निवडा',
+        pa: 'ਸਾਰੇ ਚੁਣੋ',
+        gu: 'બધા પસંદ કરો',
+        ta: 'அனைத்தையும் தேர்ந்தெடு',
+        te: 'అన్నీ ఎంచుకోండి',
+        kn: 'ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ',
+      },
+      clear: {
+        en: 'Clear',
+        hi: 'हटाएं',
+        mr: 'साफ करा',
+        pa: 'ਸਾਫ਼ ਕਰੋ',
+        gu: 'સાફ કરો',
+        ta: 'அழி',
+        te: 'క్లియర్ చేయండి',
+        kn: 'ತೆರವುಗೊಳಿಸಿ',
+      },
+      volume_grade: {
+        en: 'Volume & Grade',
+        hi: 'मात्रा एवं ग्रेड',
+        mr: 'प्रमाण आणि दर्जा',
+        pa: 'ਮਾਤਰਾ ਅਤੇ ਗ੍ਰੇਡ',
+        gu: 'જથ્થો અને ગ્રેડ',
+        ta: 'அளவு மற்றும் தரம்',
+        te: 'పరిమాణం & గ్రేడ్',
+        kn: 'ಪ್ರಮಾಣ ಮತ್ತು ಗ್ರೇಡ್',
+      },
+      mt_unit: {
+        en: 'MT',
+        hi: 'मी.टन',
+        mr: 'मे.टन',
+        pa: 'ਮੀ.ਟਨ',
+        gu: 'મે.ટન',
+        ta: 'மெ.டன்',
+        te: 'మె.టన్ను',
+        kn: 'ಮೆ.ಟನ್',
+      },
+      logistics_profile: {
+        en: 'Logistics Profile',
+        hi: 'लॉजिस्टिक्स प्रोफाइल',
+        mr: 'वाहतूक प्रोफाइल',
+        pa: 'ਲੌਜਿਸਟਿਕਸ ਪ੍ਰੋਫਾਈਲ',
+        gu: 'લોજિસ્ટિક્સ પ્રોફાઇલ',
+        ta: 'சரக்கு விவரம்',
+        te: 'రవాణా ప్రొఫైల్',
+        kn: 'ಸಾರಿಗೆ ವಿವರ',
+      },
+      ideal_dry_pool: {
+        en: '🌿 Ideal for Bulk Dry Pool',
+        hi: '🌿 थोक सूखा पूल के लिए उत्तम',
+        mr: '🌿 सुक्या धान्यासाठी उत्तम',
+        pa: '🌿 ਸੁੱਕੇ ਅਨਾਜ ਲਈ ਉੱਤਮ',
+        gu: '🌿 જથ્થાબંધ સૂકા પૂલ માટે ઉત્તમ',
+        ta: '🌿 மொத்த உலர் பூலுக்கு சிறந்தது',
+        te: '🌿 బల్క్ డ్రై పూల్‌కు అనువైనది',
+        kn: '🌿 ಒಣ ಧಾನ್ಯ ಪೂಲ್‌ಗೆ ಸೂಕ್ತ',
+      },
+      perishable_sensitive: {
+        en: '❄️ Perishable Sensitive',
+        hi: '❄️ संवेदनशील नाशवंत',
+        mr: '❄️ संवेदनशील नाशवंत',
+        pa: '❄️ ਨਾਜ਼ੁਕ ਨਾਸ਼ਵਾਨ',
+        gu: '❄️ સંવેદનશીલ નાશવંત',
+        ta: '❄️ அழுகும் உணர்திறன்',
+        te: '❄️ త్వరగా పాడయ్యే సున్నితమైనవి',
+        kn: '❄️ ಬೇಗನೆ ಹಾಳಾಗುವ ಬೆಳೆ',
+      },
+      freight_rate: {
+        en: 'Freight Rate',
+        hi: 'मालभाड़ा दर',
+        mr: 'वाहतूक दर',
+        pa: 'ਮਾਲ-ਭਾੜਾ ਦਰ',
+        gu: 'માલભાડા દર',
+        ta: 'சரக்கு கட்டணம்',
+        te: 'రవాణా ఛార్జీ',
+        kn: 'ಸಾರಿಗೆ ದರ',
+      },
+      kg_unit: {
+        en: 'kg',
+        hi: 'किग्रा',
+        mr: 'किलो',
+        pa: 'ਕਿਲੋ',
+        gu: 'કિલો',
+        ta: 'கிலோ',
+        te: 'కిలో',
+        kn: 'ಕೆಜಿ',
+      },
+      fpo_pooled: {
+        en: '👥 FPO Pooled',
+        hi: '👥 एफपीओ पूल्ड',
+        mr: '👥 एकत्रित वाहतूक',
+        pa: '👥 ਐਫਪੀਓ ਪੂਲਡ',
+        gu: '👥 FPO સામૂહિક',
+        ta: '👥 FPO கூட்டுப் போக்குவரத்து',
+        te: '👥 FPO ఉమ్మడి రవాణా',
+        kn: '👥 FPO ಸಾಮೂಹಿಕ ಸಾರಿಗೆ',
+      },
+      solo_haul: {
+        en: '🚛 Solo Haul',
+        hi: '🚛 एकल ढुलाई',
+        mr: '🚛 स्वतंत्र वाहतूक',
+        pa: '🚛 ਇਕੱਲਾ ਢੁਆਈ',
+        gu: '🚛 એકલ પરિવહન',
+        ta: '🚛 தனி போக்குவரத்து',
+        te: '🚛 వ్యక్తిగత రవాణా',
+        kn: '🚛 ಏಕಾಂಗಿ ಸಾರಿಗೆ',
+      },
+      total_pooling_volume: {
+        en: 'Total Pooling Volume',
+        hi: 'कुल पूलिंग मात्रा',
+        mr: 'एकूण एकत्रित वजन',
+        pa: 'ਕੁੱਲ ਪੂਲਿੰਗ ਮਾਤਰਾ',
+        gu: 'કુલ પૂલિંગ જથ્થો',
+        ta: 'மொத்த கூட்டு அளவு',
+        te: 'మొత్తం ఉమ్మడి పరిమాణం',
+        kn: 'ಒಟ್ಟು ಸಾಮೂಹಿಕ ಪ್ರಮಾಣ',
+      },
+      metric_tons: {
+        en: 'Metric Tons',
+        hi: 'मीट्रिक टन',
+        mr: 'मेट्रिक टन',
+        pa: 'ਮੀਟ੍ਰਿਕ ਟਨ',
+        gu: 'મેટ્રિક ટન',
+        ta: 'மெட்ரிக் டன்',
+        te: 'మెట్రిక్ టన్నులు',
+        kn: 'ಮೆಟ್ರಿಕ್ ಟನ್',
+      },
+      estimated_freight_savings: {
+        en: 'Estimated Freight Savings',
+        hi: 'अनुमानित मालभाड़ा बचत',
+        mr: 'अंदाजे वाहतूक बचत',
+        pa: 'ਅੰਦਾਜ਼ਨ ਮਾਲ-ਭਾੜਾ ਬਚਤ',
+        gu: 'અંદાજિત માલભાડા બચત',
+        ta: 'மதிப்பிடப்பட்ட சரக்கு சேமிப்பு',
+        te: 'అంచనా వేసిన రవాణా ఆదా',
+        kn: 'ಅಂದಾಜು ಸಾರಿಗೆ ಉಳಿತಾಯ',
+      },
+      dispatch_window_settlement: {
+        en: 'Dispatch Window & Settlement',
+        hi: 'प्रेषण समय एवं भुगतान',
+        mr: 'वाहतूक वेळ आणि सेटलमेंट',
+        pa: 'ਡਿਸਪੈਚ ਸਮਾਂ ਅਤੇ ਭੁਗਤਾਨ',
+        gu: 'ડિસ્પેચ સમય અને ચુકવણી',
+        ta: 'அனுப்பும் நேரம் மற்றும் தீர்வு',
+        te: 'రవాణా సమయం & చెల్లింపు',
+        kn: 'ರವಾನೆ ಸಮಯ ಮತ್ತು ಇತ್ಯರ್ಥ',
+      },
+      zero_upfront_cost: {
+        en: '🛡️ Zero upfront cost • Deducted at Mandi Escrow weighbridge settlement',
+        hi: '🛡️ कोई अग्रिम शुल्क नहीं • मंडी एस्क्रो धर्मकांटा तौल पर कटौती',
+        mr: '🛡️ कोणताही आगाऊ खर्च नाही • मंडी एस्क्रो वजनकाट्यावर कपात',
+        pa: '🛡️ ਕੋਈ ਅਗਾਊਂ ਖਰਚਾ ਨਹੀਂ • ਮੰਡੀ ਐਸਕਰੋ ਤੋਲ ਸਮੇਂ ਕਟੌਤੀ',
+        gu: '🛡️ કોઈ એડવાન્સ ખર્ચ નથી • મંડી એસ્ક્રો કાંટા વજન પર કપાત',
+        ta: '🛡️ முன்பணம் இல்லை • மண்டி எஸ்க்ரோ எடை மேடையில் பிடித்தம்',
+        te: '🛡️ ఎలాంటి ముందస్తు ఖర్చు లేదు • మండి ఎస్క్రో తూకం వద్ద మినహాయింపు',
+        kn: '🛡️ ಯಾವುದೇ ಮುಂಗಡ ವೆಚ್ಚವಿಲ್ಲ • ಮಂಡಿ ಎಸ್ಕ್ರೋ ತೂಕದ ಸಮಯದಲ್ಲಿ ಕಡಿತ',
+      },
+      update_pool_selection: {
+        en: 'Update Collective Pool Selection',
+        hi: 'कलेक्टिव पूल चयन अपडेट करें',
+        mr: 'एकत्रित पूल निवड अद्ययावत करा',
+        pa: 'ਸਮੂਹ ਪੂਲ ਚੋਣ ਅੱਪਡੇਟ ਕਰੋ',
+        gu: 'સામૂહિક પૂલ પસંદગી અપડેટ કરો',
+        ta: 'கூட்டுப் பூல் தேர்வை புதுப்பிக்கவும்',
+        te: 'ఉమ్మడి పూల్ ఎంపికను నవీకరించండి',
+        kn: 'ಸಾಮೂಹಿಕ ಪೂಲ್ ಆಯ್ಕೆಯನ್ನು ನವೀಕರಿಸಿ',
+      },
+      syncing_collective: {
+        en: 'Syncing Collective...',
+        hi: 'कलेक्टिव सिंक हो रहा है...',
+        mr: 'सिंक होत आहे...',
+        pa: 'ਸਿੰਕ ਹੋ ਰਿਹਾ ਹੈ...',
+        gu: 'સામૂહિક સિંક થઈ રહ્યું છે...',
+        ta: 'ஒத்திசைக்கப்படுகிறது...',
+        te: 'సింక్ అవుతోంది...',
+        kn: 'ಸಿಂಕ್ ಆಗುತ್ತಿದೆ...',
+      },
+      no_lots_category: {
+        en: 'No produce lots in this category',
+        hi: 'इस श्रेणी में कोई फसल लॉट नहीं है',
+        mr: 'या श्रेणीत कोणतेही पीक लॉट उपलब्ध नाही',
+        pa: 'ਇਸ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਕੋਈ ਫ਼ਸਲ ਲਾਟ ਨਹੀਂ ਹੈ',
+        gu: 'આ શ્રેણીમાં કોઈ પાક લૉટ નથી',
+        ta: 'இந்தப் பிரிவில் எந்த பயிர் லாட்டும் இல்லை',
+        te: 'ఈ వర్గంలో ఎలాంటి పంట లాట్ లేదు',
+        kn: 'ಈ ವರ್ಗದಲ್ಲಿ ಯಾವುದೇ ಬೆಳೆ ಲಾಟ್ ಇಲ್ಲ',
+      },
+      no_lots_desc: {
+        en: 'List new harvested produce from the Farmer Command Center to participate in FPO pooling.',
+        hi: 'एफपीओ पूलिंग में शामिल होने के लिए किसान डैशबोर्ड से नई फसल पंजीकृत करें।',
+        mr: 'एफपीओ एकत्रीकरणात सहभागी होण्यासाठी शेतकरी डॅशबोर्डवरून नवीन पीक नोंदवा.',
+        pa: 'ਐਫਪੀਓ ਪੂਲਿੰਗ ਵਿੱਚ ਹਿੱਸਾ ਲੈਣ ਲਈ ਕਿਸਾਨ ਡੈਸ਼ਬੋਰਡ ਤੋਂ ਨਵੀਂ ਫ਼ਸਲ ਦਰਜ ਕਰੋ।',
+        gu: 'FPO પૂલિંગમાં ભાગ લેવા માટે ખેડૂત ડેશબોર્ડ પરથી નવો પાક લૉટ ઉમેરો.',
+        ta: 'FPO பூலிங்கில் பங்கேற்க உழவர் கட்டுப்பாட்டு மையத்திலிருந்து புதிய அறுவடையைப் பட்டியலிடுங்கள்.',
+        te: 'FPO పూలింగ్‌లో పాల్గొనడానికి రైతు కమాండ్ సెంటర్ నుండి కొత్త పంటను జాబితా చేయండి.',
+        kn: 'FPO ಪೂಲಿಂಗ್‌ನಲ್ಲಿ ಭಾಗವಹಿಸಲು ರೈತ ಕಮಾಂಡ್ ಕೇಂದ್ರದಿಂದ ಹೊಸ ಬೆಳೆಯನ್ನು ಪಟ್ಟಿ ಮಾಡಿ.',
+      },
+      list_new_produce: {
+        en: '+ List New Produce Lot',
+        hi: '+ नया फसल लॉट जोड़ें',
+        mr: '+ नवीन पीक लॉट जोडा',
+        pa: '+ ਨਵਾਂ ਫ਼ਸਲ ਲਾਟ ਸ਼ਾਮਲ ਕਰੋ',
+        gu: '+ નવો પાક લૉટ ઉમેરો',
+        ta: '+ புதிய பயிர் லாட்டைச் சேர்க்கவும்',
+        te: '+ కొత్త పంట లాట్‌ను జోడించండి',
+        kn: '+ ಹೊಸ ಬೆಳೆ ಲಾಟ್ ಸೇರಿಸಿ',
+      },
+    };
+    return dict[key]?.[currentLocale] || dict[key]?.[`en`] || key;
+  };
+
+  const formatSoloVsPooled = (soloVal: number, pooledVal: number) => {
+    const s = toLocalizedDigits(Math.round(soloVal).toLocaleString('en-IN'), currentLocale);
+    const p = toLocalizedDigits(Math.round(pooledVal).toLocaleString('en-IN'), currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `एकल: ₹${s} ➔ पूल्ड: ₹${p}`;
+      case 'mr': return `स्वतंत्र: ₹${s} ➔ एकत्रित: ₹${p}`;
+      case 'pa': return `ਇਕੱਲੇ: ₹${s} ➔ ਪੂਲ: ₹${p}`;
+      case 'gu': return `એકલ: ₹${s} ➔ સામૂહિક: ₹${p}`;
+      case 'ta': return `தனி: ₹${s} ➔ கூட்டு: ₹${p}`;
+      case 'te': return `వ్యక్తిగత: ₹${s} ➔ ఉమ్మడి: ₹${p}`;
+      case 'kn': return `ಏಕಾಂಗಿ: ₹${s} ➔ ಸಾಮೂಹಿಕ: ₹${p}`;
+      default: return `Solo: ₹${s} ➔ Pooled: ₹${p}`;
+    }
+  };
+
+  const formatDepartsTime = (hrs: number, mins: number) => {
+    const h = toLocalizedDigits(hrs, currentLocale);
+    const m = toLocalizedDigits(mins, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `प्रस्थान: ${h} घंटे ${m} मिनट में`;
+      case 'mr': return `निघणार: ${h} तास ${m} मिनिटांत`;
+      case 'pa': return `ਰਵਾਨਾ: ${h} ਘੰਟੇ ${m} ਮਿੰਟ ਵਿੱਚ`;
+      case 'gu': return `પ્રસ્થાન: ${h} કલાક ${m} મિનિટમાં`;
+      case 'ta': return `புறப்பாடு: ${h} மணி ${m} நிமிடங்களில்`;
+      case 'te': return `బయలుదేరే సమయం: ${h} గంటలు ${m} నిమిషాల్లో`;
+      case 'kn': return `ಹೊರಡುವುದು: ${h} ಗಂಟೆ ${m} ನಿಮಿಷಗಳಲ್ಲಿ`;
+      default: return `Departs in ${hrs}h ${mins}m`;
+    }
+  };
+
+  const formatCarrier = (tons: number) => {
+    const t = toLocalizedDigits(tons, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `${t}-टन मालवाहक`;
+      case 'mr': return `${t}-टन वाहक`;
+      case 'pa': return `${t}-ਟਨ ਵਾਹਕ`;
+      case 'gu': return `${t}-ટન વાહક`;
+      case 'ta': return `${t}-டன் சரக்கு ஊர்தி`;
+      case 'te': return `${t}-టన్నుల వాహనం`;
+      case 'kn': return `${t}-ಟನ್ ವಾಹನ`;
+      default: return `${tons}-Ton Carrier`;
+    }
+  };
+
+  const formatFarmersCount = (count: number) => {
+    const c = toLocalizedDigits(count, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `${c} किसान`;
+      case 'mr': return `${c} शेतकरी`;
+      case 'pa': return `${c} ਕਿਸਾਨ`;
+      case 'gu': return `${c} ખેડૂતો`;
+      case 'ta': return `${c} விவசாயிகள்`;
+      case 'te': return `${c} రైతులు`;
+      case 'kn': return `${c} ರೈತರು`;
+      default: return `${count} Farmers`;
+    }
+  };
+
+  const formatYourLotsIncluded = (count: number) => {
+    const c = toLocalizedDigits(count, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `✓ आपके ${c} लॉट शामिल हैं`;
+      case 'mr': return `✓ तुमचे ${c} लॉट्स समाविष्ट`;
+      case 'pa': return `✓ ਤੁਹਾਡੇ ${c} ਲਾਟ ਸ਼ਾਮਲ`;
+      case 'gu': return `✓ તમારા ${c} લૉટ્સ સમાવિષ્ટ છે`;
+      case 'ta': return `✓ உங்கள் ${c} லாட்டுகள் சேர்க்கப்பட்டுள்ளன`;
+      case 'te': return `✓ మీ ${c} లాట్లు చేర్చబడ్డాయి`;
+      case 'kn': return `✓ ನಿಮ್ಮ ${c} ಲಾಟ್‌ಗಳು ಸೇರಿವೆ`;
+      default: return `✓ Your ${count} lots included`;
+    }
+  };
+
+  const formatCapacityTotal = (currentMT: string, maxMT: string) => {
+    const curr = toLocalizedDigits(currentMT, currentLocale);
+    const tot = toLocalizedDigits(maxMT, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `कुल: ${curr} मी.टन / ${tot} मी.टन`;
+      case 'mr': return `एकूण: ${curr} मे.टन / ${tot} मे.टन`;
+      case 'pa': return `ਕੁੱਲ: ${curr} ਮੀ.ਟਨ / ${tot} ਮੀ.ਟਨ`;
+      case 'gu': return `કુલ: ${curr} મે.ટન / ${tot} મે.ટન`;
+      case 'ta': return `மொத்தம்: ${curr} மெ.டன் / ${tot} மெ.டன்`;
+      case 'te': return `మొత్తం: ${curr} మె.టన్నులు / ${tot} మె.టన్నులు`;
+      case 'kn': return `ಒಟ್ಟು: ${curr} ಮೆ.ಟನ್ / ${tot} ಮೆ.ಟನ್`;
+      default: return `Total: ${currentMT} MT / ${maxMT} MT`;
+    }
+  };
+
+  const formatLotSavings = (savings: number, discountPct: number) => {
+    const s = toLocalizedDigits(Math.round(savings).toLocaleString('en-IN'), currentLocale);
+    const d = toLocalizedDigits(discountPct, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `बचत ₹${s} (-${d}%)`;
+      case 'mr': return `बचत ₹${s} (-${d}%)`;
+      case 'pa': return `ਬਚਤ ₹${s} (-${d}%)`;
+      case 'gu': return `બચત ₹${s} (-${d}%)`;
+      case 'ta': return `சேமிப்பு ₹${s} (-${d}%)`;
+      case 'te': return `ఆదా ₹${s} (-${d}%)`;
+      case 'kn': return `ಉಳಿತಾಯ ₹${s} (-${d}%)`;
+      default: return `Save ₹${Math.round(savings).toLocaleString('en-IN')} (-${discountPct}%)`;
+    }
+  };
+
+  const formatHubDistance = (km: number) => {
+    const d = toLocalizedDigits(km, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `आपके खेत से ${d} किमी`;
+      case 'mr': return `तुमच्या शेतापासून ${d} किमी`;
+      case 'pa': return `ਤੁਹਾਡੇ ਖੇਤ ਤੋਂ ${d} ਕਿ.ਮੀ.`;
+      case 'gu': return `તમારા ખેતરથી ${d} કિમી`;
+      case 'ta': return `உங்கள் பண்ணையிலிருந்து ${d} கி.மீ`;
+      case 'te': return `మీ పొలం నుండి ${d} కి.மீ`;
+      case 'kn': return `ನಿಮ್ಮ ತೋಟದಿಂದ ${d} ಕಿ.ಮೀ`;
+      default: return `${km} km from your farm`;
+    }
+  };
+
+  const formatLotsEnrolled = (count: number) => {
+    const c = toLocalizedDigits(count, currentLocale);
+    switch (currentLocale) {
+      case 'hi': return `${c} फसल लॉट नामांकित`;
+      case 'mr': return `${c} पीक लॉट्स समाविष्ट`;
+      case 'pa': return `${c} ਫ਼ਸਲ ਲਾਟ ਸ਼ਾਮਲ`;
+      case 'gu': return `${c} પાક લૉટ્સ સમાવિષ્ટ`;
+      case 'ta': return `${c} அறுவடை லாட்டுகள் சேர்க்கப்பட்டன`;
+      case 'te': return `${c} పంట లాట్లు చేర్చబడ్డాయి`;
+      case 'kn': return `${c} ಬೆಳೆ ಲಾಟ್‌ಗಳು ಸೇರಿವೆ`;
+      default: return `${count} Harvest Lots Enrolled`;
+    }
+  };
 
   // Initialize selected lots from existing lot status or is_fpo_pooled / isPooled flag
   const [selectedLotIds, setSelectedLotIds] = useState<string[]>(() => {
@@ -286,14 +773,7 @@ export function FPOCollectiveView({
                     {FPO_CODE}
                   </span>
                   <span className="text-emerald-300 font-bold">
-                    • {currentLocale === 'hi' ? `आपके खेत से ${toLocalizedDigits(4.2, currentLocale)} किमी`
-                      : currentLocale === 'mr' ? `तुमच्या शेतापासून ${toLocalizedDigits(4.2, currentLocale)} किमी`
-                      : currentLocale === 'pa' ? `ਤੁਹਾਡੇ ਖੇਤ ਤੋਂ ${toLocalizedDigits(4.2, currentLocale)} ਕਿ.ਮੀ.`
-                      : currentLocale === 'gu' ? `તમારા ખેતરથી ${toLocalizedDigits(4.2, currentLocale)} કિમી`
-                      : currentLocale === 'ta' ? `உங்கள் பண்ணையிலிருந்து 4.2 கி.மீ`
-                      : currentLocale === 'te' ? `మీ పొలం నుండి 4.2 కి.மீ`
-                      : currentLocale === 'kn' ? `ನಿಮ್ಮ ತೋಟದಿಂದ 4.2 ಕಿ.ಮೀ`
-                      : HUB_DISTANCE}
+                    • {formatHubDistance(4.2)}
                   </span>
                 </div>
               </div>
@@ -302,14 +782,7 @@ export function FPOCollectiveView({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 text-xs font-bold font-mono">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                {currentLocale === 'hi' ? 'एसएफएसी एवं एपीएमसी प्रमाणित मिल्क-रन'
-                  : currentLocale === 'mr' ? 'एसएफएसी आणि एपीएमसी प्रमाणित मिल्क-रन'
-                  : currentLocale === 'pa' ? 'ਐਸਐਫਏਸੀ ਅਤੇ ਏਪੀਐਮਸੀ ਪ੍ਰਮਾਣਿਤ ਮਿਲਕ-ਰਨ'
-                  : currentLocale === 'gu' ? 'એસએફએસી અને એપીએમસી પ્રમાણિત મિલ્ક-રન'
-                  : currentLocale === 'ta' ? 'எஸ்.எஃப்.ஏ.சி மற்றும் ஏ.பி.எம்.சி சான்றளிக்கப்பட்ட மில்க்-ரன்'
-                  : currentLocale === 'te' ? 'ఎస్‌ఎఫ్‌ఏసీ & ఏపీఎంసీ ధృవీకరించిన రవాణా'
-                  : currentLocale === 'kn' ? 'ಎಸ್‌ಎಫ್‌ಎಸಿ ಮತ್ತು ಎಪಿಎಂಸಿ ಪ್ರಮಾಣೀಕೃತ ಮಿಲ್ಕ್-ರನ್'
-                  : 'SFAC & APMC Certified Milk-Run'}
+                {tFpo('certified_milk_run')}
               </span>
               <Button
                 variant="outline"
@@ -317,14 +790,7 @@ export function FPOCollectiveView({
                 onClick={() => setIsLeaveModalOpen(true)}
                 className="text-xs font-bold rounded-xl border-purple-700/60 bg-purple-950/50 text-purple-200 hover:bg-rose-950 hover:text-rose-200 hover:border-rose-700 transition-colors cursor-pointer"
               >
-                {currentLocale === 'hi' ? 'कलेक्टिव छोड़ें'
-                  : currentLocale === 'mr' ? 'समुदाय सोडा'
-                  : currentLocale === 'pa' ? 'ਸਮੂਹ ਛੱਡੋ'
-                  : currentLocale === 'gu' ? 'સામૂહિકમાંથી બહાર નીકળો'
-                  : currentLocale === 'ta' ? 'கூட்டிலிருந்து வெளியேறு'
-                  : currentLocale === 'te' ? 'ఉమ్మడి సమూహం నుండి నిష్క్రమించండి'
-                  : currentLocale === 'kn' ? 'ಸಾಮೂಹಿಕದಿಂದ ನಿರ್ಗಮಿಸಿ'
-                  : 'Leave Collective'}
+                {tFpo('leave_collective')}
               </Button>
             </div>
           </div>
@@ -335,43 +801,28 @@ export function FPOCollectiveView({
             {/* Metric 1: Milk-Run Target */}
             <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs">
               <span className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <Truck size={16} /> {currentLocale === 'hi' ? 'सक्रिय प्रेषण' : currentLocale === 'mr' ? 'सक्रिय वाहतूक' : currentLocale === 'pa' ? 'ਸਰਗਰਮ ਡਿਸਪੈਚ' : 'Active Dispatch'}
+                <Truck size={16} /> {tFpo('active_dispatch')}
               </span>
               <p className="text-3xl font-black text-white">
-                {currentLocale === 'hi' ? `${toLocalizedDigits(45, currentLocale)}-टन मालवाहक`
-                  : currentLocale === 'mr' ? `${toLocalizedDigits(45, currentLocale)}-टन वाहक`
-                  : currentLocale === 'pa' ? `${toLocalizedDigits(45, currentLocale)}-ਟਨ ਵਾਹਕ`
-                  : '45-Ton Carrier'}
+                {formatCarrier(45)}
               </p>
               <p className="text-emerald-400 font-bold mt-2">
-                {currentLocale === 'hi' ? `प्रस्थान: ${toLocalizedDigits(4, currentLocale)} घंटे ${toLocalizedDigits(30, currentLocale)} मिनट में`
-                  : currentLocale === 'mr' ? `निघणार: ${toLocalizedDigits(4, currentLocale)} तास ${toLocalizedDigits(30, currentLocale)} मिनिटांत`
-                  : currentLocale === 'pa' ? `ਰਵਾਨਾ: ${toLocalizedDigits(4, currentLocale)} ਘੰਟੇ ${toLocalizedDigits(30, currentLocale)} ਮਿੰਟ ਵਿੱਚ`
-                  : 'Departs in 4h 30m'}
+                {formatDepartsTime(4, 30)}
               </p>
             </div>
 
             {/* Metric 2: Participating Farmers */}
             <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs">
               <span className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <Users size={16} /> {currentLocale === 'hi' ? 'नामांकन' : currentLocale === 'mr' ? 'नोंदणी' : currentLocale === 'pa' ? 'ਦਾਖਲਾ' : 'Enrollment'}
+                <Users size={16} /> {tFpo('enrollment')}
               </span>
               <p className="text-3xl font-black text-white">
-                {currentLocale === 'hi' ? `${toLocalizedDigits(15, currentLocale)} किसान`
-                  : currentLocale === 'mr' ? `${toLocalizedDigits(15, currentLocale)} शेतकरी`
-                  : currentLocale === 'pa' ? `${toLocalizedDigits(15, currentLocale)} ਕਿਸਾਨ`
-                  : '15 Farmers'}
+                {formatFarmersCount(15)}
               </p>
               <p className="text-purple-200 font-bold mt-2">
                 {selectedLotIds.length > 0
-                  ? (currentLocale === 'hi' ? `✓ आपके ${toLocalizedDigits(selectedLotIds.length, currentLocale)} लॉट शामिल हैं`
-                    : currentLocale === 'mr' ? `✓ तुमचे ${toLocalizedDigits(selectedLotIds.length, currentLocale)} लॉट्स समाविष्ट`
-                    : currentLocale === 'pa' ? `✓ ਤੁਹਾਡੇ ${toLocalizedDigits(selectedLotIds.length, currentLocale)} ਲਾਟ ਸ਼ਾਮਲ`
-                    : `✓ Your ${selectedLotIds.length} lots included`)
-                  : (currentLocale === 'hi' ? 'जुड़ने के लिए लॉट चुनें'
-                    : currentLocale === 'mr' ? 'सामील होण्यासाठी लॉट निवडा'
-                    : currentLocale === 'pa' ? 'ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਲਾਟ ਚੁਣੋ'
-                    : 'Select lots to join')}
+                  ? formatYourLotsIncluded(selectedLotIds.length)
+                  : tFpo('select_lots_to_join')}
               </p>
             </div>
 
@@ -379,10 +830,10 @@ export function FPOCollectiveView({
             <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs lg:col-span-1 md:col-span-2">
               <div className="flex items-center justify-between text-xs mb-3">
                 <span className="text-purple-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                  <Boxes size={16} /> {currentLocale === 'hi' ? 'क्षमता' : currentLocale === 'mr' ? 'क्षमता' : currentLocale === 'pa' ? 'ਸਮਰੱਥਾ' : 'Capacity'}
+                  <Boxes size={16} /> {tFpo('capacity')}
                 </span>
                 <span className="text-emerald-400 font-black font-mono text-lg">
-                  {toLocalizedDigits(actualCapacityPercent, currentLocale)}% {currentLocale === 'hi' ? 'भरी हुई' : currentLocale === 'mr' ? 'पूर्ण' : currentLocale === 'pa' ? 'ਭਰਿਆ' : 'Full'}
+                  {toLocalizedDigits(actualCapacityPercent, currentLocale)}% {tFpo('full')}
                 </span>
               </div>
               
@@ -402,13 +853,10 @@ export function FPOCollectiveView({
 
               <div className="flex justify-between text-[11px] text-purple-200 font-bold">
                 <span>
-                  {currentLocale === 'hi' ? `कुल: ${toLocalizedDigits(totalCombinedWeightMT.toFixed(1), currentLocale)} मी.टन / ${toLocalizedDigits(45.0, currentLocale)} मी.टन`
-                    : currentLocale === 'mr' ? `एकूण: ${toLocalizedDigits(totalCombinedWeightMT.toFixed(1), currentLocale)} मे.टन / ${toLocalizedDigits(45.0, currentLocale)} मे.टन`
-                    : currentLocale === 'pa' ? `ਕੁੱਲ: ${toLocalizedDigits(totalCombinedWeightMT.toFixed(1), currentLocale)} ਮੀ.ਟਨ / ${toLocalizedDigits(45.0, currentLocale)} ਮੀ.ਟਨ`
-                    : `Total: ${totalCombinedWeightMT.toFixed(1)} MT / 45.0 MT`}
+                  {formatCapacityTotal(totalCombinedWeightMT.toFixed(1), '45.0')}
                 </span>
                 {isOverflow && (
-                  <span className="text-rose-400">{currentLocale === 'hi' ? 'अतिरिक्त भार' : currentLocale === 'mr' ? 'अतिरिक्त भार' : 'OVERFLOW'}</span>
+                  <span className="text-rose-400">{tFpo('overflow')}</span>
                 )}
               </div>
             </div>
@@ -427,9 +875,9 @@ export function FPOCollectiveView({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div className="space-y-1">
             <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <span>🌾 {currentLocale === 'hi' ? 'फसल लॉट चुनें' : currentLocale === 'mr' ? 'पीक लॉट्स निवडा' : currentLocale === 'pa' ? 'ਫ਼ਸਲ ਲਾਟ ਚੁਣੋ' : 'Select Harvest Lots'}</span>
+              <span>🌾 {tFpo('select_harvest_lots')}</span>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono">
-                {toLocalizedDigits(selectedLotIds.length, currentLocale)} / {toLocalizedDigits(activeLots.length, currentLocale)} {currentLocale === 'hi' ? 'चयनित' : currentLocale === 'mr' ? 'निवडलेले' : currentLocale === 'pa' ? 'ਚੁਣੇ ਗਏ' : 'Selected'}
+                {toLocalizedDigits(selectedLotIds.length, currentLocale)} / {toLocalizedDigits(activeLots.length, currentLocale)} {tFpo('selected')}
               </span>
             </h3>
           </div>
@@ -446,10 +894,7 @@ export function FPOCollectiveView({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {currentLocale === 'hi' ? `सभी लॉट (${toLocalizedDigits(activeLots.length, currentLocale)})`
-                  : currentLocale === 'mr' ? `सर्व लॉट्स (${toLocalizedDigits(activeLots.length, currentLocale)})`
-                  : currentLocale === 'pa' ? `ਸਾਰੇ ਲਾਟ (${toLocalizedDigits(activeLots.length, currentLocale)})`
-                  : `All Lots (${activeLots.length})`}
+                {tFpo('all_lots')} ({toLocalizedDigits(activeLots.length, currentLocale)})
               </button>
               <button
                 type="button"
@@ -461,7 +906,7 @@ export function FPOCollectiveView({
                 }`}
               >
                 <Leaf size={12} className="text-emerald-600" />
-                {currentLocale === 'hi' ? 'सूखे अनाज' : currentLocale === 'mr' ? 'सुके धान्य' : currentLocale === 'pa' ? 'ਸੁੱਕਾ ਅਨਾਜ' : 'Dry Grains'}
+                {tFpo('dry_grains')}
               </button>
               <button
                 type="button"
@@ -473,7 +918,7 @@ export function FPOCollectiveView({
                 }`}
               >
                 <Snowflake size={12} className="text-blue-600" />
-                {currentLocale === 'hi' ? 'नाशवंत फसलें' : currentLocale === 'mr' ? 'नाशवंत पिके' : currentLocale === 'pa' ? 'ਨਾਸ਼ਵਾਨ' : 'Perishables'}
+                {tFpo('perishables')}
               </button>
             </div>
 
@@ -484,7 +929,7 @@ export function FPOCollectiveView({
                 onClick={handleSelectDryOnly}
                 className="text-xs font-bold h-8 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
               >
-                {currentLocale === 'hi' ? '🌿 सभी अनाज चुनें' : currentLocale === 'mr' ? '🌿 सर्व धान्य निवडा' : currentLocale === 'pa' ? '🌿 ਸਾਰੇ ਅਨਾਜ ਚੁਣੋ' : '🌿 Select All Grains'}
+                {tFpo('select_all_grains')}
               </Button>
               <Button
                 variant="outline"
@@ -492,7 +937,7 @@ export function FPOCollectiveView({
                 onClick={handleSelectAll}
                 className="text-xs font-bold h-8 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
               >
-                {currentLocale === 'hi' ? 'सभी चुनें' : currentLocale === 'mr' ? 'सर्व निवडा' : currentLocale === 'pa' ? 'ਸਾਰੇ ਚੁਣੋ' : 'Select All'}
+                {tFpo('select_all')}
               </Button>
               <Button
                 variant="ghost"
@@ -500,7 +945,7 @@ export function FPOCollectiveView({
                 onClick={handleClearAll}
                 className="text-xs font-bold h-8 rounded-xl text-slate-500 hover:text-rose-600 cursor-pointer"
               >
-                {currentLocale === 'hi' ? 'हटाएं' : currentLocale === 'mr' ? 'साफ करा' : currentLocale === 'pa' ? 'ਸਾਫ਼ ਕਰੋ' : 'Clear'}
+                {tFpo('clear')}
               </Button>
             </div>
           </div>
@@ -511,9 +956,9 @@ export function FPOCollectiveView({
           <div className="py-12 text-center space-y-3 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
             <Boxes className="w-10 h-10 text-slate-400 mx-auto" />
             <div className="space-y-1">
-              <h4 className="text-sm font-bold text-slate-800">No produce lots in this category</h4>
+              <h4 className="text-sm font-bold text-slate-800">{tFpo('no_lots_category')}</h4>
               <p className="text-xs text-slate-500">
-                List new harvested produce from the Farmer Command Center to participate in FPO pooling.
+                {tFpo('no_lots_desc')}
               </p>
             </div>
             {onNavigateToTab && (
@@ -522,7 +967,7 @@ export function FPOCollectiveView({
                 onClick={() => onNavigateToTab('overview')}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl"
               >
-                + List New Produce Lot
+                {tFpo('list_new_produce')}
               </Button>
             )}
           </div>
@@ -602,11 +1047,11 @@ export function FPOCollectiveView({
                     {/* Volume & Quality Grade */}
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                        {currentLocale === 'hi' ? 'मात्रा एवं ग्रेड' : currentLocale === 'mr' ? 'प्रमाण आणि दर्जा' : currentLocale === 'pa' ? 'ਮਾਤਰਾ ਅਤੇ ਗ੍ਰੇਡ' : 'Volume & Grade'}
+                        {tFpo('volume_grade')}
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-black text-slate-900 font-mono">
-                          {toLocalizedDigits(lotTons, currentLocale)} {currentLocale === 'hi' ? 'मी.टन' : currentLocale === 'mr' ? 'मे.टन' : 'MT'}
+                          {toLocalizedDigits(lotTons, currentLocale)} {tFpo('mt_unit')}
                         </span>
                         <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
                           {lot.qualityGrade || 'Grade A'} ({toLocalizedDigits(lot.qualityScore || 95, currentLocale)}%)
@@ -617,17 +1062,17 @@ export function FPOCollectiveView({
                     {/* Logistics Profile Tag */}
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                        {currentLocale === 'hi' ? 'लॉजिस्टिक्स प्रोफाइल' : currentLocale === 'mr' ? 'वाहतूक प्रोफाइल' : currentLocale === 'pa' ? 'ਲੌਜਿਸਟਿਕਸ ਪ੍ਰੋਫਾਈਲ' : 'Logistics Profile'}
+                        {tFpo('logistics_profile')}
                       </span>
                       {isDry ? (
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-lg border border-emerald-200">
                           <Leaf size={12} className="text-emerald-600" />
-                          {currentLocale === 'hi' ? '🌿 थोक सूखा पूल के लिए उत्तम' : currentLocale === 'mr' ? '🌿 सुक्या धान्यासाठी उत्तम' : currentLocale === 'pa' ? '🌿 ਸੁੱਕੇ ਅਨਾਜ ਲਈ ਉੱਤਮ' : '🌿 Ideal for Bulk Dry Pool'}
+                          {tFpo('ideal_dry_pool')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 bg-blue-100/80 px-2.5 py-1 rounded-lg border border-blue-200">
                           <Snowflake size={12} className="text-blue-600" />
-                          {currentLocale === 'hi' ? '❄️ संवेदनशील नाशवंत' : currentLocale === 'mr' ? '❄️ संवेदनशील नाशवंत' : '❄️ Perishable Sensitive'}
+                          {tFpo('perishable_sensitive')}
                         </span>
                       )}
                     </div>
@@ -639,17 +1084,14 @@ export function FPOCollectiveView({
                     
                     <div className="text-left lg:text-right space-y-0.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                        {currentLocale === 'hi' ? 'मालभाड़ा दर' : currentLocale === 'mr' ? 'वाहतूक दर' : currentLocale === 'pa' ? 'ਮਾਲ-ਭਾੜਾ ਦਰ' : 'Freight Rate'}
+                        {tFpo('freight_rate')}
                       </span>
                       <div className="flex items-center lg:justify-end gap-2 text-xs font-mono">
-                        <span className="text-slate-400 line-through">₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/{currentLocale === 'hi' ? 'किग्रा' : currentLocale === 'mr' ? 'किलो' : 'kg'}</span>
-                        <strong className="text-emerald-700 font-bold">➔ ₹{toLocalizedDigits(POOLED_FREIGHT_PER_KG.toFixed(2), currentLocale)}/{currentLocale === 'hi' ? 'किग्रा' : currentLocale === 'mr' ? 'किलो' : 'kg'}</strong>
+                        <span className="text-slate-400 line-through">₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/{tFpo('kg_unit')}</span>
+                        <strong className="text-emerald-700 font-bold">➔ ₹{toLocalizedDigits(POOLED_FREIGHT_PER_KG.toFixed(2), currentLocale)}/{tFpo('kg_unit')}</strong>
                       </div>
                       <p className="text-xs font-black text-emerald-600 font-mono">
-                        {currentLocale === 'hi' ? `बचत ₹${toLocalizedDigits(Math.round(lotSavings).toLocaleString('en-IN'), currentLocale)} (-${toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%)`
-                          : currentLocale === 'mr' ? `बचत ₹${toLocalizedDigits(Math.round(lotSavings).toLocaleString('en-IN'), currentLocale)} (-${toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%)`
-                          : currentLocale === 'pa' ? `ਬਚਤ ₹${toLocalizedDigits(Math.round(lotSavings).toLocaleString('en-IN'), currentLocale)} (-${toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%)`
-                          : `Save ₹${Math.round(lotSavings).toLocaleString('en-IN')} (-${FREIGHT_DISCOUNT_PCT}%)`}
+                        {formatLotSavings(lotSavings, FREIGHT_DISCOUNT_PCT)}
                       </p>
                     </div>
 
@@ -658,12 +1100,12 @@ export function FPOCollectiveView({
                       {isSelected ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 border border-purple-300 text-xs font-black shadow-2xs font-mono">
                           <Users size={13} className="text-purple-700" />
-                          {currentLocale === 'hi' ? '👥 एफपीओ पूल्ड' : currentLocale === 'mr' ? '👥 एकत्रित वाहतूक' : currentLocale === 'pa' ? '👥 ਐਫਪੀਓ ਪੂਲਡ' : '👥 FPO Pooled'}
+                          {tFpo('fpo_pooled')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold font-mono">
                           <Truck size={13} className="text-slate-500" />
-                          {currentLocale === 'hi' ? '🚛 एकल ढुलाई' : currentLocale === 'mr' ? '🚛 स्वतंत्र वाहतूक' : currentLocale === 'pa' ? '🚛 ਇਕੱਲਾ ਢੁਆਈ' : '🚛 Solo Haul'}
+                          {tFpo('solo_haul')}
                         </span>
                       )}
                     </div>
@@ -691,28 +1133,25 @@ export function FPOCollectiveView({
             {/* Metric 1: Selected Tonnage */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                {currentLocale === 'hi' ? 'कुल पूलिंग मात्रा' : currentLocale === 'mr' ? 'एकूण एकत्रित वजन' : currentLocale === 'pa' ? 'ਕੁੱਲ ਪੂਲਿੰਗ ਮਾਤਰਾ' : 'Total Pooling Volume'}
+                {tFpo('total_pooling_volume')}
               </span>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-3xl font-black text-white font-mono">
                   {toLocalizedDigits(selectedTonnage.toFixed(1), currentLocale)}
                 </span>
                 <span className="text-sm font-bold text-emerald-200">
-                  {currentLocale === 'hi' ? 'मीट्रिक टन' : currentLocale === 'mr' ? 'मेट्रिक टन' : currentLocale === 'pa' ? 'ਮੀਟ੍ਰਿਕ ਟਨ' : 'Metric Tons'}
+                  {tFpo('metric_tons')}
                 </span>
               </div>
               <p className="text-[11px] text-emerald-200/80 font-mono">
-                {currentLocale === 'hi' ? `${toLocalizedDigits(selectedLotIds.length, currentLocale)} फसल लॉट नामांकित`
-                  : currentLocale === 'mr' ? `${toLocalizedDigits(selectedLotIds.length, currentLocale)} पीक लॉट्स समाविष्ट`
-                  : currentLocale === 'pa' ? `${toLocalizedDigits(selectedLotIds.length, currentLocale)} ਫ਼ਸਲ ਲਾਟ ਸ਼ਾਮਲ`
-                  : `${selectedLotIds.length} Harvest Lots Enrolled`}
+                {formatLotsEnrolled(selectedLotIds.length)}
               </p>
             </div>
 
             {/* Metric 2: Net Freight Savings */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                {currentLocale === 'hi' ? 'अनुमानित मालभाड़ा बचत' : currentLocale === 'mr' ? 'अंदाजे वाहतूक बचत' : currentLocale === 'pa' ? 'ਅੰਦਾਜ਼ਨ ਮਾਲ-ਭਾੜਾ ਬਚਤ' : 'Estimated Freight Savings'}
+                {tFpo('estimated_freight_savings')}
               </span>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black text-emerald-300 font-mono">
@@ -723,31 +1162,23 @@ export function FPOCollectiveView({
                 </span>
               </div>
               <p className="text-[11px] text-emerald-200/80">
-                {currentLocale === 'hi' ? `एकल: ₹${toLocalizedDigits(Math.round(soloTotalFreight).toLocaleString('en-IN'), currentLocale)} ➔ पूल्ड: ₹${toLocalizedDigits(Math.round(pooledTotalFreight).toLocaleString('en-IN'), currentLocale)}`
-                  : currentLocale === 'mr' ? `स्वतंत्र: ₹${toLocalizedDigits(Math.round(soloTotalFreight).toLocaleString('en-IN'), currentLocale)} ➔ एकत्रित: ₹${toLocalizedDigits(Math.round(pooledTotalFreight).toLocaleString('en-IN'), currentLocale)}`
-                  : `Solo: ₹${Math.round(soloTotalFreight).toLocaleString('en-IN')} ➔ Pooled: ₹${Math.round(pooledTotalFreight).toLocaleString('en-IN')}`}
+                {formatSoloVsPooled(soloTotalFreight, pooledTotalFreight)}
               </p>
             </div>
 
             {/* Metric 3: Dispatch & Escrow Guarantee */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                {currentLocale === 'hi' ? 'प्रेषण समय एवं भुगतान' : currentLocale === 'mr' ? 'वाहतूक वेळ आणि सेटलमेंट' : currentLocale === 'pa' ? 'ਡਿਸਪੈਚ ਸਮਾਂ ਅਤੇ ਭੁਗਤਾਨ' : 'Dispatch Window & Settlement'}
+                {tFpo('dispatch_window_settlement')}
               </span>
               <div className="flex items-center gap-1.5 text-white font-bold text-sm">
                 <Clock size={16} className="text-emerald-400 shrink-0" />
                 <span>
-                  {currentLocale === 'hi' ? `प्रस्थान: ${toLocalizedDigits(4, currentLocale)} घंटे ${toLocalizedDigits(30, currentLocale)} मिनट में`
-                    : currentLocale === 'mr' ? `निघणार: ${toLocalizedDigits(4, currentLocale)} तास ${toLocalizedDigits(30, currentLocale)} मिनिटांत`
-                    : currentLocale === 'pa' ? `ਰਵਾਨਾ: ${toLocalizedDigits(4, currentLocale)} ਘੰਟੇ ${toLocalizedDigits(30, currentLocale)} ਮਿੰਟ ਵਿੱਚ`
-                    : 'Departs in 4 hrs 30 mins'}
+                  {formatDepartsTime(4, 30)}
                 </span>
               </div>
               <p className="text-[11px] text-emerald-200/80">
-                {currentLocale === 'hi' ? '🛡️ कोई अग्रिम शुल्क नहीं • मंडी एस्क्रो धर्मकांटा तौल पर कटौती'
-                  : currentLocale === 'mr' ? '🛡️ कोणताही आगाऊ खर्च नाही • मंडी एस्क्रो वजनकाट्यावर कपात'
-                  : currentLocale === 'pa' ? '🛡️ ਕੋਈ ਅਗਾਊਂ ਖਰਚਾ ਨਹੀਂ • ਮੰਡੀ ਐਸਕਰੋ ਤੋਲ ਸਮੇਂ ਕਟੌਤੀ'
-                  : '🛡️ Zero upfront cost • Deducted at Mandi Escrow weighbridge settlement'}
+                {tFpo('zero_upfront_cost')}
               </p>
             </div>
 
@@ -764,16 +1195,13 @@ export function FPOCollectiveView({
               {isSaving ? (
                 <>
                   <span className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
-                  <span>{currentLocale === 'hi' ? 'कलेक्टिव सिंक हो रहा है...' : currentLocale === 'mr' ? 'सिंक होत आहे...' : 'Syncing Collective...'}</span>
+                  <span>{tFpo('syncing_collective')}</span>
                 </>
               ) : (
                 <>
                   <CheckCircle2 size={18} />
                   <span>
-                    {currentLocale === 'hi' ? 'कलेक्टिव पूल चयन अपडेट करें'
-                      : currentLocale === 'mr' ? 'एकत्रित पूल निवड अद्ययावत करा'
-                      : currentLocale === 'pa' ? 'ਸਮੂਹ ਪੂਲ ਚੋਣ ਅੱਪਡੇਟ ਕਰੋ'
-                      : 'Update Collective Pool Selection'}
+                    {tFpo('update_pool_selection')}
                   </span>
                 </>
               )}
@@ -813,6 +1241,14 @@ export function FPOCollectiveView({
                   ? <>सर्व लॉट्स <strong className="text-slate-900">{fpoNameDisplay}</strong> मधून वगळल्यास तुमचे सामायिक वाहतूक आरक्षण रद्द होईल. तुमचे वाहतूक दर नियमित दरावर (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/किलो</strong> ऐवजी <strong>₹{toLocalizedDigits(POOLED_FREIGHT_PER_KG.toFixed(2), currentLocale)}/किलो</strong>) परत जातील.</>
                   : currentLocale === 'pa'
                   ? <>ਸਾਰੇ ਲਾਟਾਂ ਨੂੰ <strong className="text-slate-900">{fpoNameDisplay}</strong> ਤੋਂ ਵੱਖ ਕਰਨ ਨਾਲ ਤੁਹਾਡਾ ਸਾਂਝਾ ਟਰਾਂਸਪੋਰਟ ਰਿਜ਼ਰਵੇਸ਼ਨ ਰੱਦ ਹੋ ਜਾਵੇਗਾ। ਤੁਹਾਡਾ ਕਿਰਾਇਆ ਇਕੱਲੇ ਭਾੜੇ ਦੀ ਦਰ (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/ਕਿਲੋ</strong>) 'ਤੇ ਵਾਪਸ ਆ ਜਾਵੇਗਾ।</>
+                  : currentLocale === 'gu'
+                  ? <>બધા લૉટને <strong className="text-slate-900">{fpoNameDisplay}</strong> માંથી અલગ કરવાથી તમારું વહેંચાયેલ પરિવહન રૂટ રદ થઈ જશે. તમારા માલભાડા દર સામાન્ય એકલ દર (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/કિલો</strong>) પર પાછા આવી જશે.</>
+                  : currentLocale === 'ta'
+                  ? <><strong className="text-slate-900">{fpoNameDisplay}</strong> இலிருந்து அனைத்து லாட்டுகளையும் பிரிப்பது உங்கள் பகிரப்பட்ட போக்குவரத்து முன்பதிவை ரத்து செய்யும். உங்கள் விளைபொருளுக்கான சரக்கு கட்டணம் நிலையான தனி விகிதங்களுக்குத் திரும்பும் (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/கிலோ</strong>).</>
+                  : currentLocale === 'te'
+                  ? <><strong className="text-slate-900">{fpoNameDisplay}</strong> నుండి అన్ని లాట్లను వేరు చేయడం ద్వారా మీ ఉమ్మడి రవాణా రిజర్వేషన్ రద్దు చేయబడుతుంది. మీ రవాణా ఛార్జీలు సాధారణ వ్యక్తిగత రేట్లకు (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/కిలో</strong>) తిరిగి వస్తాయి.</>
+                  : currentLocale === 'kn'
+                  ? <><strong className="text-slate-900">{fpoNameDisplay}</strong> ನಿಂದ ಎಲ್ಲಾ ಲಾಟ್‌ಗಳನ್ನು ಬೇರ್ಪಡಿಸುವುದರಿಂದ ನಿಮ್ಮ ಹಂಚಿಕೆಯ ಸಾರಿಗೆ ಕಾಯ್ದಿರಿಸುವಿಕೆ ರದ್ದಾಗುತ್ತದೆ. ನಿಮ್ಮ ಸರಕು ಸಾಗಣೆ ದರಗಳು ಸಾಮಾನ್ಯ ದರಕ್ಕೆ (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/ಕೆಜಿ</strong>) ಹಿಂತಿರುಗುತ್ತವೆ.</>
                   : <>Detaching all lots from <strong className="text-slate-900">{FPO_NAME}</strong> will cancel your shared delivery route reservation. Freight costs for your produce will revert to standard solo direct haul rates (<strong>₹1.85/kg</strong> instead of <strong>₹1.20/kg</strong>).</>}
               </p>
             </div>
@@ -822,6 +1258,10 @@ export function FPOCollectiveView({
                 {currentLocale === 'hi' ? 'अनुमानित वित्तीय प्रभाव:'
                   : currentLocale === 'mr' ? 'अंदाजे आर्थिक परिणाम:'
                   : currentLocale === 'pa' ? 'ਅੰਦਾਜ਼ਨ ਵਿੱਤੀ ਪ੍ਰਭਾਵ:'
+                  : currentLocale === 'gu' ? 'અંદાજિત નાણાકીય અસર:'
+                  : currentLocale === 'ta' ? 'மதிப்பிடப்பட்ட நிதி தாக்கம்:'
+                  : currentLocale === 'te' ? 'అంచనా వేసిన ఆర్థిక ప్రభావం:'
+                  : currentLocale === 'kn' ? 'ಅಂದಾಜು ಆರ್ಥಿಕ ಪರಿಣಾಮ:'
                   : 'Estimated Financial Impact:'}
               </strong>
               <p className="text-[11px] text-amber-800">
@@ -831,6 +1271,14 @@ export function FPOCollectiveView({
                   ? <>तुम्ही तुमच्या सक्रिय पीक लॉट्सवरील <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> पर्यंतची बचत गमावाल.</>
                   : currentLocale === 'pa'
                   ? <>ਤੁਸੀਂ ਆਪਣੇ ਕਿਰਿਆਸ਼ੀਲ ਲਾਟਾਂ 'ਤੇ <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> ਤੱਕ ਦੀ ਬਚਤ ਗੁਆ ਦੇਵੋਗੇ।</>
+                  : currentLocale === 'gu'
+                  ? <>તમે તમારા સક્રિય પાક લૉટ્સ પર <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> સુધીની માલભાડા બચત ગુમાવશો.</>
+                  : currentLocale === 'ta'
+                  ? <>உங்கள் செயலில் உள்ள லாட்டுகளில் <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> வரை சரக்கு சேமிப்பை இழக்க நேரிடும்.</>
+                  : currentLocale === 'te'
+                  ? <>మీరు మీ క్రియాశీల పంట లాట్లపై <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> వరకు రవాణా ఆదాను కోల్పోతారు.</>
+                  : currentLocale === 'kn'
+                  ? <>ನಿಮ್ಮ ಸಕ್ರಿಯ ಬೆಳೆ ಲಾಟ್‌ಗಳ ಮೇಲೆ <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> ವರೆಗಿನ ಸಾರಿಗೆ ಉಳಿತಾಯವನ್ನು ನೀವು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ.</>
                   : <>You will forfeit up to <strong className="text-amber-950">₹{Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN')}</strong> in logistics savings on your active harvest lots.</>}
               </p>
             </div>
@@ -846,7 +1294,7 @@ export function FPOCollectiveView({
                   : currentLocale === 'mr' ? 'पूलमध्ये ठेवा'
                   : currentLocale === 'pa' ? 'ਪੂਲ ਵਿੱਚ ਰੱਖੋ'
                   : currentLocale === 'gu' ? 'પૂલમાં જાળવી રાખો'
-                  : currentLocale === 'ta' ? 'பூலில் வைத்திருங்கள்'
+                  : currentLocale === 'ta' ? 'பூலில் வைத்திருக்கவும்'
                   : currentLocale === 'te' ? 'పూల్‌లోనే ఉంచండి'
                   : currentLocale === 'kn' ? 'ಪೂಲ್‌ನಲ್ಲಿಯೇ ಇರಿಸಿ'
                   : 'Keep in Pool'}
