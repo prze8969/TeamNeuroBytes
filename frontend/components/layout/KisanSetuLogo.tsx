@@ -2,21 +2,72 @@
 
 import React from 'react';
 
+import { useLocaleContext } from '@/lib/LocaleContext';
+
 export interface KrishiNitiLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   showTagline?: boolean;
   variant?: 'light' | 'dark' | 'auto';
   className?: string;
   badge?: string;
+  locale?: string;
 }
+
+const BRAND_MAP: Record<string, { first: string; second: string; tagline: string }> = {
+  hi: {
+    first: 'कृषि',
+    second: 'नीति',
+    tagline: 'गारंटीकृत मूल्य निर्धारण एवं एस्क्रो • SIH 2026',
+  },
+  mr: {
+    first: 'कृषी',
+    second: 'नीती',
+    tagline: 'हमीभाव शोध आणि एस्क्रो • SIH 2026',
+  },
+  pa: {
+    first: 'ਕ੍ਰਿਸ਼ੀ',
+    second: 'ਨੀਤੀ',
+    tagline: 'ਸਹੀ ਮੁੱਲ ਖੋਜ ਅਤੇ ਐਸਕਰੋ • SIH 2026',
+  },
+  gu: {
+    first: 'કૃષિ',
+    second: 'નીતિ',
+    tagline: 'ખાતરીપૂર્વક ભાવ શોધ અને એસ્ક્રો • SIH 2026',
+  },
+  ta: {
+    first: 'கிருஷி',
+    second: 'நீதி',
+    tagline: 'உத்தரவாத விலை கண்டறிதல் மற்றும் எஸ்க்ரோ • SIH 2026',
+  },
+  te: {
+    first: 'కృషి',
+    second: 'నీతి',
+    tagline: 'హామీ ధర గుర్తింపు మరియు ఎస్క్రో • SIH 2026',
+  },
+  kn: {
+    first: 'ಕೃಷಿ',
+    second: 'ನೀತಿ',
+    tagline: 'ಖಾತರಿಯ ಬೆಲೆ ಅನ್ವೇಷಣೆ ಮತ್ತು ಎಸ್ಕ್ರೊ • SIH 2026',
+  },
+  en: {
+    first: 'Krishi',
+    second: 'Niti',
+    tagline: 'Guaranteed Price Discovery & Escrow • SIH 2026',
+  },
+};
 
 export function KrishiNitiLogo({
   size = 'lg',
   showTagline = false,
   variant = 'light',
   className = '',
-  badge
+  badge,
+  locale,
 }: KrishiNitiLogoProps) {
+  const { currentLocale } = useLocaleContext();
+  const effectiveLocale = locale || currentLocale || 'en';
+  const brand = BRAND_MAP[effectiveLocale] || BRAND_MAP.en;
+
   const sizeMap = {
     xs: { iconSize: 28, textClass: 'text-[20px]', badgeClass: 'text-[8px] px-1.5 py-0.2' },
     sm: { iconSize: 34, textClass: 'text-2xl', badgeClass: 'text-[9px] px-2 py-0.5' },
@@ -36,7 +87,7 @@ export function KrishiNitiLogo({
       >
         <img
           src="/logo.png"
-          alt="Krishi Niti Official Logo"
+          alt={`${brand.first} ${brand.second}`}
           className="w-full h-full object-contain scale-[1.35]"
           loading="eager"
         />
@@ -48,8 +99,8 @@ export function KrishiNitiLogo({
           <span 
             className={`font-heading font-black tracking-tight leading-none ${variant === 'dark' ? 'text-slate-900' : 'text-white'} ${currentSize.textClass}`}
           >
-            <span>Krishi</span>
-            <span className="ml-1 text-amber-400 font-black">Niti</span>
+            <span>{brand.first}</span>
+            <span className="ml-1 text-amber-400 font-black">{brand.second}</span>
           </span>
 
           {badge && (
@@ -61,7 +112,7 @@ export function KrishiNitiLogo({
 
         {showTagline && (
           <span className="text-[11px] font-medium text-emerald-200 tracking-tight mt-1 font-sans">
-            Guaranteed Price Discovery &amp; Escrow • SIH 2026
+            {brand.tagline}
           </span>
         )}
       </div>

@@ -101,7 +101,7 @@ export function KrishiNitiNav() {
               title="Razorpay Standard Checkout"
             >
               <ShieldCheck size={14} className="text-emerald-300" />
-              <span>Checkout</span>
+              <span>{currentLocale === 'hi' ? 'चेकआउट' : currentLocale === 'mr' ? 'चेकआउट' : 'Checkout'}</span>
             </Link>
           </nav>
 
@@ -213,7 +213,7 @@ export function KrishiNitiNav() {
                 className="block p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-700/70 text-emerald-100 flex items-center gap-2"
               >
                 <ShieldCheck size={16} className="text-emerald-300" />
-                <span>Razorpay Checkout</span>
+                <span>{currentLocale === 'hi' ? 'रेज़रपे चेकआउट' : currentLocale === 'mr' ? 'रेझरपे चेकआउट' : 'Razorpay Checkout'}</span>
               </Link>
             </div>
 

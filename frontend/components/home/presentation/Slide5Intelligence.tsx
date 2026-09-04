@@ -3,8 +3,85 @@
 import React from 'react';
 import Link from 'next/link';
 import { TrendingUp, ArrowRight, Activity } from 'lucide-react';
+import { useLocaleContext } from '@/lib/LocaleContext';
 
 export function Slide5Intelligence() {
+  const { currentLocale } = useLocaleContext();
+
+  const getTitle = () => {
+    switch (currentLocale) {
+      case 'hi': return 'सटीक जानें कि कब बेचना है।';
+      case 'mr': return 'पीक कधी विकायचे ते अचूक जाणून घ्या.';
+      case 'pa': return 'ਸਹੀ ਸਮੇਂ ਜਾਣੋ ਕਿ ਕਦੋਂ ਵੇਚਣਾ ਹੈ।';
+      case 'gu': return 'ચોક્કસ જાણો ક્યારે વેચવું.';
+      case 'ta': return 'எப்போது விற்க வேண்டும் என்பதை துல்லியமாக அறிந்து கொள்ளுங்கள்.';
+      case 'te': return 'ఎప్పుడు అమ్మాలో ఖచ్చితంగా తెలుసుకోండి.';
+      case 'kn': return 'ಯಾವಾಗ ಮಾರಾಟ ಮಾಡಬೇಕೆಂದು ನಿಖರವಾಗಿ ತಿಳಿಯಿರಿ.';
+      default: return 'Know exactly when to sell.';
+    }
+  };
+
+  const getSubtitle = () => {
+    switch (currentLocale) {
+      case 'hi': return 'हमारा प्लेटफॉर्म सिर्फ फसलों की लिस्टिंग नहीं करता। हम एआई से बाजार भाव का पूर्वानुमान लगाते हैं ताकि आप तय कर सकें कि आज बेचना है या बेहतर दाम के लिए रुकना है।';
+      case 'mr': return 'आमचे प्लॅटफॉर्म फक्त पिकांची नोंदणी करत नाही. आम्ही एआय तंत्रज्ञानाने बाजारभावाचा अंदाज लावतो जेणेकरून तुम्हाला कळेल की आज विकायचे की चांगल्या भावासाठी थांबायचे.';
+      case 'pa': return 'ਸਾਡਾ ਪਲੇਟਫਾਰਮ ਸਿਰਫ਼ ਫ਼ਸਲਾਂ ਦੀ ਸੂਚੀ ਨਹੀਂ ਬਣਾਉਂਦਾ। ਅਸੀਂ ਮੰਡੀ ਦੇ ਭਾਅ ਦਾ ਅਨੁਮਾਨ ਲਗਾਉਂਦੇ ਹਾਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਫੈਸਲਾ ਕਰ ਸਕੋ ਕਿ ਅੱਜ ਵੇਚਣਾ ਹੈ ਜਾਂ ਬਿਹਤਰ ਭਾਅ ਦੀ ਉਡੀਕ ਕਰਨੀ ਹੈ।';
+      case 'gu': return 'અમારું પ્લેટફોર્મ માત્ર પાકની યાદી બનાવતું નથી. અમે બજાર ભાવની આગાહી કરીએ છીએ જેથી તમે નક્કી કરી શકો કે આજે વેચવું કે સારા ભાવ માટે રાહ જોવી.';
+      default: return "Our platform doesn't just list your crops. We predict market prices so you know whether to sell today or wait for a better price.";
+    }
+  };
+
+  const getButtonText = () => {
+    switch (currentLocale) {
+      case 'hi': return 'जानें हम कैसे अलग हैं';
+      case 'mr': return 'आम्ही कसे वेगळे आहोत ते पहा';
+      default: return "See how we're different";
+    }
+  };
+
+  const getCardData = () => {
+    switch (currentLocale) {
+      case 'hi':
+        return {
+          market: 'नासिक एपीएमसी',
+          liveForecast: 'लाइव पूर्वानुमान',
+          currentPrice: 'मौजूदा भाव',
+          forecast7d: '7-दिवसीय पूर्वानुमान',
+          recommendedLabel: 'अनुशंसित कदम',
+          recommendedAction: '7 दिन रुकें',
+          potentialValue: '+₹6,500 संभावित अतिरिक्त लाभ',
+          statusPill: 'एआई बाजार विश्लेषण सक्रिय',
+          unit: '/किग्रा'
+        };
+      case 'mr':
+        return {
+          market: 'नाशिक एपीएमसी',
+          liveForecast: 'थेट अंदाज',
+          currentPrice: 'सध्याचा भाव',
+          forecast7d: '७ दिवसांचा अंदाज',
+          recommendedLabel: 'शिफारस केलेली कृती',
+          recommendedAction: '७ दिवस थांबा',
+          potentialValue: '+₹६,५०० संभाव्य अतिरिक्त नफा',
+          statusPill: 'एआय बाजार विश्लेषण सक्रिय',
+          unit: '/किलो'
+        };
+      default:
+        return {
+          market: 'Nashik APMC',
+          liveForecast: 'Live Forecast',
+          currentPrice: 'Current price',
+          forecast7d: '7-day forecast',
+          recommendedLabel: 'Recommended Action',
+          recommendedAction: 'Wait 7 days',
+          potentialValue: '+₹6,500 potential value',
+          statusPill: 'AI Market Analysis Active',
+          unit: '/kg'
+        };
+    }
+  };
+
+  const card = getCardData();
+
   return (
     <section className="w-full min-h-[100dvh] snap-start flex flex-col justify-center items-center bg-[#04130c] relative px-6 py-20 overflow-hidden">
       
@@ -16,18 +93,18 @@ export function Slide5Intelligence() {
         {/* Left: Text Content */}
         <div className="text-center lg:text-left max-w-lg w-full">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight leading-tight">
-            Know exactly when to sell.
+            {getTitle()}
           </h2>
           <div className="w-16 h-1 bg-amber-400 mt-6 mx-auto lg:mx-0 rounded-full" />
           <p className="mt-6 text-emerald-100/70 text-lg leading-relaxed mb-8">
-            Our platform doesn't just list your crops. We predict market prices so you know whether to sell today or wait for a better price.
+            {getSubtitle()}
           </p>
           
           <Link 
             href="/platform" 
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-emerald-700/60 text-emerald-300 hover:text-white hover:bg-emerald-900/40 hover:border-emerald-500 transition-all text-sm font-bold tracking-wide uppercase"
           >
-            <span>See how we're different</span>
+            <span>{getButtonText()}</span>
             <ArrowRight size={16} />
           </Link>
         </div>
@@ -42,35 +119,35 @@ export function Slide5Intelligence() {
 
             {/* Header */}
             <div className="flex items-center justify-between mb-8 relative z-10">
-              <span className="text-white font-display font-bold text-xl tracking-wide">Nashik APMC</span>
+              <span className="text-white font-display font-bold text-xl tracking-wide">{card.market}</span>
               <span className="px-3 py-1 bg-emerald-950 border border-emerald-700 rounded-full text-[10px] text-emerald-400 font-mono font-bold tracking-widest uppercase flex items-center gap-1.5">
                 <Activity size={12} />
-                Live Forecast
+                {card.liveForecast}
               </span>
             </div>
 
             {/* Price Data */}
             <div className="space-y-6 relative z-10">
               <div className="flex justify-between items-end border-b border-emerald-800/40 pb-4">
-                <span className="text-emerald-100/60 text-sm">Current price</span>
-                <span className="text-white text-2xl font-bold font-mono">₹25.50<span className="text-sm font-normal text-emerald-100/50">/kg</span></span>
+                <span className="text-emerald-100/60 text-sm">{card.currentPrice}</span>
+                <span className="text-white text-2xl font-bold font-mono">₹25.50<span className="text-sm font-normal text-emerald-100/50">{card.unit}</span></span>
               </div>
               
               <div className="flex justify-between items-end">
-                <span className="text-emerald-100/60 text-sm">7-day forecast</span>
+                <span className="text-emerald-100/60 text-sm">{card.forecast7d}</span>
                 <span className="text-amber-400 text-2xl font-bold font-mono flex items-center gap-2">
                   <TrendingUp size={20} className="text-amber-400" />
-                  ₹27.20<span className="text-sm font-normal text-amber-400/50">/kg</span>
+                  ₹27.20<span className="text-sm font-normal text-amber-400/50">{card.unit}</span>
                 </span>
               </div>
             </div>
 
             {/* Recommendation Box */}
             <div className="mt-8 bg-amber-400/10 border border-amber-400/20 p-5 rounded-2xl relative z-10">
-              <div className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-1">Recommended Action</div>
-              <div className="text-white font-display font-bold text-xl mb-2">Wait 7 days</div>
+              <div className="text-amber-400 text-xs font-bold uppercase tracking-widest mb-1">{card.recommendedLabel}</div>
+              <div className="text-white font-display font-bold text-xl mb-2">{card.recommendedAction}</div>
               <div className="text-emerald-400 font-mono font-bold text-sm bg-emerald-950/50 inline-block px-2.5 py-1 rounded-md border border-emerald-800/50">
-                +₹6,500 potential value
+                {card.potentialValue}
               </div>
             </div>
 
@@ -79,7 +156,7 @@ export function Slide5Intelligence() {
           {/* Floating decorative element */}
           <div className="absolute -bottom-5 left-2 sm:-bottom-6 sm:-left-6 bg-[#04130c] border border-emerald-800/60 p-3 sm:p-4 rounded-2xl shadow-xl flex items-center gap-2.5 sm:gap-3">
              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-             <span className="text-[11px] sm:text-xs font-bold text-emerald-100 tracking-wide">AI Market Analysis Active</span>
+             <span className="text-[11px] sm:text-xs font-bold text-emerald-100 tracking-wide">{card.statusPill}</span>
           </div>
 
         </div>

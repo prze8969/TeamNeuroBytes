@@ -87,10 +87,10 @@ export function MinimalMetaMaskHero() {
           {/* Mobile Auth Buttons */}
           <div className="flex sm:hidden flex-col gap-3 mt-8 w-full items-end">
             <Link href="/register" className="w-full max-w-[280px] text-center py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-transform">
-              Get Started
+              {currentLocale === 'hi' ? 'शुरू करें' : currentLocale === 'mr' ? 'सुरू करा' : currentLocale === 'pa' ? 'ਸ਼ੁਰੂ ਕਰੋ' : currentLocale === 'gu' ? 'શરૂ કરો' : currentLocale === 'ta' ? 'தொடங்குங்கள்' : currentLocale === 'te' ? 'ప్రారంభించండి' : currentLocale === 'kn' ? 'ಪ್ರಾರಂಭಿಸಿ' : 'Get Started'}
             </Link>
             <Link href="/login" className="w-full max-w-[280px] text-center py-3.5 rounded-xl bg-white/10 border border-white/20 text-white font-bold text-lg backdrop-blur-md hover:bg-white/20 active:scale-[0.98] transition-all">
-              Sign In
+              {currentLocale === 'hi' ? 'साइन इन करें' : currentLocale === 'mr' ? 'साइन इन करा' : currentLocale === 'pa' ? 'ਸਾਈਨ ਇਨ ਕਰੋ' : currentLocale === 'gu' ? 'સાઇન ઇન કરો' : currentLocale === 'ta' ? 'உள்நுழைய' : currentLocale === 'te' ? 'సైన్ ఇన్ చేయండి' : currentLocale === 'kn' ? 'ಸೈನ್ ಇನ್ ಮಾಡಿ' : 'Sign In'}
             </Link>
           </div>
         </div>

@@ -3,9 +3,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Palette, Check, Sparkles, ChevronDown, Trees, Landmark, Cpu } from 'lucide-react';
 import { useAppTheme, ColorTheme, THEME_CONFIGS, ThemeConfig } from '@/lib/ThemeContext';
+import { useLocaleContext } from '@/lib/LocaleContext';
 
 export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating' }) {
   const { theme, setTheme, config } = useAppTheme();
+  const { currentLocale } = useLocaleContext();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -85,7 +87,9 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
         title="Switch Visual Color Theme"
       >
         <Palette size={14} className="text-amber-300" />
-        <span className="hidden sm:inline font-mono text-[10px] uppercase tracking-wider text-amber-200">Theme:</span>
+        <span className="hidden sm:inline font-mono text-[10px] uppercase tracking-wider text-amber-200">
+          {currentLocale === 'hi' ? 'थीम:' : currentLocale === 'mr' ? 'थीम:' : 'Theme:'}
+        </span>
         <span className="font-bold">{config.shortName}</span>
         <ChevronDown size={12} className={`transition-transform duration-200 opacity-70 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -95,10 +99,12 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
           <div className="px-2 pb-2 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-amber-400" />
-              <span className="text-xs font-black uppercase tracking-wider text-slate-200">Choose Aesthetic Theme</span>
+              <span className="text-xs font-black uppercase tracking-wider text-slate-200">
+                {currentLocale === 'hi' ? 'थीम चुनें' : currentLocale === 'mr' ? 'थीम निवडा' : 'Choose Aesthetic Theme'}
+              </span>
             </div>
             <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
-              {allThemes.length} Curated Themes
+              {currentLocale === 'hi' ? `${allThemes.length} थीम उपलब्ध` : currentLocale === 'mr' ? `${allThemes.length} थीम उपलब्ध` : `${allThemes.length} Curated Themes`}
             </span>
           </div>
 
@@ -108,7 +114,9 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 px-1">
                 <Trees size={12} />
-                <span>Natural, Farm &amp; Earthy (Non-AI)</span>
+                <span>
+                  {currentLocale === 'hi' ? 'प्राकृतिक एवं ग्रामीण' : currentLocale === 'mr' ? 'नैसर्गिक आणि ग्रामीण' : 'Natural, Farm & Earthy (Non-AI)'}
+                </span>
               </div>
               <div className="space-y-1.5">
                 {naturalThemes.map(renderThemeButton)}
@@ -119,7 +127,9 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 px-1">
                 <Landmark size={12} />
-                <span>Institutional Banking &amp; DPI</span>
+                <span>
+                  {currentLocale === 'hi' ? 'संस्थागत बैंकिंग एवं डीपीआई' : currentLocale === 'mr' ? 'संस्थात्मक बँकिंग आणि डीपीआय' : 'Institutional Banking & DPI'}
+                </span>
               </div>
               <div className="space-y-1.5">
                 {institutionalThemes.map(renderThemeButton)}
@@ -130,7 +140,9 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400 px-1">
                 <Cpu size={12} />
-                <span>Tech &amp; Dark</span>
+                <span>
+                  {currentLocale === 'hi' ? 'तकनीकी एवं डार्क' : currentLocale === 'mr' ? 'तांत्रिक आणि डार्क' : 'Tech & Dark'}
+                </span>
               </div>
               <div className="space-y-1.5">
                 {techThemes.map(renderThemeButton)}
