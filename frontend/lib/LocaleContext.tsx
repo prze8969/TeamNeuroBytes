@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useTransition } from 'react';
 import { Globe } from 'lucide-react';
 import { Locale, locales, localeNames } from '@/i18n/routing';
 import enMessages from '@/messages/en.json';
@@ -369,6 +369,7 @@ export function LocaleProvider({
   initialLocale?: Locale;
 }) {
   const [currentLocale, setCurrentLocaleState] = useState<Locale>(initialLocale);
+  const [isPending, startTransition] = useTransition();
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [targetLocaleName, setTargetLocaleName] = useState<string>('');
 
@@ -389,19 +390,20 @@ export function LocaleProvider({
     setTargetLocaleName(targetInfo?.native || newLocale);
     setIsTransitioning(true);
 
-    // Phase 1: Gracefully fade out and soften DOM (120ms)
-    setTimeout(() => {
-      setCurrentLocaleState(newLocale);
-      try {
-        localStorage.setItem('kisansetu_locale', newLocale);
-        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-      } catch {}
+    try {
+      localStorage.setItem('kisansetu_locale', newLocale);
+      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    } catch {}
 
-      // Phase 2: Fade back in with newly rendered language (180ms)
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 180);
-    }, 120);
+    // Concurrent non-blocking transition: instant update without screen flicker or whitening
+    startTransition(() => {
+      setCurrentLocaleState(newLocale);
+    });
+
+    // Auto-dismiss top indicator and toast smoothly
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 450);
   };
 
   const messages = allMessages[currentLocale] || allMessages.en;
@@ -475,39 +477,33 @@ export function LocaleProvider({
     }
   };
 
+  const activeTransition = isTransitioning || isPending;
+
   return (
-    <LocaleContext.Provider value={{ currentLocale, setLocale, messages, t, tCrop, tNum, isTransitioning }}>
+    <LocaleContext.Provider value={{ currentLocale, setLocale, messages, t, tCrop, tNum, isTransitioning: activeTransition }}>
       {/* 1. Sleek Top Progress Glow Bar during Language Switch */}
       <div 
-        className={`fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-amber-400 via-yellow-300 to-emerald-400 z-[99999] shadow-[0_0_15px_rgba(251,191,36,0.9)] pointer-events-none transition-all duration-300 ${
-          isTransitioning ? 'opacity-100 w-full animate-pulse' : 'opacity-0 w-0'
+        className={`fixed top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-emerald-400 via-amber-400 to-emerald-400 z-[99999] shadow-[0_0_15px_rgba(52,211,153,0.9)] pointer-events-none transition-all duration-300 ${
+          activeTransition ? 'opacity-100 w-full' : 'opacity-0 w-0'
         }`} 
       />
 
       {/* 2. Floating Subtle Notification Toast */}
       <div 
         className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] pointer-events-none transition-all duration-300 ease-out transform ${
-          isTransitioning 
+          activeTransition 
             ? 'opacity-100 translate-y-0 scale-100' 
-            : 'opacity-0 translate-y-4 scale-95'
+            : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
         }`}
       >
-        <div className="bg-slate-950/95 border border-amber-400/60 text-amber-200 text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.7)] backdrop-blur-2xl flex items-center gap-2.5">
-          <Globe size={15} className="text-amber-400 animate-spin" style={{ animationDuration: '1.2s' }} />
+        <div className="bg-[#04130c]/95 border border-emerald-500/40 text-emerald-200 text-xs sm:text-sm font-semibold px-4 py-2 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.8)] backdrop-blur-2xl flex items-center gap-2.5">
+          <Globe size={15} className="text-emerald-400 animate-spin" style={{ animationDuration: '1s' }} />
           <span>{getSwitchNotificationText()}</span>
         </div>
       </div>
 
-      {/* 3. Global Silky Smooth Crossfade Container */}
-      <div 
-        className={`w-full transition-all duration-300 ease-in-out ${
-          isTransitioning 
-            ? 'opacity-65 scale-[0.998] filter blur-[0.75px]' 
-            : 'opacity-100 scale-100 filter blur-0'
-        }`}
-      >
-        {children}
-      </div>
+      {/* 3. Direct Seamless Render - zero opacity dipping, zero white flashing */}
+      {children}
     </LocaleContext.Provider>
   );
 }

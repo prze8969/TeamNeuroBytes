@@ -100,7 +100,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-600 selection:text-white font-sans">
+      <body className="min-h-full flex flex-col bg-[#04130c] text-slate-100 selection:bg-emerald-600 selection:text-white font-sans">
         <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
         <ThemeProvider>
           <AuthProvider>
