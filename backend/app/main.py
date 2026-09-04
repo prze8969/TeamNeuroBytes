@@ -1,26 +1,26 @@
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.db.engine import create_db_and_tables, get_session
 from app.services.apmc_data import AgmarknetSyncService
-
-# Import all API Routers
-from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo, payment
-
-logger = logging.getLogger(__name__)
-
+from app.services.crop_grading_service import CropGradingService
+from app.services.onnx_service import ONNXInferenceService
 from app.core.ml_models.crop_quality_predictor import crop_quality_predictor
+from app.routers import auth, marketplace, whatsapp, ai_grading, decision, escrow, buyer, transporter, fpo, payment, inference, crop_grading, smart_grading
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 async def scheduled_agmarknet_sync_loop():
     """
     Background worker that runs on startup and every 6 hours
-    to pull live mandi rates from Data.gov.in AGMARKNET feed into the database.
+    to pull live mandi rates from AGMARKNET feed into the database.
     """
-    await asyncio.sleep(3) # Allow DB engine to finish initialization
+    await asyncio.sleep(3)  # Allow DB engine to finish initialization
     while True:
         try:
             logger.info("⏰ Executing scheduled AGMARKNET price sync worker...")
@@ -28,49 +28,71 @@ async def scheduled_agmarknet_sync_loop():
             AgmarknetSyncService.sync_all_active_commodities(session)
         except Exception as e:
             logger.warning(f"Background AGMARKNET sync worker caught error: {e}")
-        
-        # Sleep for 6 hours (21,600 seconds)
+
+        # Sleep for 6 hours
         await asyncio.sleep(6 * 3600)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize SQLModel DB and auto-seed initial demo dataset
+    """
+    FastAPI Lifespan Context Manager:
+    Initializes database tables, pre-loads the ONNX CropGradingService into app.state,
+    and manages background service threads.
+    """
+    # 1. Initialize SQLModel Database & Tables
     create_db_and_tables()
 
-    # Pre-load High-Accuracy DINOv2 Crop Quality Grading Model onto GPU
+    # 2. Pre-load DINOv2 Crop Model & ONNX Crop AI Inference Engine (CUDA / CPU)
     try:
         crop_quality_predictor.load_model()
     except Exception as e:
-        print(f"[WARN] Could not pre-load DINOv2 crop model on startup: {e}")
+        logger.warning(f"Could not pre-load PyTorch DINOv2 crop model on startup: {e}")
 
-    # Spawn background recurring 6-hour AGMARKNET sync worker
+    try:
+        grading_service = CropGradingService()
+        app.state.crop_grading_service = grading_service
+        app.state.onnx_service = grading_service
+        logger.info("🚀 DINOv2 + CORAL CropGradingService pre-loaded successfully into app.state.")
+    except Exception as e:
+        logger.warning(f"Could not pre-load CropGradingService on startup: {e}")
+
+    # 3. Start recurring 6-hour AGMARKNET sync worker
     sync_task = asyncio.create_task(scheduled_agmarknet_sync_loop())
+    
     yield
+    
+    # Clean up background tasks on shutdown
     sync_task.cancel()
 
 app = FastAPI(
-    title="KisanSetu & AgMarknet Core API",
+    title="KisanSetu Agricultural Market Linkage & Quality Grading API",
     description=(
-        "Production-ready backend for Smart India Hackathon (SIH Problem Statement 26132: "
-        "'Strengthening market linkages and price discovery for farmers'). "
-        "Orchestrates DINOv2 + CORAL AI Crop Grading, Geospatial Freight Pooling, Price Intelligence, "
-        "WhatsApp Business Conversational Bot, Milestone Escrow Rails, and Buyer Institutional KYC."
+        "Production-ready FastAPI backend integrating Meta DINOv2 ONNX Ordinal Inference, "
+        "YOLOv8 Quality Grading, Price Intelligence, WhatsApp Bot, and Escrow Financial Rails."
     ),
     version="2.0.0",
     lifespan=lifespan
 )
 
-# CORS Configuration for Next.js web dashboards & local testing
+# Configure CORS Middleware for Frontend Clients (React/Next.js on localhost:3000 & localhost:5173)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS if isinstance(settings.BACKEND_CORS_ORIGINS, list) else [settings.BACKEND_CORS_ORIGINS],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ] if not getattr(settings, "BACKEND_CORS_ORIGINS", None) else settings.BACKEND_CORS_ORIGINS,
     allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Register Sub-Routers
+# Register API Routers
+app.include_router(smart_grading.router)
+app.include_router(crop_grading.router)
+app.include_router(inference.router)
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication & DigiLocker KYC"])
 app.include_router(buyer.router, prefix="/api/buyer", tags=["Buyer Institutional KYC & Onboarding"])
 app.include_router(marketplace.router, prefix="/api/marketplace", tags=["Crop Marketplace & Bidding"])
@@ -90,13 +112,5 @@ def root():
         "service": "KisanSetu Agricultural Market Linkage API",
         "version": "2.0.0",
         "docs_url": "/docs",
-        "modules": [
-            "Institutional Buyer e-KYC & GSTIN Verification",
-            "WhatsApp Farmer Conversational Bot",
-            "YOLOv8 AI Quality Grading",
-            "Geospatial Freight Pooling (PostGIS)",
-            "APMC Price Intelligence & Loss Estimation",
-            "Milestone Escrow Rails (4-digit OTP Handshake)",
-            "Automated 6-Hour AGMARKNET Live Feed Synchronization"
-        ]
+        "ml_engine": "DINOv2 ViT-B/14 + CORAL ONNX Runtime (CUDA/CPU)"
     }

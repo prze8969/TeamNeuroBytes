@@ -16,3 +16,6 @@ web3>=6.0.0
 eth-account>=0.8.0
 pycryptodome>=3.19.0
 razorpay>=1.4.1
+onnxruntime-gpu>=1.17.0
+opencv-python>=4.9.0
+scikit-image>=0.22.0

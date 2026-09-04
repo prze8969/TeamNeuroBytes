@@ -1,0 +1,11 @@
+sample_index,image_path,true_label,predicted_rank,continuous_score,min_boundary_distance,is_misclassified,prob_grade_A,prob_grade_B,prob_grade_C,prob_grade_D
+109,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\onion_Grade_B_0119_v2.jpg,1,1,1.2408,0.2592,False,0.3102,0.2927,0.2432,0.1539
+226,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\onion_Grade_B_0119_orig.jpg,1,1,1.2389,0.2611,False,0.3109,0.2928,0.2428,0.1535
+361,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\potato_Grade_B_0035_v3.jpg,1,1,1.2163,0.2837,False,0.3193,0.2937,0.2385,0.1485
+180,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\potato_Grade_B_0035_orig.jpg,1,1,1.2094,0.2906,False,0.3219,0.2939,0.2372,0.147
+215,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\tomato_Grade_B_0116_v3.jpg,1,1,1.1907,0.3093,False,0.3289,0.2944,0.2336,0.143
+244,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\banana_Grade_B_0063_orig.jpg,1,1,1.1794,0.3206,False,0.3333,0.2947,0.2314,0.1406
+78,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\banana_Grade_B_0090_v3.jpg,1,1,1.1777,0.3223,False,0.3339,0.2947,0.2311,0.1403
+41,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\banana_Grade_B_0063_v3.jpg,1,1,1.1772,0.3228,False,0.3341,0.2947,0.231,0.1402
+161,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_B\onion_Grade_B_0119_v3.jpg,1,1,1.1676,0.3324,False,0.3378,0.2949,0.2291,0.1382
+248,F:\Desktop\My stuff\vs code\TeamNeuroBytes\crop_quality_ai\data_augmented\Grade_C\potato_Grade_C_0132_v2.jpg,2,2,2.1602,0.3398,False,0.0826,0.1506,0.2908,0.476
