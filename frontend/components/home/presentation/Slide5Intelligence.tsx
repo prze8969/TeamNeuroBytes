@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { TrendingUp, ArrowRight, Activity } from 'lucide-react';
-import { useLocaleContext } from '@/lib/LocaleContext';
+import { useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 
 export function Slide5Intelligence() {
   const { currentLocale } = useLocaleContext();
@@ -46,10 +46,10 @@ export function Slide5Intelligence() {
           market: 'नासिक एपीएमसी',
           liveForecast: 'लाइव पूर्वानुमान',
           currentPrice: 'मौजूदा भाव',
-          forecast7d: '7-दिवसीय पूर्वानुमान',
+          forecast7d: `${toLocalizedDigits(7, 'hi')}-दिवसीय पूर्वानुमान`,
           recommendedLabel: 'अनुशंसित कदम',
-          recommendedAction: '7 दिन रुकें',
-          potentialValue: '+₹6,500 संभावित अतिरिक्त लाभ',
+          recommendedAction: `${toLocalizedDigits(7, 'hi')} दिन रुकें`,
+          potentialValue: `+₹${toLocalizedDigits('6,500', 'hi')} संभावित अतिरिक्त लाभ`,
           statusPill: 'एआई बाजार विश्लेषण सक्रिय',
           unit: '/किग्रा'
         };
@@ -58,12 +58,36 @@ export function Slide5Intelligence() {
           market: 'नाशिक एपीएमसी',
           liveForecast: 'थेट अंदाज',
           currentPrice: 'सध्याचा भाव',
-          forecast7d: '७ दिवसांचा अंदाज',
+          forecast7d: `${toLocalizedDigits(7, 'mr')} दिवसांचा अंदाज`,
           recommendedLabel: 'शिफारस केलेली कृती',
-          recommendedAction: '७ दिवस थांबा',
-          potentialValue: '+₹६,५०० संभाव्य अतिरिक्त नफा',
+          recommendedAction: `${toLocalizedDigits(7, 'mr')} दिवस थांबा`,
+          potentialValue: `+₹${toLocalizedDigits('6,५००', 'mr')} संभाव्य अतिरिक्त नफा`,
           statusPill: 'एआय बाजार विश्लेषण सक्रिय',
           unit: '/किलो'
+        };
+      case 'pa':
+        return {
+          market: 'ਨਾਸਿਕ ਏਪੀਐਮਸੀ',
+          liveForecast: 'ਲਾਈਵ ਅਨੁਮਾਨ',
+          currentPrice: 'ਮੌਜੂਦਾ ਭਾਅ',
+          forecast7d: `${toLocalizedDigits(7, 'pa')}-ਦਿਨਾਂ ਦਾ ਅਨੁਮਾਨ`,
+          recommendedLabel: 'ਸਿਫਾਰਸ਼ੀ ਕਦਮ',
+          recommendedAction: `${toLocalizedDigits(7, 'pa')} ਦਿਨ ਉਡੀਕੋ`,
+          potentialValue: `+₹${toLocalizedDigits('6,500', 'pa')} ਸੰਭਾਵੀ ਵਾਧੂ ਲਾਭ`,
+          statusPill: 'ਏਆਈ ਮਾਰਕੀਟ ਵਿਸ਼ਲੇਸ਼ਣ ਸਰਗਰਮ',
+          unit: '/ਕਿਲੋ'
+        };
+      case 'gu':
+        return {
+          market: 'નાસિક એપીએમસી',
+          liveForecast: 'લાઇવ આગાહી',
+          currentPrice: 'વર્તમાન ભાવ',
+          forecast7d: `${toLocalizedDigits(7, 'gu')} દિવસની આગાહી`,
+          recommendedLabel: 'ભલામણ કરેલ પગલું',
+          recommendedAction: `${toLocalizedDigits(7, 'gu')} દિવસ રાહ જુઓ`,
+          potentialValue: `+₹${toLocalizedDigits('6,500', 'gu')} સંભવિત વધારાનો નફો`,
+          statusPill: 'એઆઈ બજાર વિશ્લેષણ સક્રિય',
+          unit: '/કિલો'
         };
       default:
         return {
@@ -81,6 +105,8 @@ export function Slide5Intelligence() {
   };
 
   const card = getCardData();
+  const currentPriceVal = toLocalizedDigits('25.50', currentLocale);
+  const forecastPriceVal = toLocalizedDigits('27.20', currentLocale);
 
   return (
     <section className="w-full min-h-[100dvh] snap-start flex flex-col justify-center items-center bg-[#04130c] relative px-6 py-20 overflow-hidden">
@@ -130,14 +156,14 @@ export function Slide5Intelligence() {
             <div className="space-y-6 relative z-10">
               <div className="flex justify-between items-end border-b border-emerald-800/40 pb-4">
                 <span className="text-emerald-100/60 text-sm">{card.currentPrice}</span>
-                <span className="text-white text-2xl font-bold font-mono">₹25.50<span className="text-sm font-normal text-emerald-100/50">{card.unit}</span></span>
+                <span className="text-white text-2xl font-bold font-mono">₹{currentPriceVal}<span className="text-sm font-normal text-emerald-100/50">{card.unit}</span></span>
               </div>
               
               <div className="flex justify-between items-end">
                 <span className="text-emerald-100/60 text-sm">{card.forecast7d}</span>
                 <span className="text-amber-400 text-2xl font-bold font-mono flex items-center gap-2">
                   <TrendingUp size={20} className="text-amber-400" />
-                  ₹27.20<span className="text-sm font-normal text-amber-400/50">{card.unit}</span>
+                  ₹{forecastPriceVal}<span className="text-sm font-normal text-amber-400/50">{card.unit}</span>
                 </span>
               </div>
             </div>

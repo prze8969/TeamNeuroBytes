@@ -323,12 +323,30 @@ export const cropTranslations: Record<Locale, Record<string, string>> = {
   },
 };
 
+export const DIGIT_MAPS: Record<string, string[]> = {
+  hi: ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'],
+  mr: ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'],
+  pa: ['੦', '੧', '੨', '੩', '੪', '੫', '੬', '੭', '੮', '੯'],
+  gu: ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯'],
+  ta: ['௦', '௧', '௨', '௩', '௪', '௫', '௬', '௭', '௮', '௯'],
+  te: ['౦', '౧', '౨', '౩', '౪', '౫', '౬', '౭', '౮', '౯'],
+  kn: ['೦', '೧', '೨', '೩', '೪', '೫', '೬', '೭', '೮', '೯'],
+};
+
+export function toLocalizedDigits(input: string | number, locale: string): string {
+  if (input === null || input === undefined) return '';
+  const digits = DIGIT_MAPS[locale];
+  if (!digits) return String(input);
+  return String(input).replace(/[0-9]/g, (d) => digits[parseInt(d, 10)]);
+}
+
 interface LocaleContextValue {
   currentLocale: Locale;
   setLocale: (locale: Locale) => void;
   messages: any;
   t: (key: string, namespace?: string) => string;
   tCrop: (cropName: string) => string;
+  tNum: (val: string | number) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue>({
@@ -337,6 +355,7 @@ const LocaleContext = createContext<LocaleContextValue>({
   messages: enMessages,
   t: (key: string) => key,
   tCrop: (cropName: string) => cropName,
+  tNum: (val: string | number) => String(val),
 });
 
 export function LocaleProvider({
@@ -422,8 +441,10 @@ export function LocaleProvider({
     return translated;
   };
 
+  const tNum = (val: string | number) => toLocalizedDigits(val, currentLocale);
+
   return (
-    <LocaleContext.Provider value={{ currentLocale, setLocale, messages, t, tCrop }}>
+    <LocaleContext.Provider value={{ currentLocale, setLocale, messages, t, tCrop, tNum }}>
       {children}
     </LocaleContext.Provider>
   );
@@ -441,5 +462,10 @@ export function useTranslations(namespace?: string) {
 export function useCropTranslation() {
   const { tCrop } = useLocaleContext();
   return tCrop;
+}
+
+export function useLocalizedNumber() {
+  const { tNum } = useLocaleContext();
+  return tNum;
 }
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { useLocaleContext } from '@/lib/LocaleContext';
+import { useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 
 export interface KrishiNitiLogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -17,22 +17,22 @@ const BRAND_MAP: Record<string, { first: string; second: string; tagline: string
   hi: {
     first: 'कृषि',
     second: 'नीति',
-    tagline: 'गारंटीकृत मूल्य निर्धारण एवं एस्क्रो • SIH 2026',
+    tagline: 'गारंटीकृत मूल्य निर्धारण एवं एस्क्रो • SIH २०२६',
   },
   mr: {
     first: 'कृषी',
     second: 'नीती',
-    tagline: 'हमीभाव शोध आणि एस्क्रो • SIH 2026',
+    tagline: 'हमीभाव शोध आणि एस्क्रो • SIH २०२६',
   },
   pa: {
     first: 'ਕ੍ਰਿਸ਼ੀ',
     second: 'ਨੀਤੀ',
-    tagline: 'ਸਹੀ ਮੁੱਲ ਖੋਜ ਅਤੇ ਐਸਕਰੋ • SIH 2026',
+    tagline: 'ਸਹੀ ਮੁੱਲ ਖੋਜ ਅਤੇ ਐਸਕਰੋ • SIH ੨੦੨੬',
   },
   gu: {
     first: 'કૃષિ',
     second: 'નીતિ',
-    tagline: 'ખાતરીપૂર્વક ભાવ શોધ અને એસ્ક્રો • SIH 2026',
+    tagline: 'ખાતરીપૂર્વક ભાવ શોધ અને એસ્ક્રો • SIH ૨૦૨૬',
   },
   ta: {
     first: 'கிருஷி',
@@ -105,7 +105,7 @@ export function KrishiNitiLogo({
 
           {badge && (
             <span className={`rounded-full font-extrabold uppercase tracking-wide ${currentSize.badgeClass} bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 shadow-md shadow-amber-400/30 border border-amber-200`}>
-              {badge}
+              {toLocalizedDigits(badge, effectiveLocale)}
             </span>
           )}
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Smartphone, CheckCircle, Handshake, Truck, IndianRupee } from 'lucide-react';
-import { useLocaleContext } from '@/lib/LocaleContext';
+import { useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 
 export function Slide2HowItWorks() {
   const { currentLocale } = useLocaleContext();
@@ -111,7 +111,7 @@ export function Slide2HowItWorks() {
                   {step.icon}
                 </div>
                 <div className="absolute -top-2 -right-2 bg-amber-400 text-[#04130c] font-black font-mono text-[10px] md:text-xs px-2 py-0.5 rounded-full">
-                  {step.num}
+                  {toLocalizedDigits(step.num, currentLocale)}
                 </div>
               </div>
 
