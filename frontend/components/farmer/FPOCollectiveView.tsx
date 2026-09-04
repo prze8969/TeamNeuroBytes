@@ -25,7 +25,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { CropLot } from '@/lib/types';
 import { toast } from 'sonner';
-import { useCropTranslation } from '@/lib/LocaleContext';
+import { useCropTranslation, useLocaleContext, toLocalizedDigits } from '@/lib/LocaleContext';
 
 export interface FPOCollectiveViewProps {
   activeLots: CropLot[];
@@ -44,6 +44,7 @@ export function FPOCollectiveView({
   onUpdatePoolSelection,
   onNavigateToTab
 }: FPOCollectiveViewProps) {
+  const { currentLocale } = useLocaleContext();
   const tCrop = useCropTranslation();
   // Constant FPO Collective Details
   const FPO_NAME = "Nashik East Farmers Producer Company";
@@ -55,6 +56,19 @@ export function FPOCollectiveView({
   const SOLO_FREIGHT_PER_KG = 1.85;
   const POOLED_FREIGHT_PER_KG = 1.20;
   const FREIGHT_DISCOUNT_PCT = 35.1;
+
+  const fpoNameDisplay = useMemo(() => {
+    switch (currentLocale) {
+      case 'hi': return 'नासिक ईस्ट फार्मर्स प्रोड्यूसर कंपनी';
+      case 'mr': return 'नाशिक ईस्ट फार्मर्स प्रोड्युसर कंपनी';
+      case 'pa': return 'ਨਾਸਿਕ ਈਸਟ ਫਾਰਮਰਜ਼ ਪ੍ਰੋਡਿਊਸਰ ਕੰਪਨੀ';
+      case 'gu': return 'નાસિક ઈસ્ટ ફાર્મર્સ પ્રોડ્યુસર કંપની';
+      case 'ta': return 'நாசிக் ஈஸ்ட் விவசாயிகள் உற்பத்தியாளர் நிறுவனம்';
+      case 'te': return 'నాసిక్ ఈస్ట్ రైతుల ఉత్పత్తిదారుల సంస్థ';
+      case 'kn': return 'ನಾಸಿಕ್ ಈಸ್ಟ್ ರೈತರ ಉತ್ಪಾದಕರ ಕಂಪನಿ';
+      default: return FPO_NAME;
+    }
+  }, [currentLocale]);
 
   // Initialize selected lots from existing lot status or is_fpo_pooled / isPooled flag
   const [selectedLotIds, setSelectedLotIds] = useState<string[]>(() => {
@@ -265,13 +279,22 @@ export function FPOCollectiveView({
               </div>
               <div>
                 <h2 className="text-2xl font-black tracking-tight text-white mb-1">
-                  {FPO_NAME}
+                  {fpoNameDisplay}
                 </h2>
                 <div className="flex items-center gap-2 text-xs">
                   <span className="bg-purple-400/20 text-purple-200 border border-purple-400/30 px-2 py-0.5 rounded-md font-mono font-bold">
                     {FPO_CODE}
                   </span>
-                  <span className="text-emerald-300 font-bold">• {HUB_DISTANCE}</span>
+                  <span className="text-emerald-300 font-bold">
+                    • {currentLocale === 'hi' ? `आपके खेत से ${toLocalizedDigits(4.2, currentLocale)} किमी`
+                      : currentLocale === 'mr' ? `तुमच्या शेतापासून ${toLocalizedDigits(4.2, currentLocale)} किमी`
+                      : currentLocale === 'pa' ? `ਤੁਹਾਡੇ ਖੇਤ ਤੋਂ ${toLocalizedDigits(4.2, currentLocale)} ਕਿ.ਮੀ.`
+                      : currentLocale === 'gu' ? `તમારા ખેતરથી ${toLocalizedDigits(4.2, currentLocale)} કિમી`
+                      : currentLocale === 'ta' ? `உங்கள் பண்ணையிலிருந்து 4.2 கி.மீ`
+                      : currentLocale === 'te' ? `మీ పొలం నుండి 4.2 కి.மீ`
+                      : currentLocale === 'kn' ? `ನಿಮ್ಮ ತೋಟದಿಂದ 4.2 ಕಿ.ಮೀ`
+                      : HUB_DISTANCE}
+                  </span>
                 </div>
               </div>
             </div>
@@ -279,15 +302,29 @@ export function FPOCollectiveView({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-900/60 border border-emerald-500/40 text-emerald-300 text-xs font-bold font-mono">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                SFAC &amp; APMC Certified Milk-Run
+                {currentLocale === 'hi' ? 'एसएफएसी एवं एपीएमसी प्रमाणित मिल्क-रन'
+                  : currentLocale === 'mr' ? 'एसएफएसी आणि एपीएमसी प्रमाणित मिल्क-रन'
+                  : currentLocale === 'pa' ? 'ਐਸਐਫਏਸੀ ਅਤੇ ਏਪੀਐਮਸੀ ਪ੍ਰਮਾਣਿਤ ਮਿਲਕ-ਰਨ'
+                  : currentLocale === 'gu' ? 'એસએફએસી અને એપીએમસી પ્રમાણિત મિલ્ક-રન'
+                  : currentLocale === 'ta' ? 'எஸ்.எஃப்.ஏ.சி மற்றும் ஏ.பி.எம்.சி சான்றளிக்கப்பட்ட மில்க்-ரன்'
+                  : currentLocale === 'te' ? 'ఎస్‌ఎఫ్‌ఏసీ & ఏపీఎంసీ ధృవీకరించిన రవాణా'
+                  : currentLocale === 'kn' ? 'ಎಸ್‌ಎಫ್‌ಎಸಿ ಮತ್ತು ಎಪಿಎಂಸಿ ಪ್ರಮಾಣೀಕೃತ ಮಿಲ್ಕ್-ರನ್'
+                  : 'SFAC & APMC Certified Milk-Run'}
               </span>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsLeaveModalOpen(true)}
-                className="text-xs font-bold rounded-xl border-purple-700/60 bg-purple-950/50 text-purple-200 hover:bg-rose-950 hover:text-rose-200 hover:border-rose-700 transition-colors"
+                className="text-xs font-bold rounded-xl border-purple-700/60 bg-purple-950/50 text-purple-200 hover:bg-rose-950 hover:text-rose-200 hover:border-rose-700 transition-colors cursor-pointer"
               >
-                Leave Collective
+                {currentLocale === 'hi' ? 'कलेक्टिव छोड़ें'
+                  : currentLocale === 'mr' ? 'समुदाय सोडा'
+                  : currentLocale === 'pa' ? 'ਸਮੂਹ ਛੱਡੋ'
+                  : currentLocale === 'gu' ? 'સામૂહિકમાંથી બહાર નીકળો'
+                  : currentLocale === 'ta' ? 'கூட்டிலிருந்து வெளியேறு'
+                  : currentLocale === 'te' ? 'ఉమ్మడి సమూహం నుండి నిష్క్రమించండి'
+                  : currentLocale === 'kn' ? 'ಸಾಮೂಹಿಕದಿಂದ ನಿರ್ಗಮಿಸಿ'
+                  : 'Leave Collective'}
               </Button>
             </div>
           </div>
@@ -298,24 +335,43 @@ export function FPOCollectiveView({
             {/* Metric 1: Milk-Run Target */}
             <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs">
               <span className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <Truck size={16} /> Active Dispatch
+                <Truck size={16} /> {currentLocale === 'hi' ? 'सक्रिय प्रेषण' : currentLocale === 'mr' ? 'सक्रिय वाहतूक' : currentLocale === 'pa' ? 'ਸਰਗਰਮ ਡਿਸਪੈਚ' : 'Active Dispatch'}
               </span>
               <p className="text-3xl font-black text-white">
-                45-Ton Carrier
+                {currentLocale === 'hi' ? `${toLocalizedDigits(45, currentLocale)}-टन मालवाहक`
+                  : currentLocale === 'mr' ? `${toLocalizedDigits(45, currentLocale)}-टन वाहक`
+                  : currentLocale === 'pa' ? `${toLocalizedDigits(45, currentLocale)}-ਟਨ ਵਾਹਕ`
+                  : '45-Ton Carrier'}
               </p>
-              <p className="text-emerald-400 font-bold mt-2">Departs in 4h 30m</p>
+              <p className="text-emerald-400 font-bold mt-2">
+                {currentLocale === 'hi' ? `प्रस्थान: ${toLocalizedDigits(4, currentLocale)} घंटे ${toLocalizedDigits(30, currentLocale)} मिनट में`
+                  : currentLocale === 'mr' ? `निघणार: ${toLocalizedDigits(4, currentLocale)} तास ${toLocalizedDigits(30, currentLocale)} मिनिटांत`
+                  : currentLocale === 'pa' ? `ਰਵਾਨਾ: ${toLocalizedDigits(4, currentLocale)} ਘੰਟੇ ${toLocalizedDigits(30, currentLocale)} ਮਿੰਟ ਵਿੱਚ`
+                  : 'Departs in 4h 30m'}
+              </p>
             </div>
 
             {/* Metric 2: Participating Farmers */}
             <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs">
               <span className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                <Users size={16} /> Enrollment
+                <Users size={16} /> {currentLocale === 'hi' ? 'नामांकन' : currentLocale === 'mr' ? 'नोंदणी' : currentLocale === 'pa' ? 'ਦਾਖਲਾ' : 'Enrollment'}
               </span>
               <p className="text-3xl font-black text-white">
-                15 Farmers
+                {currentLocale === 'hi' ? `${toLocalizedDigits(15, currentLocale)} किसान`
+                  : currentLocale === 'mr' ? `${toLocalizedDigits(15, currentLocale)} शेतकरी`
+                  : currentLocale === 'pa' ? `${toLocalizedDigits(15, currentLocale)} ਕਿਸਾਨ`
+                  : '15 Farmers'}
               </p>
               <p className="text-purple-200 font-bold mt-2">
-                {selectedLotIds.length > 0 ? `✓ Your ${selectedLotIds.length} lots included` : 'Select lots to join'}
+                {selectedLotIds.length > 0
+                  ? (currentLocale === 'hi' ? `✓ आपके ${toLocalizedDigits(selectedLotIds.length, currentLocale)} लॉट शामिल हैं`
+                    : currentLocale === 'mr' ? `✓ तुमचे ${toLocalizedDigits(selectedLotIds.length, currentLocale)} लॉट्स समाविष्ट`
+                    : currentLocale === 'pa' ? `✓ ਤੁਹਾਡੇ ${toLocalizedDigits(selectedLotIds.length, currentLocale)} ਲਾਟ ਸ਼ਾਮਲ`
+                    : `✓ Your ${selectedLotIds.length} lots included`)
+                  : (currentLocale === 'hi' ? 'जुड़ने के लिए लॉट चुनें'
+                    : currentLocale === 'mr' ? 'सामील होण्यासाठी लॉट निवडा'
+                    : currentLocale === 'pa' ? 'ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਲਾਟ ਚੁਣੋ'
+                    : 'Select lots to join')}
               </p>
             </div>
 
@@ -323,10 +379,10 @@ export function FPOCollectiveView({
             <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs lg:col-span-1 md:col-span-2">
               <div className="flex items-center justify-between text-xs mb-3">
                 <span className="text-purple-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                  <Boxes size={16} /> Capacity
+                  <Boxes size={16} /> {currentLocale === 'hi' ? 'क्षमता' : currentLocale === 'mr' ? 'क्षमता' : currentLocale === 'pa' ? 'ਸਮਰੱਥਾ' : 'Capacity'}
                 </span>
                 <span className="text-emerald-400 font-black font-mono text-lg">
-                  {actualCapacityPercent}% Full
+                  {toLocalizedDigits(actualCapacityPercent, currentLocale)}% {currentLocale === 'hi' ? 'भरी हुई' : currentLocale === 'mr' ? 'पूर्ण' : currentLocale === 'pa' ? 'ਭਰਿਆ' : 'Full'}
                 </span>
               </div>
               
@@ -345,9 +401,14 @@ export function FPOCollectiveView({
               </div>
 
               <div className="flex justify-between text-[11px] text-purple-200 font-bold">
-                <span>Total: {totalCombinedWeightMT.toFixed(1)} MT / 45.0 MT</span>
+                <span>
+                  {currentLocale === 'hi' ? `कुल: ${toLocalizedDigits(totalCombinedWeightMT.toFixed(1), currentLocale)} मी.टन / ${toLocalizedDigits(45.0, currentLocale)} मी.टन`
+                    : currentLocale === 'mr' ? `एकूण: ${toLocalizedDigits(totalCombinedWeightMT.toFixed(1), currentLocale)} मे.टन / ${toLocalizedDigits(45.0, currentLocale)} मे.टन`
+                    : currentLocale === 'pa' ? `ਕੁੱਲ: ${toLocalizedDigits(totalCombinedWeightMT.toFixed(1), currentLocale)} ਮੀ.ਟਨ / ${toLocalizedDigits(45.0, currentLocale)} ਮੀ.ਟਨ`
+                    : `Total: ${totalCombinedWeightMT.toFixed(1)} MT / 45.0 MT`}
+                </span>
                 {isOverflow && (
-                  <span className="text-rose-400">OVERFLOW</span>
+                  <span className="text-rose-400">{currentLocale === 'hi' ? 'अतिरिक्त भार' : currentLocale === 'mr' ? 'अतिरिक्त भार' : 'OVERFLOW'}</span>
                 )}
               </div>
             </div>
@@ -366,9 +427,9 @@ export function FPOCollectiveView({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div className="space-y-1">
             <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <span>🌾 Select Harvest Lots</span>
+              <span>🌾 {currentLocale === 'hi' ? 'फसल लॉट चुनें' : currentLocale === 'mr' ? 'पीक लॉट्स निवडा' : currentLocale === 'pa' ? 'ਫ਼ਸਲ ਲਾਟ ਚੁਣੋ' : 'Select Harvest Lots'}</span>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono">
-                {selectedLotIds.length} / {activeLots.length} Selected
+                {toLocalizedDigits(selectedLotIds.length, currentLocale)} / {toLocalizedDigits(activeLots.length, currentLocale)} {currentLocale === 'hi' ? 'चयनित' : currentLocale === 'mr' ? 'निवडलेले' : currentLocale === 'pa' ? 'ਚੁਣੇ ਗਏ' : 'Selected'}
               </span>
             </h3>
           </div>
@@ -385,7 +446,10 @@ export function FPOCollectiveView({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                All Lots ({activeLots.length})
+                {currentLocale === 'hi' ? `सभी लॉट (${toLocalizedDigits(activeLots.length, currentLocale)})`
+                  : currentLocale === 'mr' ? `सर्व लॉट्स (${toLocalizedDigits(activeLots.length, currentLocale)})`
+                  : currentLocale === 'pa' ? `ਸਾਰੇ ਲਾਟ (${toLocalizedDigits(activeLots.length, currentLocale)})`
+                  : `All Lots (${activeLots.length})`}
               </button>
               <button
                 type="button"
@@ -397,7 +461,7 @@ export function FPOCollectiveView({
                 }`}
               >
                 <Leaf size={12} className="text-emerald-600" />
-                Dry Grains
+                {currentLocale === 'hi' ? 'सूखे अनाज' : currentLocale === 'mr' ? 'सुके धान्य' : currentLocale === 'pa' ? 'ਸੁੱਕਾ ਅਨਾਜ' : 'Dry Grains'}
               </button>
               <button
                 type="button"
@@ -409,7 +473,7 @@ export function FPOCollectiveView({
                 }`}
               >
                 <Snowflake size={12} className="text-blue-600" />
-                Perishables
+                {currentLocale === 'hi' ? 'नाशवंत फसलें' : currentLocale === 'mr' ? 'नाशवंत पिके' : currentLocale === 'pa' ? 'ਨਾਸ਼ਵਾਨ' : 'Perishables'}
               </button>
             </div>
 
@@ -418,25 +482,25 @@ export function FPOCollectiveView({
                 variant="outline"
                 size="sm"
                 onClick={handleSelectDryOnly}
-                className="text-xs font-bold h-8 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50"
+                className="text-xs font-bold h-8 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
               >
-                🌿 Select All Grains
+                {currentLocale === 'hi' ? '🌿 सभी अनाज चुनें' : currentLocale === 'mr' ? '🌿 सर्व धान्य निवडा' : currentLocale === 'pa' ? '🌿 ਸਾਰੇ ਅਨਾਜ ਚੁਣੋ' : '🌿 Select All Grains'}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSelectAll}
-                className="text-xs font-bold h-8 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50"
+                className="text-xs font-bold h-8 rounded-xl border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
               >
-                Select All
+                {currentLocale === 'hi' ? 'सभी चुनें' : currentLocale === 'mr' ? 'सर्व निवडा' : currentLocale === 'pa' ? 'ਸਾਰੇ ਚੁਣੋ' : 'Select All'}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleClearAll}
-                className="text-xs font-bold h-8 rounded-xl text-slate-500 hover:text-rose-600"
+                className="text-xs font-bold h-8 rounded-xl text-slate-500 hover:text-rose-600 cursor-pointer"
               >
-                Clear
+                {currentLocale === 'hi' ? 'हटाएं' : currentLocale === 'mr' ? 'साफ करा' : currentLocale === 'pa' ? 'ਸਾਫ਼ ਕਰੋ' : 'Clear'}
               </Button>
             </div>
           </div>
@@ -517,10 +581,10 @@ export function FPOCollectiveView({
                     <div className="space-y-0.5 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black font-mono text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded">
-                          {lot.id}
+                          {toLocalizedDigits(lot.id, currentLocale)}
                         </span>
                         <span className="text-xs font-bold text-slate-500 font-mono">
-                          {lot.harvestDate}
+                          {toLocalizedDigits(lot.harvestDate || '', currentLocale)}
                         </span>
                       </div>
                       <h4 className="text-sm font-black text-slate-900 truncate">
@@ -538,14 +602,14 @@ export function FPOCollectiveView({
                     {/* Volume & Quality Grade */}
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                        Volume &amp; Grade
+                        {currentLocale === 'hi' ? 'मात्रा एवं ग्रेड' : currentLocale === 'mr' ? 'प्रमाण आणि दर्जा' : currentLocale === 'pa' ? 'ਮਾਤਰਾ ਅਤੇ ਗ੍ਰੇਡ' : 'Volume & Grade'}
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-black text-slate-900 font-mono">
-                          {lotTons} MT
+                          {toLocalizedDigits(lotTons, currentLocale)} {currentLocale === 'hi' ? 'मी.टन' : currentLocale === 'mr' ? 'मे.टन' : 'MT'}
                         </span>
                         <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-200">
-                          {lot.qualityGrade || 'Grade A'} ({lot.qualityScore || 95}%)
+                          {lot.qualityGrade || 'Grade A'} ({toLocalizedDigits(lot.qualityScore || 95, currentLocale)}%)
                         </span>
                       </div>
                     </div>
@@ -553,17 +617,17 @@ export function FPOCollectiveView({
                     {/* Logistics Profile Tag */}
                     <div className="space-y-0.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                        Logistics Profile
+                        {currentLocale === 'hi' ? 'लॉजिस्टिक्स प्रोफाइल' : currentLocale === 'mr' ? 'वाहतूक प्रोफाइल' : currentLocale === 'pa' ? 'ਲੌਜਿਸਟਿਕਸ ਪ੍ਰੋਫਾਈਲ' : 'Logistics Profile'}
                       </span>
                       {isDry ? (
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-lg border border-emerald-200">
                           <Leaf size={12} className="text-emerald-600" />
-                          🌿 Ideal for Bulk Dry Pool
+                          {currentLocale === 'hi' ? '🌿 थोक सूखा पूल के लिए उत्तम' : currentLocale === 'mr' ? '🌿 सुक्या धान्यासाठी उत्तम' : currentLocale === 'pa' ? '🌿 ਸੁੱਕੇ ਅਨਾਜ ਲਈ ਉੱਤਮ' : '🌿 Ideal for Bulk Dry Pool'}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-700 bg-blue-100/80 px-2.5 py-1 rounded-lg border border-blue-200">
                           <Snowflake size={12} className="text-blue-600" />
-                          ❄️ Perishable Sensitive
+                          {currentLocale === 'hi' ? '❄️ संवेदनशील नाशवंत' : currentLocale === 'mr' ? '❄️ संवेदनशील नाशवंत' : '❄️ Perishable Sensitive'}
                         </span>
                       )}
                     </div>
@@ -575,14 +639,17 @@ export function FPOCollectiveView({
                     
                     <div className="text-left lg:text-right space-y-0.5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">
-                        Freight Rate
+                        {currentLocale === 'hi' ? 'मालभाड़ा दर' : currentLocale === 'mr' ? 'वाहतूक दर' : currentLocale === 'pa' ? 'ਮਾਲ-ਭਾੜਾ ਦਰ' : 'Freight Rate'}
                       </span>
                       <div className="flex items-center lg:justify-end gap-2 text-xs font-mono">
-                        <span className="text-slate-400 line-through">₹{SOLO_FREIGHT_PER_KG.toFixed(2)}/kg</span>
-                        <strong className="text-emerald-700 font-bold">➔ ₹{POOLED_FREIGHT_PER_KG.toFixed(2)}/kg</strong>
+                        <span className="text-slate-400 line-through">₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/{currentLocale === 'hi' ? 'किग्रा' : currentLocale === 'mr' ? 'किलो' : 'kg'}</span>
+                        <strong className="text-emerald-700 font-bold">➔ ₹{toLocalizedDigits(POOLED_FREIGHT_PER_KG.toFixed(2), currentLocale)}/{currentLocale === 'hi' ? 'किग्रा' : currentLocale === 'mr' ? 'किलो' : 'kg'}</strong>
                       </div>
                       <p className="text-xs font-black text-emerald-600 font-mono">
-                        Save ₹{Math.round(lotSavings).toLocaleString('en-IN')} (-{FREIGHT_DISCOUNT_PCT}%)
+                        {currentLocale === 'hi' ? `बचत ₹${toLocalizedDigits(Math.round(lotSavings).toLocaleString('en-IN'), currentLocale)} (-${toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%)`
+                          : currentLocale === 'mr' ? `बचत ₹${toLocalizedDigits(Math.round(lotSavings).toLocaleString('en-IN'), currentLocale)} (-${toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%)`
+                          : currentLocale === 'pa' ? `ਬਚਤ ₹${toLocalizedDigits(Math.round(lotSavings).toLocaleString('en-IN'), currentLocale)} (-${toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%)`
+                          : `Save ₹${Math.round(lotSavings).toLocaleString('en-IN')} (-${FREIGHT_DISCOUNT_PCT}%)`}
                       </p>
                     </div>
 
@@ -591,12 +658,12 @@ export function FPOCollectiveView({
                       {isSelected ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 border border-purple-300 text-xs font-black shadow-2xs font-mono">
                           <Users size={13} className="text-purple-700" />
-                          👥 FPO Pooled
+                          {currentLocale === 'hi' ? '👥 एफपीओ पूल्ड' : currentLocale === 'mr' ? '👥 एकत्रित वाहतूक' : currentLocale === 'pa' ? '👥 ਐਫਪੀਓ ਪੂਲਡ' : '👥 FPO Pooled'}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-300 text-xs font-bold font-mono">
                           <Truck size={13} className="text-slate-500" />
-                          🚛 Solo Haul
+                          {currentLocale === 'hi' ? '🚛 एकल ढुलाई' : currentLocale === 'mr' ? '🚛 स्वतंत्र वाहतूक' : currentLocale === 'pa' ? '🚛 ਇਕੱਲਾ ਢੁਆਈ' : '🚛 Solo Haul'}
                         </span>
                       )}
                     </div>
@@ -624,48 +691,63 @@ export function FPOCollectiveView({
             {/* Metric 1: Selected Tonnage */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                Total Pooling Volume
+                {currentLocale === 'hi' ? 'कुल पूलिंग मात्रा' : currentLocale === 'mr' ? 'एकूण एकत्रित वजन' : currentLocale === 'pa' ? 'ਕੁੱਲ ਪੂਲਿੰਗ ਮਾਤਰਾ' : 'Total Pooling Volume'}
               </span>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-3xl font-black text-white font-mono">
-                  {selectedTonnage.toFixed(1)}
+                  {toLocalizedDigits(selectedTonnage.toFixed(1), currentLocale)}
                 </span>
-                <span className="text-sm font-bold text-emerald-200">Metric Tons</span>
+                <span className="text-sm font-bold text-emerald-200">
+                  {currentLocale === 'hi' ? 'मीट्रिक टन' : currentLocale === 'mr' ? 'मेट्रिक टन' : currentLocale === 'pa' ? 'ਮੀਟ੍ਰਿਕ ਟਨ' : 'Metric Tons'}
+                </span>
               </div>
               <p className="text-[11px] text-emerald-200/80 font-mono">
-                {selectedLotIds.length} Harvest Lots Enrolled
+                {currentLocale === 'hi' ? `${toLocalizedDigits(selectedLotIds.length, currentLocale)} फसल लॉट नामांकित`
+                  : currentLocale === 'mr' ? `${toLocalizedDigits(selectedLotIds.length, currentLocale)} पीक लॉट्स समाविष्ट`
+                  : currentLocale === 'pa' ? `${toLocalizedDigits(selectedLotIds.length, currentLocale)} ਫ਼ਸਲ ਲਾਟ ਸ਼ਾਮਲ`
+                  : `${selectedLotIds.length} Harvest Lots Enrolled`}
               </p>
             </div>
 
             {/* Metric 2: Net Freight Savings */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                Estimated Freight Savings
+                {currentLocale === 'hi' ? 'अनुमानित मालभाड़ा बचत' : currentLocale === 'mr' ? 'अंदाजे वाहतूक बचत' : currentLocale === 'pa' ? 'ਅੰਦਾਜ਼ਨ ਮਾਲ-ਭਾੜਾ ਬਚਤ' : 'Estimated Freight Savings'}
               </span>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black text-emerald-300 font-mono">
-                  ₹{Math.round(totalFreightSavings).toLocaleString('en-IN')}
+                  ₹{toLocalizedDigits(Math.round(totalFreightSavings).toLocaleString('en-IN'), currentLocale)}
                 </span>
                 <span className="text-xs font-black px-2 py-0.5 rounded-full bg-emerald-400 text-slate-950">
-                  -{FREIGHT_DISCOUNT_PCT}%
+                  -{toLocalizedDigits(FREIGHT_DISCOUNT_PCT, currentLocale)}%
                 </span>
               </div>
               <p className="text-[11px] text-emerald-200/80">
-                Solo: ₹{Math.round(soloTotalFreight).toLocaleString('en-IN')} ➔ Pooled: ₹{Math.round(pooledTotalFreight).toLocaleString('en-IN')}
+                {currentLocale === 'hi' ? `एकल: ₹${toLocalizedDigits(Math.round(soloTotalFreight).toLocaleString('en-IN'), currentLocale)} ➔ पूल्ड: ₹${toLocalizedDigits(Math.round(pooledTotalFreight).toLocaleString('en-IN'), currentLocale)}`
+                  : currentLocale === 'mr' ? `स्वतंत्र: ₹${toLocalizedDigits(Math.round(soloTotalFreight).toLocaleString('en-IN'), currentLocale)} ➔ एकत्रित: ₹${toLocalizedDigits(Math.round(pooledTotalFreight).toLocaleString('en-IN'), currentLocale)}`
+                  : `Solo: ₹${Math.round(soloTotalFreight).toLocaleString('en-IN')} ➔ Pooled: ₹${Math.round(pooledTotalFreight).toLocaleString('en-IN')}`}
               </p>
             </div>
 
             {/* Metric 3: Dispatch & Escrow Guarantee */}
             <div className="space-y-1">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
-                Dispatch Window &amp; Settlement
+                {currentLocale === 'hi' ? 'प्रेषण समय एवं भुगतान' : currentLocale === 'mr' ? 'वाहतूक वेळ आणि सेटलमेंट' : currentLocale === 'pa' ? 'ਡਿਸਪੈਚ ਸਮਾਂ ਅਤੇ ਭੁਗਤਾਨ' : 'Dispatch Window & Settlement'}
               </span>
               <div className="flex items-center gap-1.5 text-white font-bold text-sm">
                 <Clock size={16} className="text-emerald-400 shrink-0" />
-                <span>Departs in 4 hrs 30 mins</span>
+                <span>
+                  {currentLocale === 'hi' ? `प्रस्थान: ${toLocalizedDigits(4, currentLocale)} घंटे ${toLocalizedDigits(30, currentLocale)} मिनट में`
+                    : currentLocale === 'mr' ? `निघणार: ${toLocalizedDigits(4, currentLocale)} तास ${toLocalizedDigits(30, currentLocale)} मिनिटांत`
+                    : currentLocale === 'pa' ? `ਰਵਾਨਾ: ${toLocalizedDigits(4, currentLocale)} ਘੰਟੇ ${toLocalizedDigits(30, currentLocale)} ਮਿੰਟ ਵਿੱਚ`
+                    : 'Departs in 4 hrs 30 mins'}
+                </span>
               </div>
               <p className="text-[11px] text-emerald-200/80">
-                🛡️ Zero upfront cost • Deducted at Mandi Escrow weighbridge settlement
+                {currentLocale === 'hi' ? '🛡️ कोई अग्रिम शुल्क नहीं • मंडी एस्क्रो धर्मकांटा तौल पर कटौती'
+                  : currentLocale === 'mr' ? '🛡️ कोणताही आगाऊ खर्च नाही • मंडी एस्क्रो वजनकाट्यावर कपात'
+                  : currentLocale === 'pa' ? '🛡️ ਕੋਈ ਅਗਾਊਂ ਖਰਚਾ ਨਹੀਂ • ਮੰਡੀ ਐਸਕਰੋ ਤੋਲ ਸਮੇਂ ਕਟੌਤੀ'
+                  : '🛡️ Zero upfront cost • Deducted at Mandi Escrow weighbridge settlement'}
               </p>
             </div>
 
@@ -682,12 +764,17 @@ export function FPOCollectiveView({
               {isSaving ? (
                 <>
                   <span className="w-4 h-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
-                  <span>Syncing Collective...</span>
+                  <span>{currentLocale === 'hi' ? 'कलेक्टिव सिंक हो रहा है...' : currentLocale === 'mr' ? 'सिंक होत आहे...' : 'Syncing Collective...'}</span>
                 </>
               ) : (
                 <>
                   <CheckCircle2 size={18} />
-                  <span>Update Collective Pool Selection</span>
+                  <span>
+                    {currentLocale === 'hi' ? 'कलेक्टिव पूल चयन अपडेट करें'
+                      : currentLocale === 'mr' ? 'एकत्रित पूल निवड अद्ययावत करा'
+                      : currentLocale === 'pa' ? 'ਸਮੂਹ ਪੂਲ ਚੋਣ ਅੱਪਡੇਟ ਕਰੋ'
+                      : 'Update Collective Pool Selection'}
+                  </span>
                 </>
               )}
             </Button>
@@ -710,17 +797,41 @@ export function FPOCollectiveView({
 
             <div className="text-center space-y-2">
               <h3 className="text-lg font-black text-slate-900">
-                Leave FPO Collective Pool?
+                {currentLocale === 'hi' ? 'एफपीओ कलेक्टिव पूल छोड़ें?'
+                  : currentLocale === 'mr' ? 'एफपीओ एकत्रित पूल सोडावा?'
+                  : currentLocale === 'pa' ? 'FPO ਸਮੂਹਿਕ ਪੂਲ ਛੱਡੋ?'
+                  : currentLocale === 'gu' ? 'FPO સામૂહિક પૂલ છોડવો છે?'
+                  : currentLocale === 'ta' ? 'FPO கூட்டுப் பூலில் இருந்து வெளியேறவா?'
+                  : currentLocale === 'te' ? 'FPO ఉమ్మడి పూల్ నుండి నిష్క్రమించాలా?'
+                  : currentLocale === 'kn' ? 'FPO ಸಾಮೂಹಿಕ ಪೂಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಬೇಕೆ?'
+                  : 'Leave FPO Collective Pool?'}
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Detaching all lots from <strong className="text-slate-900">{FPO_NAME}</strong> will cancel your shared delivery route reservation. Freight costs for your produce will revert to standard solo direct haul rates (<strong>₹1.85/kg</strong> instead of <strong>₹1.20/kg</strong>).
+                {currentLocale === 'hi'
+                  ? <>सभी लॉट को <strong className="text-slate-900">{fpoNameDisplay}</strong> से अलग करने पर आपका साझा परिवहन मार्ग आरक्षण रद्द हो जाएगा। आपके मालभाड़े की दरें मानक एकल दर (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/किग्रा</strong> बनाम <strong>₹{toLocalizedDigits(POOLED_FREIGHT_PER_KG.toFixed(2), currentLocale)}/किग्रा</strong>) पर वापस आ जाएंगी।</>
+                  : currentLocale === 'mr'
+                  ? <>सर्व लॉट्स <strong className="text-slate-900">{fpoNameDisplay}</strong> मधून वगळल्यास तुमचे सामायिक वाहतूक आरक्षण रद्द होईल. तुमचे वाहतूक दर नियमित दरावर (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/किलो</strong> ऐवजी <strong>₹{toLocalizedDigits(POOLED_FREIGHT_PER_KG.toFixed(2), currentLocale)}/किलो</strong>) परत जातील.</>
+                  : currentLocale === 'pa'
+                  ? <>ਸਾਰੇ ਲਾਟਾਂ ਨੂੰ <strong className="text-slate-900">{fpoNameDisplay}</strong> ਤੋਂ ਵੱਖ ਕਰਨ ਨਾਲ ਤੁਹਾਡਾ ਸਾਂਝਾ ਟਰਾਂਸਪੋਰਟ ਰਿਜ਼ਰਵੇਸ਼ਨ ਰੱਦ ਹੋ ਜਾਵੇਗਾ। ਤੁਹਾਡਾ ਕਿਰਾਇਆ ਇਕੱਲੇ ਭਾੜੇ ਦੀ ਦਰ (<strong>₹{toLocalizedDigits(SOLO_FREIGHT_PER_KG.toFixed(2), currentLocale)}/ਕਿਲੋ</strong>) 'ਤੇ ਵਾਪਸ ਆ ਜਾਵੇਗਾ।</>
+                  : <>Detaching all lots from <strong className="text-slate-900">{FPO_NAME}</strong> will cancel your shared delivery route reservation. Freight costs for your produce will revert to standard solo direct haul rates (<strong>₹1.85/kg</strong> instead of <strong>₹1.20/kg</strong>).</>}
               </p>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
-              <strong className="block font-bold">Estimated Financial Impact:</strong>
+              <strong className="block font-bold">
+                {currentLocale === 'hi' ? 'अनुमानित वित्तीय प्रभाव:'
+                  : currentLocale === 'mr' ? 'अंदाजे आर्थिक परिणाम:'
+                  : currentLocale === 'pa' ? 'ਅੰਦਾਜ਼ਨ ਵਿੱਤੀ ਪ੍ਰਭਾਵ:'
+                  : 'Estimated Financial Impact:'}
+              </strong>
               <p className="text-[11px] text-amber-800">
-                You will forfeit up to <strong className="text-amber-950">₹{Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN')}</strong> in logistics savings on your active harvest lots.
+                {currentLocale === 'hi'
+                  ? <>आप अपने सक्रिय फसल लॉट पर <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> तक की लॉजिस्टिक्स बचत खो देंगे।</>
+                  : currentLocale === 'mr'
+                  ? <>तुम्ही तुमच्या सक्रिय पीक लॉट्सवरील <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> पर्यंतची बचत गमावाल.</>
+                  : currentLocale === 'pa'
+                  ? <>ਤੁਸੀਂ ਆਪਣੇ ਕਿਰਿਆਸ਼ੀਲ ਲਾਟਾਂ 'ਤੇ <strong className="text-amber-950">₹{toLocalizedDigits(Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN'), currentLocale)}</strong> ਤੱਕ ਦੀ ਬਚਤ ਗੁਆ ਦੇਵੋਗੇ।</>
+                  : <>You will forfeit up to <strong className="text-amber-950">₹{Math.round(totalFreightSavings > 0 ? totalFreightSavings : 2850).toLocaleString('en-IN')}</strong> in logistics savings on your active harvest lots.</>}
               </p>
             </div>
 
@@ -729,16 +840,30 @@ export function FPOCollectiveView({
                 type="button"
                 variant="outline"
                 onClick={() => setIsLeaveModalOpen(false)}
-                className="flex-1 text-xs h-11 rounded-xl border-slate-300 font-bold"
+                className="flex-1 text-xs h-11 rounded-xl border-slate-300 font-bold cursor-pointer"
               >
-                Keep in Pool
+                {currentLocale === 'hi' ? 'पूल में बनाए रखें'
+                  : currentLocale === 'mr' ? 'पूलमध्ये ठेवा'
+                  : currentLocale === 'pa' ? 'ਪੂਲ ਵਿੱਚ ਰੱਖੋ'
+                  : currentLocale === 'gu' ? 'પૂલમાં જાળવી રાખો'
+                  : currentLocale === 'ta' ? 'பூலில் வைத்திருங்கள்'
+                  : currentLocale === 'te' ? 'పూల్‌లోనే ఉంచండి'
+                  : currentLocale === 'kn' ? 'ಪೂಲ್‌ನಲ್ಲಿಯೇ ಇರಿಸಿ'
+                  : 'Keep in Pool'}
               </Button>
               <Button
                 type="button"
                 onClick={handleConfirmLeaveCollective}
-                className="flex-1 text-xs h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black shadow-sm"
+                className="flex-1 text-xs h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black shadow-sm cursor-pointer"
               >
-                Confirm Leave
+                {currentLocale === 'hi' ? 'छोड़ने की पुष्टि करें'
+                  : currentLocale === 'mr' ? 'सोडण्याची पुष्टी करा'
+                  : currentLocale === 'pa' ? 'ਛੱਡਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ'
+                  : currentLocale === 'gu' ? 'છોડવાની ખાતરી કરો'
+                  : currentLocale === 'ta' ? 'வெளியேறுவதை உறுதிசெய்'
+                  : currentLocale === 'te' ? 'నిష్క్రమణను నిర్ధారించండి'
+                  : currentLocale === 'kn' ? 'ನಿರ್ಗಮನವನ್ನು ದೃಢೀಕರಿಸಿ'
+                  : 'Confirm Leave'}
               </Button>
             </div>
 

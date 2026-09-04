@@ -7,6 +7,7 @@ import { FPOCollectiveView } from '@/components/farmer/FPOCollectiveView';
 import { ClusterMap } from '@/components/dashboard/ClusterMap';
 import { CropLot, GeoCluster } from '@/lib/types';
 import { useAuth } from '@/lib/AuthContext';
+import { useLocaleContext } from '@/lib/LocaleContext';
 
 const MOCK_LOTS: CropLot[] = [
   {
@@ -55,19 +56,46 @@ const mockClusters: GeoCluster[] = [
 export default function FpoPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { currentLocale } = useLocaleContext();
   const [myLots, setMyLots] = useState<CropLot[]>(MOCK_LOTS);
 
   const handleUpdatePoolSelection = (updatedLots: CropLot[], _pooledLotIds: string[]) => {
     setMyLots(updatedLots);
   };
 
+  const getBackText = () => {
+    switch (currentLocale) {
+      case 'hi': return 'डैशबोर्ड पर वापस जाएं';
+      case 'mr': return 'डॅशबोर्डवर परत जा';
+      case 'pa': return 'ਡੈਸ਼ਬੋਰਡ \'ਤੇ ਵਾਪਸ ਜਾਓ';
+      case 'gu': return 'ડેશબોર્ડ પર પાછા જાઓ';
+      case 'ta': return 'டாஷ்போர்டுக்குத் திரும்பு';
+      case 'te': return 'డ్యాష్‌బోర్డ్‌కు తిరిగి వెళ్లండి';
+      case 'kn': return 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹಿಂತಿರುಗಿ';
+      default: return 'Back to Dashboard';
+    }
+  };
+
+  const getFpoTitle = () => {
+    switch (currentLocale) {
+      case 'hi': return 'एफपीओ कलेक्टिव लॉजिस्टिक्स';
+      case 'mr': return 'एफपीओ एकत्रित वाहतूक समुदाय';
+      case 'pa': return 'ਐਫਪੀਓ ਸਮੂਹ ਲੌਜਿਸਟਿਕਸ';
+      case 'gu': return 'એફપીઓ સામૂહિક લોજિસ્ટિક્સ';
+      case 'ta': return 'எஃப்பிஓ கூட்டு சரக்கு';
+      case 'te': return 'ఎఫ్‌పీఓ ఉమ్మడి రవాణా';
+      case 'kn': return 'ಎಫ್‌ಪಿಒ ಸಾಮೂಹಿಕ ಸರಕು ಸಾಗಣೆ';
+      default: return 'FPO Collective';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/60 p-4 sm:p-6 lg:p-8 space-y-6">
-      <button onClick={() => router.push('/farmer/dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-2 font-bold cursor-pointer">
-        <ArrowLeft size={16} /> Back to Dashboard
+      <button onClick={() => router.push('/farmer/dashboard')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 mb-2 font-bold cursor-pointer transition-colors">
+        <ArrowLeft size={16} /> {getBackText()}
       </button>
 
-      <h1 className="text-3xl font-black text-slate-900 mb-6">FPO Collective</h1>
+      <h1 className="text-3xl font-black text-slate-900 mb-6">{getFpoTitle()}</h1>
 
       <div className="space-y-6">
         <FPOCollectiveView
