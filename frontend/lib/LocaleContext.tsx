@@ -411,6 +411,26 @@ export function LocaleProvider({
         setCurrentLocaleState(saved);
       }
     } catch {}
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'kisansetu_locale' && e.newValue && locales.includes(e.newValue as Locale)) {
+        setCurrentLocaleState(e.newValue as Locale);
+      }
+    };
+    const handleCustomSync = () => {
+      try {
+        const saved = localStorage.getItem('kisansetu_locale') as Locale;
+        if (saved && locales.includes(saved)) {
+          setCurrentLocaleState(saved);
+        }
+      } catch {}
+    };
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('kisansetu_locale_changed', handleCustomSync);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('kisansetu_locale_changed', handleCustomSync);
+    };
   }, []);
 
   const setLocale = (newLocale: Locale) => {
@@ -426,10 +446,9 @@ export function LocaleProvider({
       document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
     } catch {}
 
-    // Concurrent non-blocking transition: instant update without screen flicker or whitening
-    startTransition(() => {
-      setCurrentLocaleState(newLocale);
-    });
+    // Immediate state update so all components re-render immediately
+    setCurrentLocaleState(newLocale);
+    window.dispatchEvent(new Event('kisansetu_locale_changed'));
 
     // Auto-dismiss top indicator and toast smoothly
     setTimeout(() => {
