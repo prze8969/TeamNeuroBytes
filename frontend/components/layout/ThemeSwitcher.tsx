@@ -91,7 +91,7 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-[420px] rounded-3xl bg-slate-950/98 border border-slate-800 text-white shadow-2xl p-3.5 space-y-3.5 z-50 backdrop-blur-2xl animate-in fade-in zoom-in-95">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] rounded-3xl bg-slate-950/98 border border-slate-800 text-white shadow-2xl p-3.5 space-y-3.5 z-50 backdrop-blur-2xl animate-in fade-in zoom-in-95">
           <div className="px-2 pb-2 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-amber-400" />

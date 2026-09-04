@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocaleContext } from '@/lib/LocaleContext';
+import Link from 'next/link';
 
 export function MinimalMetaMaskHero() {
   const { currentLocale } = useLocaleContext();
@@ -12,7 +13,7 @@ export function MinimalMetaMaskHero() {
   }, []);
 
   return (
-    <section className="relative w-screen h-[100dvh] min-h-[100dvh] snap-start shrink-0 flex flex-col justify-end overflow-hidden bg-[#04130c] m-0 p-0 border-none left-[calc(-50vw+50%)] outline-none">
+    <section className="relative w-full md:w-screen h-[100dvh] min-h-[100dvh] snap-start shrink-0 flex flex-col justify-end overflow-hidden bg-[#04130c] m-0 p-0 border-none left-0 md:left-[calc(-50vw+50%)] outline-none">
       
       {/* 1. Background Image Layer */}
       <div className={`absolute inset-0 z-0 overflow-hidden pointer-events-none transition-opacity duration-[2000ms] ease-out ${mounted ? 'opacity-100' : 'opacity-0'}`}>
@@ -25,13 +26,13 @@ export function MinimalMetaMaskHero() {
       <div className="absolute bottom-0 left-0 w-full h-32 md:h-48 bg-gradient-to-t from-[#04130c] via-[#04130c]/80 to-transparent pointer-events-none z-10" />
 
       {/* 3. Foreground Content Container */}
-      <div className="relative z-20 w-full max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 pt-24 pb-12 sm:pb-16 md:pb-20 flex flex-col-reverse md:flex-row justify-between items-end gap-10 md:gap-16 border-none outline-none h-full md:h-auto overflow-y-auto overflow-x-hidden md:overflow-visible scrollbar-hide">
+      <div className="relative z-20 w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16 pt-20 pb-24 sm:pb-16 md:pb-20 flex flex-col-reverse md:flex-row justify-between items-end gap-6 md:gap-16 border-none outline-none h-full md:h-auto overflow-y-auto overflow-x-hidden md:overflow-visible scrollbar-hide">
         
         <div className="hidden md:block w-full md:w-auto border-none outline-none" />
 
         {/* Right Area: Editorial Headline */}
-        <div className={`w-full text-right max-w-2xl lg:mr-8 drop-shadow-2xl transition-all duration-1000 delay-300 ease-out transform ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} border-none outline-none mb-4 md:mb-0`}>
-          <h2 className="text-[2.75rem] sm:text-[3.5rem] md:text-5xl lg:text-[5rem] font-bold font-display tracking-tight text-white leading-[1.05] md:leading-[1.1]" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+        <div className={`w-full text-right max-w-2xl lg:mr-8 drop-shadow-2xl transition-all duration-1000 delay-300 ease-out transform ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} border-none outline-none mb-6 sm:mb-2 md:mb-0`}>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-[5.5rem] font-bold font-display tracking-tight text-white leading-[1.1] md:leading-[1.1] break-words" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
             {currentLocale === 'hi' ? (
               <div className="flex flex-col items-end gap-1.5 md:gap-2">
                 <span className="block opacity-95">फसल बेचें।</span>
@@ -82,6 +83,16 @@ export function MinimalMetaMaskHero() {
               </div>
             )}
           </h2>
+
+          {/* Mobile Auth Buttons */}
+          <div className="flex sm:hidden flex-col gap-3 mt-8 w-full items-end">
+            <Link href="/register" className="w-full max-w-[280px] text-center py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-transform">
+              Get Started
+            </Link>
+            <Link href="/login" className="w-full max-w-[280px] text-center py-3.5 rounded-xl bg-white/10 border border-white/20 text-white font-bold text-lg backdrop-blur-md hover:bg-white/20 active:scale-[0.98] transition-all">
+              Sign In
+            </Link>
+          </div>
         </div>
 
       </div>

@@ -1244,7 +1244,7 @@ export function ListNewCropModal({
         {/* ========================================================================= */}
         {/* MODAL FOOTER (Wizard Controls) */}
         {/* ========================================================================= */}
-        <div className="p-5 border-t border-slate-100 bg-white flex items-center justify-between gap-4 rounded-b-3xl">
+        <div className="p-4 sm:p-5 border-t border-slate-100 bg-white flex items-center justify-between gap-3 sm:gap-4 rounded-b-3xl">
           <Button
             type="button"
             variant="outline"
@@ -1253,7 +1253,7 @@ export function ListNewCropModal({
               else setCurrentStep(prev => prev - 1);
             }}
             disabled={isSubmitting}
-            className="h-12 px-6 rounded-xl font-bold text-sm border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer shadow-sm w-32"
+            className="h-11 sm:h-12 min-h-[44px] px-4 sm:px-6 rounded-xl font-bold text-xs sm:text-sm border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs flex-1 sm:flex-none sm:w-32"
           >
             {currentStep === 1 ? 'Cancel' : '← Back'}
           </Button>
@@ -1272,7 +1272,7 @@ export function ListNewCropModal({
                 }
                 setCurrentStep(prev => prev + 1);
               }}
-              className="h-12 px-8 rounded-xl font-black text-sm text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 cursor-pointer w-40"
+              className="h-11 sm:h-12 min-h-[44px] px-4 sm:px-8 rounded-xl font-black text-xs sm:text-sm text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 cursor-pointer flex-1 sm:flex-none sm:w-40"
             >
               Next Step →
             </Button>
@@ -1281,11 +1281,11 @@ export function ListNewCropModal({
               type="button"
               onClick={handleSubmit}
               disabled={isSubmitting || totalQuantityKg <= 0 || askingPricePerKg < minPermissibleFloor || !isPassed || inferredGrade === 'REJECTED'}
-              className="h-12 px-8 rounded-xl font-black text-sm text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="h-11 sm:h-12 min-h-[44px] px-4 sm:px-8 rounded-xl font-black text-xs sm:text-sm text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none sm:w-auto flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   <span>Publishing...</span>
                 </>
               ) : (

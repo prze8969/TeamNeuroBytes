@@ -39,17 +39,18 @@ export function ProduceCard({ lot, onDelete, onClick }: ProduceCardProps) {
           }}
         />
 
-        {/* 1. Single Top-Left Overlay Delist Icon (Hover Only) */}
+        {/* 1. Single Top-Left Overlay Delist Icon (Touch-Friendly) */}
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onDelete(lot.id, tCrop(lot.cropName));
           }}
-          className="absolute top-3 left-3 bg-black/50 hover:bg-rose-600 text-white rounded-full p-2 backdrop-blur-md transition-all shadow-md cursor-pointer border border-white/20 hover:scale-110 opacity-0 group-hover:opacity-100 duration-200"
+          className="absolute top-2.5 left-2.5 bg-black/50 hover:bg-rose-600 text-white rounded-full p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center backdrop-blur-md transition-all shadow-md cursor-pointer border border-white/20 hover:scale-110 opacity-90 md:opacity-0 md:group-hover:opacity-100 duration-200"
           title={tList('delistTooltip')}
+          aria-label={tList('delistTooltip')}
         >
-          <Trash2 size={13} />
+          <Trash2 size={15} />
         </button>
 
         {/* 2. Top-Right Overlay Quality Grade Badge with Glassmorphism */}

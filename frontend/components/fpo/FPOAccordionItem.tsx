@@ -96,7 +96,7 @@ export function FPOAccordionItem({
       >
         
         {/* Left Column: Identifier & Commodity Info */}
-        <div className="flex items-center gap-3.5 min-w-[280px]">
+        <div className="flex items-center gap-3.5 min-w-0 flex-1">
           <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 relative">
             <img 
               src={imageUrl} 

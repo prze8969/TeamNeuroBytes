@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Plus, 
   MapPin, 
@@ -51,6 +52,7 @@ export function FarmerDashboardLayout() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isListModalOpen, setIsListModalOpen] = useState<boolean>(false);
   const [lotToDelete, setLotToDelete] = useState<{ id: string; cropName: string } | null>(null);
+  const [selectedLot, setSelectedLot] = useState<CropLot | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<number | undefined>(undefined);
 
   const handleTrackOrder = (bidIdStr: string) => {
@@ -633,457 +635,149 @@ export function FarmerDashboardLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
-      <Navbar activeRole="FARMER" />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-4 lg:space-y-6 overflow-visible relative">
         
-        {/* Top Global Search Bar */}
-        <div className="relative">
+        {/* ========================================================================= */}
+        {/* NEW CUSTOM FARMER DASHBOARD LAYOUT (MATCHING PROVIDED IMAGE) */}
+        {/* ========================================================================= */}
+
+        {/* 1. CURRENT LOTS SECTION */}
+        <section className="bg-white p-5 sm:p-6 rounded-[24px] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[20px] font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <Boxes size={20} className="text-[#3B38D0]" />
+              <span>Current Lots {totalLots > 0 ? `(${totalLots})` : ''}</span>
+            </h2>
+          </div>
+          
+          {loading ? (
+            <div className="py-12 flex justify-center">
+              <div className="w-8 h-8 border-3 border-[#3B38D0] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : totalLots === 0 ? (
+            <div className="py-8 text-center text-slate-500 text-sm">
+              No produce lots listed yet. Click 'Create New Lot' below to get started.
+            </div>
+          ) : (
+            <div className="flex items-start gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-1 px-1 pt-1">
+              {myLots.map((lot) => (
+                <div 
+                  key={`farmer-lot-${lot.id}`} 
+                  className="w-[100px] sm:w-[120px] shrink-0 snap-start flex flex-col items-center gap-2 cursor-pointer"
+                  onClick={() => setSelectedLot(lot)}
+                >
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative group">
+                    <img 
+                      src={resolveCropImageUrl(lot.cropName, lot.imageUrl)} 
+                      alt={lot.cropName} 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = resolveCropImageUrl(lot.cropName);
+                      }}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteLot(lot.id, lot.cropName);
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Delist"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
+                  <span className="text-xs font-bold text-slate-800 text-center leading-tight line-clamp-2">
+                    {lot.cropName}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 2. CREATE NEW LOT (Massive Button) */}
+        <button onClick={() => setIsListModalOpen(true)} className="w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#3B38D0] to-[#2D2A9E] p-8 sm:p-12 rounded-[32px] shadow-[0_8px_30px_-4px_rgba(59,56,208,0.3)] border border-[#4F4DE4] hover:shadow-[0_12px_40px_-4px_rgba(59,56,208,0.4)] transition-all hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75 cursor-pointer relative overflow-hidden group">
+          <div className="absolute inset-0 bg-white/5 group-hover:bg-transparent transition-colors duration-300"></div>
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm mb-4 border border-white/20 group-hover:scale-110 transition-transform duration-500">
+            <Plus size={48} strokeWidth={2.5} />
+          </div>
+          <h3 className="text-[28px] sm:text-[36px] font-black text-white leading-tight tracking-tight text-center">
+            Create New Lot
+          </h3>
+          <p className="text-sm sm:text-base text-indigo-200 mt-2 text-center max-w-sm">
+            List your crop instantly to agmarknet-verified institutional buyers
+          </p>
+        </button>
+
+        {/* 3. SEARCH BAR */}
+        <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
           <input 
             type="text" 
-            placeholder="Search Mandi prices, nearby FPOs, warehouses, crop quality..."
-            className="w-full bg-white border border-slate-200/90 rounded-2xl pl-12 pr-4 py-3.5 text-sm font-medium text-slate-800 placeholder-slate-400 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            placeholder="Search items, buyers, lots..."
+            className="w-full bg-[#FAFAFA] border border-slate-200 rounded-[20px] pl-12 pr-4 py-4 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B38D0]/30 transition-all shadow-sm"
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
         </div>
 
-        {/* ========================================================================= */}
-        {/* 1. HEADER & PROFILE INTEGRATION (MODERNIZED) */}
-        {/* ========================================================================= */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
+        {/* 4. MARKET PRICE GRID & FLOATING BUTTONS */}
+        <section className="bg-white p-5 sm:p-6 rounded-[24px] shadow-[0_4px_24px_-8px_rgba(0,0,0,0.05)] border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150 relative">
+          <h2 className="text-[20px] font-bold text-slate-900 tracking-tight mb-4">Market Price</h2>
           
-          {/* Left: Identity & Badges */}
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-emerald-600/20">
-                <UserCheck size={22} className="text-white" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pb-4">
+            {/* Card 1 */}
+            <Link href="/farmer/market/vegetables" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
+              <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
+                 <div className="text-[60px] leading-none drop-shadow-md">🥦</div>
               </div>
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-                    {user?.name || tDash('farmerName')}
-                  </h2>
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-300 shadow-2xs font-mono">
-                    <ShieldCheck size={12} className="text-emerald-700" />
-                    {tDash('digilockerVerified')}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
-                  <MapPin size={12} className="text-slate-400" />
-                  <span>{user?.location || tDash('location')}</span>
-                </p>
+              <span className="font-bold text-slate-900 text-sm">Vegetables</span>
+            </Link>
+            {/* Card 2 */}
+            <Link href="/farmer/market/fruits" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
+              <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
+                 <div className="text-[60px] leading-none drop-shadow-md">🍎</div>
               </div>
-            </div>
-
-            {/* Badges Strip */}
-            <div className="flex items-center gap-2 pt-0.5">
-              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/90 px-3 py-1 rounded-xl text-xs font-black font-mono">
-                {totalLots} {totalLots === 1 ? tDash('lotActive') : tDash('lotsActive')}
-              </span>
-              <span className={`px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-1.5 font-mono ${
-                pooledCount > 0
-                  ? 'bg-purple-50 text-purple-900 border-purple-200' 
-                  : totalLots > 0
-                  ? 'bg-slate-100 text-slate-700 border-slate-200'
-                  : 'bg-slate-50 text-slate-500 border-slate-200'
-              }`}>
-                {pooledCount > 0 ? (
-                  <>
-                    <Users size={13} className="text-purple-600" />
-                    <span>{tDash('fpoEnrolled')} ({pooledCount} Lots)</span>
-                  </>
-                ) : totalLots > 0 ? (
-                  <>
-                    <Truck size={13} className="text-slate-500" />
-                    <span>{tDash('soloHaulage')}</span>
-                  </>
-                ) : (
-                  <>
-                    <Users size={13} className="text-slate-400" />
-                    <span>FPO: Standalone Farmer</span>
-                  </>
-                )}
-              </span>
-            </div>
+              <span className="font-bold text-slate-900 text-sm">Fruits</span>
+            </Link>
+            {/* Card 3 */}
+            <Link href="/farmer/market/grains" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
+              <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
+                 <div className="text-[60px] leading-none drop-shadow-md">🌾</div>
+              </div>
+              <span className="font-bold text-slate-900 text-sm">Grains</span>
+            </Link>
+            {/* Card 4 */}
+            <Link href="/farmer/market/pulses" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
+              <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
+                 <div className="text-[60px] leading-none drop-shadow-md">🫘</div>
+              </div>
+              <span className="font-bold text-slate-900 text-sm">Pulses</span>
+            </Link>
+            {/* Card 5 */}
+            <Link href="/farmer/market/spices" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
+              <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
+                 <div className="text-[60px] leading-none drop-shadow-md">🌶️</div>
+              </div>
+              <span className="font-bold text-slate-900 text-sm">Spices</span>
+            </Link>
+            {/* Card 6 */}
+            <Link href="/farmer/market/flowers" className="bg-white border border-slate-100 rounded-[20px] p-4 flex flex-col items-center justify-center shadow-xs h-[160px] hover:border-[#3B38D0] hover:shadow-md transition-all cursor-pointer">
+              <div className="w-20 h-20 relative mb-3 flex items-center justify-center">
+                 <div className="text-[60px] leading-none drop-shadow-md">🌻</div>
+              </div>
+              <span className="font-bold text-slate-900 text-sm">Flowers</span>
+            </Link>
           </div>
 
-          {/* Right: Primary Call to Action */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Button
-              onClick={() => setIsListModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm h-11 px-5 rounded-2xl shadow-lg shadow-emerald-600/25 ring-2 ring-emerald-400/40 hover:ring-emerald-400 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <Plus size={16} className="stroke-[2.5]" />
-              <span>{tDash('listNewCropProduce')}</span>
-            </Button>
+          {/* Floating Action Buttons Docked to Right */}
+          <div className="absolute top-[20%] -right-4 sm:-right-6 lg:-right-8 flex flex-col gap-3 z-30">
+            <Link href="/farmer/fpo" className="w-16 h-20 bg-[#3B38D0] rounded-l-2xl shadow-xl flex flex-col items-center justify-center text-white hover:bg-[#2D2A9E] transition-transform hover:-translate-x-1 cursor-pointer">
+              <Boxes size={20} className="mb-1" />
+              <span className="text-[10px] font-bold mb-1">FPO</span>
+              <ArrowRight size={12} />
+            </Link>
           </div>
-        </div>
-
-        {/* ========================================================================= */}
-        {/* 2. CLEAN SEGMENTED NAVIGATION BAR */}
-        {/* ========================================================================= */}
-        <div className="bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200/80 inline-flex flex-wrap gap-1.5 w-full sm:w-auto shadow-2xs">
-          <button
-            type="button"
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'overview'
-                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
-            }`}
-          >
-            <Boxes size={15} className={activeTab === 'overview' ? 'text-white' : 'text-slate-500'} />
-            <span>My Farm Overview</span>
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => setActiveTab('fpo-pooling')}
-            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'fpo-pooling'
-                ? 'bg-purple-600 text-white shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
-            }`}
-          >
-            <Users size={15} className={activeTab === 'fpo-pooling' ? 'text-white' : 'text-slate-500'} />
-            <span>Group Transport (Save 35%)</span>
-            {pooledCount > 0 && (
-              <span className={`text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full ${
-                activeTab === 'fpo-pooling' ? 'bg-purple-800 text-purple-100' : 'bg-purple-100 text-purple-900'
-              }`}>
-                {pooledCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('decision-engine')}
-            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'decision-engine'
-                ? 'bg-blue-600 text-white shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
-            }`}
-          >
-            <TrendingUp size={15} className={activeTab === 'decision-engine' ? 'text-white' : 'text-slate-500'} />
-            <span>Market Rates &amp; Price Forecast</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('escrow')}
-            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'escrow'
-                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
-            }`}
-          >
-            <ShieldCheck size={15} className={activeTab === 'escrow' ? 'text-white' : 'text-slate-500'} />
-            <span>Safe Payment Tracker</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('whatsapp-bot')}
-            className={`px-4 py-2.5 text-xs transition-all cursor-pointer flex items-center gap-2 ${
-              activeTab === 'whatsapp-bot'
-                ? 'bg-emerald-600 text-white shadow-sm font-black rounded-xl'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/70 font-bold rounded-xl'
-            }`}
-          >
-            <MessageSquare size={15} className={activeTab === 'whatsapp-bot' ? 'text-white' : 'text-slate-500'} />
-            <span>WhatsApp Assistant</span>
-          </button>
-        </div>
-
-        {/* Global Toast Message */}
-        {toastMsg && (
-          <div className="rounded-2xl bg-emerald-50 border border-emerald-300 p-4 text-xs font-bold text-emerald-950 animate-in fade-in flex justify-between items-center shadow-xs">
-            <span className="flex items-center gap-2">
-              <Sparkles size={16} className="text-emerald-700 shrink-0" />
-              {toastMsg}
-            </span>
-            <button onClick={() => setToastMsg(null)} className="text-emerald-800 hover:text-emerald-950 font-extrabold text-sm ml-4 cursor-pointer">✕</button>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* 3. KPI STAT CARDS (TOP STRIP) */}
-        {/* ========================================================================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          {/* KPI 1: AI Quality Grade */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  {tKpi('aiQualityGrade')}
-                </span>
-                <span className="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
-                  Portfolio Average
-                </span>
-              </div>
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
-                <Microscope size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">
-                {portfolioGrade}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-emerald-700 font-bold font-mono">
-                  {totalLots > 0 ? `${avgQualityScore}% Quality Score` : 'No Scans Yet'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">{tKpi('aiVerified')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* KPI 2: Highest Market Bid */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('highestActiveBid')}
-              </span>
-              <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-700 shadow-2xs">
-                <TrendingUp size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900 font-mono">
-                {highestBid > 0 ? `₹${highestBid.toFixed(2)}/kg` : '₹0.00'}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-blue-700 font-bold font-mono">
-                  {highestBid > 0 ? `+₹${Math.max(0, highestBid - 24.50).toFixed(2)}/kg ${tKpi('aboveFloor')}` : 'No Active Bids'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400 truncate max-w-[120px]" title={highestBidBuyer}>
-                  {highestBidBuyer || ''}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* KPI 3: Escrow Security */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('escrowSecurity')}
-              </span>
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-700 shadow-2xs">
-                <ShieldCheck size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">
-                {totalEscrowLocked > 0 ? tKpi('locked100') : '₹0 Guarantee'}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-emerald-700 font-bold font-mono">
-                  {totalEscrowLocked > 0 ? `₹${totalEscrowLocked.toLocaleString('en-IN')} ${tKpi('guarantee')}` : 'No Escrow Locked'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">{tKpi('rbiCompliantEscrow')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* KPI 4: FPO Logistics Savings */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                {tKpi('freightPooling')}
-              </span>
-              <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-200/80 flex items-center justify-center text-purple-700 shadow-2xs">
-                <Truck size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-2xl font-black tracking-tight text-slate-900">
-                {pooledCount > 0 ? `-35.1% ${tKpi('costSavings')}` : totalLots > 0 ? tKpi('individual') : 'No FPO Enrolled'}
-              </p>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-purple-700 font-bold font-mono">
-                  {pooledCount > 0 ? 'Nashik East Pool' : totalLots > 0 ? '₹1.85/kg Solo' : 'Enroll produce to pool'}
-                </span>
-                <span className="text-[10px] font-bold text-slate-400">{tKpi('sharedDeliveryRoute')}</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* ========================================================================= */}
-        {/* TAB 1: OVERVIEW */}
-        {/* ========================================================================= */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            
-            {/* 4. FPO COLLECTIVE NOTIFICATION BANNER */}
-            <div className="bg-gradient-to-r from-purple-950 via-slate-900 to-emerald-950 text-white rounded-2xl p-5 sm:p-6 shadow-lg border border-purple-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-purple-300 font-mono">
-                    {tFpo('smartRoutePooling')}
-                  </span>
-                  <span className="rounded-full bg-purple-400/20 text-purple-200 border border-purple-400/30 px-2.5 py-0.5 text-xs font-black font-mono">
-                    {pooledCount > 0 ? `${tFpo('connectedToFpo')} (${pooledCount} LOTS)` : totalLots > 0 ? tFpo('individualTransportActive') : 'Idle • Standalone Farmer'}
-                  </span>
-                </div>
-                <p className="text-xs text-purple-100/90 max-w-3xl leading-relaxed">
-                  {pooledCount > 0
-                    ? tFpo('fpoSavingsDesc')
-                    : totalLots > 0
-                    ? tFpo('fpoJoinDesc')
-                    : 'Enroll farm produce listings to enable collective pooling with neighboring farms and save up to 35% on APMC freight.'}
-                </p>
-              </div>
-
-              <Button
-                type="button"
-                onClick={() => setActiveTab('fpo-pooling')}
-                className={`text-xs font-black px-6 h-11 rounded-xl shadow-md whitespace-nowrap cursor-pointer flex items-center gap-2 transition-all ${
-                  pooledCount > 0
-                    ? 'bg-purple-600 hover:bg-purple-500 text-white'
-                    : 'bg-emerald-400 hover:bg-emerald-300 text-slate-950'
-                }`}
-              >
-                <span>{pooledCount > 0 ? tFpo('manageFpoPoolLots') : tFpo('joinPoolCta')}</span>
-                <ArrowRight size={14} />
-              </Button>
-            </div>
-
-            {/* 5. "MY ACTIVE PRODUCE LISTINGS" CARD GRID */}
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
-              <div className="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-                    <Boxes size={18} className="text-emerald-700" />
-                    <span>{tList('myActiveListings')} ({totalLots})</span>
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {tList('listingsSubtitle')}
-                  </p>
-                </div>
-              </div>
-
-              {loading ? (
-                <div className="p-16 text-center text-slate-400 font-medium animate-pulse flex flex-col items-center justify-center gap-3">
-                  <div className="w-10 h-10 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs">Loading your farm produce listings from Supabase...</p>
-                </div>
-              ) : totalLots === 0 ? (
-                <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-gradient-to-b from-white to-slate-50/60 p-10 sm:p-14 text-center flex flex-col items-center justify-center space-y-4">
-                  <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-200/70 text-emerald-600 flex items-center justify-center text-3xl shadow-sm">
-                    🌾
-                  </div>
-                  <div className="space-y-1.5 max-w-md mx-auto">
-                    <h4 className="text-base sm:text-lg font-black text-slate-900">No Produce Lots Listed Yet</h4>
-                    <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                      You haven't listed any farm produce for sale. Add your first crop batch to get an AI quality grade and receive bids from institutional buyers.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => setIsListModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-2xl h-11 px-6 shadow-md shadow-emerald-600/20 cursor-pointer flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    <Plus size={16} className="stroke-[2.5]" />
-                    <span>+ List New Crop Produce</span>
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {myLots.map((lot) => (
-                    <ProduceCard
-                      key={`farmer-lot-${lot.id}`}
-                      lot={lot}
-                      onDelete={handleDeleteLot}
-                      onClick={() => {}}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Price Chart & Live Market Feed */}
-            <PriceChart commodity={myLots[0]?.cropName || 'Sharbati Wheat'} mandiPrices={mockPrices} />
-
-            {/* Live Bids Table from Institutional Buyers */}
-            <BidTable
-              bids={bids}
-              lots={myLots}
-              isFarmerView={true}
-              onAcceptBid={handleAcceptBid}
-              onRejectBid={handleRejectBid}
-              onTrackOrder={handleTrackOrder}
-            />
-
-            {/* Multi-Order Milestone Escrow Rails Tracker */}
-            <EscrowTracker 
-              activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} 
-              acceptedBids={bids.filter(b => b.escrowStatus === 'LOCKED')}
-              lots={myLots}
-              selectedOrderId={selectedOrderId}
-              onSelectOrder={setSelectedOrderId}
-            />
-
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 2: SELECTIVE FPO POOLING HUB */}
-        {/* ========================================================================= */}
-        {activeTab === 'fpo-pooling' && (
-          <div className="space-y-6">
-            <FPOCollectiveView
-              activeLots={myLots}
-              onUpdatePoolSelection={handleUpdatePoolSelection}
-              onNavigateToTab={(tab) => {
-                if (tab === 'overview') setActiveTab('overview');
-                else if (tab === 'list-crop') setIsListModalOpen(true);
-                else setActiveTab(tab as any);
-              }}
-            />
-            <ClusterMap clusters={mockClusters} />
-          </div>
-        )}
-
-
-
-        {/* ========================================================================= */}
-        {/* TAB 4: SELL VS WAIT AI DECISION ENGINE */}
-        {/* ========================================================================= */}
-        {activeTab === 'decision-engine' && (
-          <div className="space-y-6">
-            <SellVsWaitCard />
-            <PriceChart commodity={myLots[0]?.cropName || 'Sharbati Wheat'} mandiPrices={mockPrices} />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 5: ESCROW RAILS */}
-        {/* ========================================================================= */}
-        {activeTab === 'escrow' && (
-          <div className="space-y-6">
-            <EscrowTracker 
-              activeCropName={myLots[0]?.cropName ? `${myLots[0].cropName} (${(myLots[0].quantityKg/1000).toFixed(1)} MT)` : undefined} 
-              acceptedBids={bids.filter(b => b.escrowStatus === 'LOCKED')}
-              lots={myLots}
-              selectedOrderId={selectedOrderId}
-              onSelectOrder={setSelectedOrderId}
-            />
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 6: WHATSAPP VERNACULAR SIMULATOR */}
-        {/* ========================================================================= */}
-        {activeTab === 'whatsapp-bot' && (
-          <div className="space-y-6">
-            <WhatsAppSimulatorModal />
-          </div>
-        )}
-
+        </section>
       </main>
 
       {/* ========================================================================= */}
@@ -1094,9 +788,32 @@ export function FarmerDashboardLayout() {
         onClose={() => setIsListModalOpen(false)}
         onLotPublished={(newLot) => {
           setMyLots(prev => [newLot, ...prev.filter(l => l.id !== newLot.id)]);
-          setActiveTab('overview');
         }}
       />
+
+      {/* ========================================================================= */}
+      {/* LOT OVERVIEW MODAL */}
+      {/* ========================================================================= */}
+      {selectedLot && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-[32px] w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <button
+              onClick={() => setSelectedLot(null)}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 hover:text-slate-900 transition-colors z-10"
+            >
+              ✕
+            </button>
+            <div className="p-4 sm:p-6">
+              <h2 className="text-xl font-black text-slate-900 mb-4">Lot Overview</h2>
+              <ProduceCard
+                lot={selectedLot}
+                onDelete={handleDeleteLot}
+                onClick={() => {}}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* DELETE CONFIRMATION MODAL */}

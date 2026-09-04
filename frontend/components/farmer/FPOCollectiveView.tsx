@@ -259,26 +259,19 @@ export function FPOCollectiveView({
           
           {/* Top Metadata Row */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-purple-800/40 pb-5">
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 text-xl font-bold shadow-xs">
-                  👥
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-                      {FPO_NAME}
-                    </h2>
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-400/20 text-purple-200 border border-purple-400/30 font-mono">
-                      {FPO_CODE}
-                    </span>
-                  </div>
-                  <p className="text-xs text-purple-200 font-medium flex items-center gap-1.5 mt-0.5">
-                    <MapPin size={13} className="text-purple-400 shrink-0" />
-                    <span>{HUB_NAME}</span>
-                    <span className="text-purple-400">•</span>
-                    <strong className="text-emerald-300">{HUB_DISTANCE}</strong>
-                  </p>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 text-3xl font-bold shadow-xs">
+                🚛
+              </div>
+              <div>
+                <h2 className="text-2xl font-black tracking-tight text-white mb-1">
+                  {FPO_NAME}
+                </h2>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="bg-purple-400/20 text-purple-200 border border-purple-400/30 px-2 py-0.5 rounded-md font-mono font-bold">
+                    {FPO_CODE}
+                  </span>
+                  <span className="text-emerald-300 font-bold">• {HUB_DISTANCE}</span>
                 </div>
               </div>
             </div>
@@ -300,83 +293,62 @@ export function FPOCollectiveView({
           </div>
 
           {/* Aggregation Target & Live Truckload Progress Matrix */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             
             {/* Metric 1: Milk-Run Target */}
-            <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4 space-y-1.5 backdrop-blur-xs">
-              <div className="flex items-center justify-between text-xs text-purple-300">
-                <span className="font-bold flex items-center gap-1.5">
-                  <Truck size={15} className="text-purple-400" />
-                  Active Milk-Run Haul
-                </span>
-                <span className="text-[10px] font-black uppercase text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800 font-mono">
-                  Departs in 4h 30m
-                </span>
-              </div>
-              <p className="text-lg font-black text-white">
-                45-Ton Multi-Axle Carrier
+            <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs">
+              <span className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <Truck size={16} /> Active Dispatch
+              </span>
+              <p className="text-3xl font-black text-white">
+                45-Ton Carrier
               </p>
-              <p className="text-[11px] text-slate-300 font-mono">
-                Route: <strong className="text-purple-200">Niphad Central Hub ➔ Vashi APMC Terminal</strong>
-              </p>
+              <p className="text-emerald-400 font-bold mt-2">Departs in 4h 30m</p>
             </div>
 
             {/* Metric 2: Participating Farmers */}
-            <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4 space-y-1.5 backdrop-blur-xs">
-              <div className="flex items-center justify-between text-xs text-purple-300">
-                <span className="font-bold flex items-center gap-1.5">
-                  <Users size={15} className="text-purple-400" />
-                  Collective Enrollment
-                </span>
-                <span className="text-[10px] font-black font-mono text-purple-300">
-                  Cluster #CLST-01
-                </span>
-              </div>
-              <p className="text-lg font-black text-white">
-                {selectedLotIds.length > 0 ? '14 other farmers + you (15 Enrolled)' : '14 other farmers enrolled (+ you when joined)'}
+            <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs">
+              <span className="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <Users size={16} /> Enrollment
+              </span>
+              <p className="text-3xl font-black text-white">
+                15 Farmers
               </p>
-              <p className="text-[11px] text-purple-200">
-                {selectedLotIds.length > 0 ? (
-                  <span className="text-emerald-300 font-bold">✓ Your {selectedLotIds.length} lots included in active manifest</span>
-                ) : (
-                  <span className="text-amber-300">Select produce below to join current truck</span>
-                )}
+              <p className="text-purple-200 font-bold mt-2">
+                {selectedLotIds.length > 0 ? `✓ Your ${selectedLotIds.length} lots included` : 'Select lots to join'}
               </p>
             </div>
 
             {/* Metric 3: Capacity Progress */}
-            <div className="rounded-2xl bg-white/5 border border-purple-500/20 p-4 space-y-2 backdrop-blur-xs">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-purple-300 font-bold">Truckload Capacity</span>
-                <span className="text-emerald-400 font-black font-mono flex items-center gap-1.5">
-                  {totalCombinedWeightMT.toFixed(1)} MT / {TRUCK_CAPACITY_MT.toFixed(1)} MT ({actualCapacityPercent}%)
-                  {isOverflow && (
-                    <span className="text-[9px] font-black text-amber-300 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/50">
-                      OVERFLOW (+{(totalCombinedWeightMT - TRUCK_CAPACITY_MT).toFixed(1)} MT)
-                    </span>
-                  )}
+            <div className="rounded-3xl bg-white/5 border border-purple-500/20 p-5 flex flex-col justify-center backdrop-blur-xs lg:col-span-1 md:col-span-2">
+              <div className="flex items-center justify-between text-xs mb-3">
+                <span className="text-purple-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Boxes size={16} /> Capacity
+                </span>
+                <span className="text-emerald-400 font-black font-mono text-lg">
+                  {actualCapacityPercent}% Full
                 </span>
               </div>
               
               {/* Progress bar */}
-              <div className="w-full h-3 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-purple-900/60">
+              <div className="w-full h-4 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-purple-900/60 mb-2">
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${
                     isOverflow
                       ? 'bg-gradient-to-r from-amber-400 to-rose-500'
                       : actualCapacityPercent >= 90
                       ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
-                      : actualCapacityPercent >= 70
-                      ? 'bg-gradient-to-r from-purple-500 to-emerald-400'
                       : 'bg-gradient-to-r from-amber-500 to-purple-400'
                   }`}
                   style={{ width: `${Math.min(actualCapacityPercent, 100)}%` }}
                 />
               </div>
 
-              <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-                <span>Baseline: {BASELINE_COLLECTIVE_WEIGHT_MT} MT</span>
-                <span className="text-emerald-300 font-bold">Your Share: +{selectedTonnage.toFixed(1)} MT</span>
+              <div className="flex justify-between text-[11px] text-purple-200 font-bold">
+                <span>Total: {totalCombinedWeightMT.toFixed(1)} MT / 45.0 MT</span>
+                {isOverflow && (
+                  <span className="text-rose-400">OVERFLOW</span>
+                )}
               </div>
             </div>
 
@@ -393,15 +365,12 @@ export function FPOCollectiveView({
         {/* Controls Row */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div className="space-y-1">
-            <h3 className="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <span>🌾 Select Harvest Lots for Shared FPO Transport</span>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <span>🌾 Select Harvest Lots</span>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono">
-                {selectedLotIds.length} of {activeLots.length} Selected
+                {selectedLotIds.length} / {activeLots.length} Selected
               </span>
             </h3>
-            <p className="text-xs text-slate-500">
-              Toggle specific produce lots into the shared 45-Ton milk-run carrier to unlock bulk freight rates.
-            </p>
           </div>
 
           {/* Quick Selection Filter Pills */}

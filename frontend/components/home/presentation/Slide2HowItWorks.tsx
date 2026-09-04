@@ -58,7 +58,7 @@ export function Slide2HowItWorks() {
   return (
     <section 
       ref={sectionRef}
-      className="w-full min-h-[100dvh] snap-start flex flex-col justify-center items-center bg-[#04130c] relative px-6 py-20 overflow-hidden"
+      className="w-full min-h-[100dvh] snap-start flex flex-col justify-center items-center bg-[#04130c] relative px-4 sm:px-6 py-14 md:py-20 overflow-hidden"
     >
       
       {/* Subtle Background Glow */}
@@ -67,11 +67,11 @@ export function Slide2HowItWorks() {
       <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
         
         {/* Slide Header */}
-        <div className="text-center mb-16 md:mb-24">
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
+        <div className="text-center mb-10 md:mb-24">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white tracking-tight">
             How selling works
           </h2>
-          <div className="w-24 h-1 bg-amber-400 mt-6 mx-auto rounded-full opacity-80" />
+          <div className="w-20 md:w-24 h-1 bg-amber-400 mt-4 md:mt-6 mx-auto rounded-full opacity-80" />
         </div>
 
         {/* Visual Flow Container */}

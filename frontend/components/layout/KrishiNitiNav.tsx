@@ -55,8 +55,13 @@ export function KrishiNitiNav() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between">
           
           {/* Left: Clean Branding with compact SIH badge */}
-          <Link href="/" className="flex items-center group">
-            <KisanSetuLogo size="md" variant="light" badge="SIH 2026" showTagline={false} />
+          <Link href="/" className="flex items-center group shrink-0">
+            <div className="block sm:hidden">
+              <KisanSetuLogo size="xs" variant="light" badge="SIH" showTagline={false} />
+            </div>
+            <div className="hidden sm:block">
+              <KisanSetuLogo size="md" variant="light" badge="SIH 2026" showTagline={false} />
+            </div>
           </Link>
 
           {/* Center Navigation Links (Radically Simplified for Farmers: 3 items) */}
@@ -101,21 +106,25 @@ export function KrishiNitiNav() {
           </nav>
 
           {/* Right Action Group */}
-          <div className="flex items-center space-x-2 sm:space-x-2.5">
+          <div className="flex items-center space-x-1.5 sm:space-x-2.5">
             
-            {/* Live Theme Palette Switcher */}
-            <ThemeSwitcher />
+            {/* Live Theme Palette Switcher (Desktop / Tablet) */}
+            <div className="hidden sm:block">
+              <ThemeSwitcher />
+            </div>
 
             {/* Language Selector Dropdown (Prominent for farmers) */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                className="text-xs sm:text-sm font-bold px-3 py-2 rounded-xl border border-white/20 bg-black/20 text-white hover:bg-black/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm backdrop-blur-md"
+                className="text-xs sm:text-sm font-bold px-2.5 sm:px-3 py-2 min-h-[44px] rounded-xl border border-white/20 bg-black/20 text-white hover:bg-black/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm backdrop-blur-md"
                 title="Change Language"
+                aria-label="Change Language"
               >
-                <Globe size={14} className="text-amber-300" />
-                <span>{activeLangObj.native}</span>
-                <ChevronDown size={12} className={`transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
+                <Globe size={14} className="text-amber-300 shrink-0" />
+                <span className="max-w-[50px] sm:max-w-none truncate">{activeLangObj.native}</span>
+                <ChevronDown size={12} className={`transition-transform duration-200 shrink-0 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isLangDropdownOpen && (
@@ -138,11 +147,11 @@ export function KrishiNitiNav() {
               )}
             </div>
 
-            {/* Auth Action */}
+            {/* Auth Action (Hidden on very small mobile to let Hamburger shine, available inside drawer) */}
             {isAuthenticated ? (
               <Link
                 href={role === 'FARMER' ? '/farmer/dashboard' : '/buyer/dashboard'}
-                className="text-xs sm:text-sm font-black px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 transition-all shadow-md shadow-amber-400/20 flex items-center gap-1.5 cursor-pointer"
+                className="hidden sm:flex text-xs sm:text-sm font-black px-3.5 sm:px-4 py-2 sm:py-2.5 min-h-[44px] rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 transition-all shadow-md shadow-amber-400/20 items-center justify-center gap-1.5 cursor-pointer"
               >
                 <span>{t.dashboard}</span>
                 <ArrowRight size={14} />
@@ -150,7 +159,7 @@ export function KrishiNitiNav() {
             ) : (
               <Link
                 href="/login"
-                className="text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 rounded-xl border border-emerald-700/80 bg-emerald-900/60 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-all shadow-sm cursor-pointer"
+                className="hidden sm:flex text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 min-h-[44px] rounded-xl border border-emerald-700/80 bg-emerald-900/60 text-emerald-100 hover:bg-emerald-800 hover:text-white transition-all shadow-sm items-center justify-center cursor-pointer"
               >
                 {t.signIn}
               </Link>
@@ -158,8 +167,10 @@ export function KrishiNitiNav() {
 
             {/* Mobile Menu Button */}
             <button
+              type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl border border-emerald-700/80 bg-emerald-900/60 text-emerald-100 hover:text-white cursor-pointer"
+              className="md:hidden p-2.5 min-h-[44px] min-w-[44px] rounded-xl border border-emerald-700/80 bg-emerald-900/60 text-emerald-100 hover:text-white cursor-pointer flex items-center justify-center shrink-0"
+              aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -206,21 +217,10 @@ export function KrishiNitiNav() {
               </Link>
             </div>
 
-            <div className="pt-2 border-t border-emerald-800/60 flex items-center justify-between text-xs">
-              <Link 
-                href="/login" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-emerald-200 hover:text-white font-bold"
-              >
-                {t.signIn}
-              </Link>
-              <Link 
-                href="/register" 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-amber-300 font-bold"
-              >
-                {t.getStarted}
-              </Link>
+            <div className="pt-2 border-t border-emerald-800/60 flex items-center justify-between">
+              <div className="sm:hidden w-full flex justify-center">
+                <ThemeSwitcher />
+              </div>
             </div>
           </div>
         )}

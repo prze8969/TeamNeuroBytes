@@ -126,16 +126,20 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-family: var(--font-noto-sans), "Noto Sans", sans-serif;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
     font-family: var(--font-noto-sans), "Noto Sans", sans-serif;
     @apply bg-background text-foreground antialiased;
+    overflow-x: hidden;
+    width: 100%;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-mukta), "Mukta", sans-serif;
     letter-spacing: -0.02em;
-  }
-  html {
-    font-family: var(--font-noto-sans), "Noto Sans", sans-serif;
   }
 }
 

@@ -77,9 +77,9 @@ export function Slide5Intelligence() {
           </div>
 
           {/* Floating decorative element */}
-          <div className="absolute -bottom-6 -left-6 bg-[#04130c] border border-emerald-800/60 p-4 rounded-2xl shadow-xl flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-             <span className="text-xs font-bold text-emerald-100 tracking-wide">AI Market Analysis Active</span>
+          <div className="absolute -bottom-5 left-2 sm:-bottom-6 sm:-left-6 bg-[#04130c] border border-emerald-800/60 p-3 sm:p-4 rounded-2xl shadow-xl flex items-center gap-2.5 sm:gap-3">
+             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+             <span className="text-[11px] sm:text-xs font-bold text-emerald-100 tracking-wide">AI Market Analysis Active</span>
           </div>
 
         </div>

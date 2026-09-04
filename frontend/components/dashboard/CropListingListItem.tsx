@@ -83,10 +83,10 @@ export function CropListingListItem({
             e.stopPropagation();
             onOpenDetails(lot);
           }}
-          className="bg-emerald-50 hover:bg-emerald-600 text-emerald-800 hover:text-white border border-emerald-200/80 group-hover:border-emerald-600 font-bold text-xs h-9 px-3.5 rounded-xl shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+          className="bg-emerald-50 hover:bg-emerald-600 text-emerald-800 hover:text-white border border-emerald-200/80 group-hover:border-emerald-600 font-bold text-xs h-9 min-h-[44px] min-w-[44px] px-3.5 rounded-xl shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <span className="hidden sm:inline">Details</span>
-          <ChevronRight size={15} className="group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
         </Button>
       </div>
     </div>

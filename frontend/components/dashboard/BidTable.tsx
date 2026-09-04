@@ -54,8 +54,8 @@ export function BidTable({ bids, lots = [], onAcceptBid, onRejectBid, onTrackOrd
       </div>
 
       {/* Table Container */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs border-collapse">
+      <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
+        <table className="w-full min-w-[720px] text-left text-xs border-collapse">
           <thead>
             <tr className="border-b border-slate-100 text-[10px] uppercase font-bold text-slate-400 bg-slate-50/70">
               <th className="py-3.5 px-4 rounded-l-xl">Produce &amp; Lot</th>

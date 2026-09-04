@@ -390,7 +390,7 @@ export function ShipmentTracker({
       {/* ========================================================================= */}
       {/* 2. INTERACTIVE GEOSPATIAL MAP (LEAFLET CONTAINER) */}
       {/* ========================================================================= */}
-      <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full bg-slate-100 overflow-hidden">
+      <div className="relative h-72 sm:h-auto sm:aspect-[21/9] w-full bg-slate-100 overflow-hidden">
         
         {/* Map Div */}
         <div ref={mapContainerRef} className="w-full h-full z-0" />

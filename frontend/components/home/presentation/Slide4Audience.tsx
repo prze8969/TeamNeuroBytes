@@ -5,19 +5,19 @@ import { Tractor, Building2 } from 'lucide-react';
 
 export function Slide4Audience() {
   return (
-    <section className="w-full min-h-[100dvh] snap-start flex flex-col justify-center bg-[#04130c] relative">
+    <section className="w-full min-h-[100dvh] snap-start flex flex-col justify-center bg-[#04130c] relative pt-16 md:pt-0">
       
       {/* Title above split */}
-      <div className="absolute top-[10vh] md:top-[15vh] left-0 w-full z-20 px-6 text-center">
+      <div className="relative md:absolute top-0 md:top-[15vh] left-0 w-full z-20 px-6 py-6 md:py-0 text-center">
          <h2 className="text-3xl md:text-5xl font-display font-bold text-white tracking-tight drop-shadow-lg">
             Who is it for?
          </h2>
       </div>
 
-      <div className="flex flex-col md:flex-row w-full h-full min-h-[100dvh]">
+      <div className="flex flex-col md:flex-row w-full h-full min-h-full md:min-h-[100dvh]">
         
         {/* Left Side: Farmers */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-16 lg:p-24 relative overflow-hidden bg-gradient-to-br from-[#061e13] to-[#04130c]">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-10 md:p-16 lg:p-24 relative overflow-hidden bg-gradient-to-br from-[#061e13] to-[#04130c]">
           <div className="relative z-10 w-full max-w-sm">
             <div className="flex items-center gap-4 mb-8">
               <div className="h-14 w-14 rounded-2xl bg-amber-400/10 flex items-center justify-center border border-amber-400/20 text-amber-400">
