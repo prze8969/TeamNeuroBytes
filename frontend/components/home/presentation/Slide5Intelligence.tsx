@@ -27,6 +27,9 @@ export function Slide5Intelligence() {
       case 'mr': return 'आमचे प्लॅटफॉर्म फक्त पिकांची नोंदणी करत नाही. आम्ही एआय तंत्रज्ञानाने बाजारभावाचा अंदाज लावतो जेणेकरून तुम्हाला कळेल की आज विकायचे की चांगल्या भावासाठी थांबायचे.';
       case 'pa': return 'ਸਾਡਾ ਪਲੇਟਫਾਰਮ ਸਿਰਫ਼ ਫ਼ਸਲਾਂ ਦੀ ਸੂਚੀ ਨਹੀਂ ਬਣਾਉਂਦਾ। ਅਸੀਂ ਮੰਡੀ ਦੇ ਭਾਅ ਦਾ ਅਨੁਮਾਨ ਲਗਾਉਂਦੇ ਹਾਂ ਤਾਂ ਜੋ ਤੁਸੀਂ ਫੈਸਲਾ ਕਰ ਸਕੋ ਕਿ ਅੱਜ ਵੇਚਣਾ ਹੈ ਜਾਂ ਬਿਹਤਰ ਭਾਅ ਦੀ ਉਡੀਕ ਕਰਨੀ ਹੈ।';
       case 'gu': return 'અમારું પ્લેટફોર્મ માત્ર પાકની યાદી બનાવતું નથી. અમે બજાર ભાવની આગાહી કરીએ છીએ જેથી તમે નક્કી કરી શકો કે આજે વેચવું કે સારા ભાવ માટે રાહ જોવી.';
+      case 'ta': return 'எங்கள் தளம் பயிர்களை பட்டியலிடுவது மட்டுமல்ல. சந்தை விலையை முன்கூட்டியே கணிக்கிறது, இதனால் எப்போது விற்க வேண்டும் என்பதை நீங்கள் தீர்மானிக்கலாம்.';
+      case 'te': return 'మా ప్లాట్‌ఫారమ్ పంటలను జాబితా చేయడమే కాకుండా మార్కెట్ ధరలను అంచనా వేస్తుంది, తద్వారా మీరు ఎప్పుడు అమ్మాలో నిర్ణయించుకోవచ్చు.';
+      case 'kn': return 'ನಮ್ಮ ವೇದಿಕೆಯು ಕೇವಲ ಬೆಳೆಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವುದಿಲ್ಲ, ಮಾರುಕಟ್ಟೆ ದರವನ್ನು ಮುನ್ಸೂಚಿಸುತ್ತದೆ, ಇದರಿಂದ ನೀವು ಯಾವಾಗ ಮಾರಾಟ ಮಾಡಬೇಕೆಂದು ನಿರ್ಧರಿಸಬಹುದು.';
       default: return "Our platform doesn't just list your crops. We predict market prices so you know whether to sell today or wait for a better price.";
     }
   };
@@ -35,6 +38,11 @@ export function Slide5Intelligence() {
     switch (currentLocale) {
       case 'hi': return 'जानें हम कैसे अलग हैं';
       case 'mr': return 'आम्ही कसे वेगळे आहोत ते पहा';
+      case 'pa': return 'ਜਾਣੋ ਅਸੀਂ ਕਿਵੇਂ ਵੱਖਰੇ ਹਾਂ';
+      case 'gu': return 'અમે કેવી રીતે અલગ છીએ તે જુઓ';
+      case 'ta': return 'நாங்கள் எவ்வாறு வேறுபடுகிறோம் என்று பாருங்கள்';
+      case 'te': return 'మేము ఎలా భిన్నంగా ఉన్నామో చూడండి';
+      case 'kn': return 'ನಾವು ಹೇಗೆ ಭಿನ್ನವಾಗಿದ್ದೇವೆ ಎಂದು ನೋಡಿ';
       default: return "See how we're different";
     }
   };
@@ -88,6 +96,42 @@ export function Slide5Intelligence() {
           potentialValue: `+₹${toLocalizedDigits('6,500', 'gu')} સંભવિત વધારાનો નફો`,
           statusPill: 'એઆઈ બજાર વિશ્લેષણ સક્રિય',
           unit: '/કિલો'
+        };
+      case 'ta':
+        return {
+          market: 'நாசிக் ஏபிஎம்சி',
+          liveForecast: 'நேரடி கணிப்பு',
+          currentPrice: 'தற்போதைய விலை',
+          forecast7d: `${toLocalizedDigits(7, 'ta')} நாள் கணிப்பு`,
+          recommendedLabel: 'பரிந்துரைக்கப்பட்ட நடவடிக்கை',
+          recommendedAction: `${toLocalizedDigits(7, 'ta')} நாட்கள் காத்திருக்கவும்`,
+          potentialValue: `+₹${toLocalizedDigits('6,500', 'ta')} சாத்தியமான கூடுதல் லாபம்`,
+          statusPill: 'AI சந்தை பகுப்பாய்வு செயலில் உள்ளது',
+          unit: '/கிலோ'
+        };
+      case 'te':
+        return {
+          market: 'నాసిక్ ఏపీఎంసీ',
+          liveForecast: 'ప్రత్యక్ష అంచనా',
+          currentPrice: 'ప్రస్తుత ధర',
+          forecast7d: `${toLocalizedDigits(7, 'te')} రోజుల అంచనా`,
+          recommendedLabel: 'సిఫార్సు చేసిన చర్య',
+          recommendedAction: `${toLocalizedDigits(7, 'te')} రోజులు వేచి ఉండండి`,
+          potentialValue: `+₹${toLocalizedDigits('6,500', 'te')} సంభావ్య అదనపు లాభం`,
+          statusPill: 'AI మార్కెట్ విశ్లేషణ చురుకుగా ఉంది',
+          unit: '/కిలో'
+        };
+      case 'kn':
+        return {
+          market: 'ನಾಸಿಕ್ ಎಪಿಎಂಸಿ',
+          liveForecast: 'ಲೈವ್ ಮುನ್ಸೂಚನೆ',
+          currentPrice: 'ಪ್ರಸ್ತುತ ಬೆಲೆ',
+          forecast7d: `${toLocalizedDigits(7, 'kn')} ದಿನಗಳ ಮುನ್ಸೂಚನೆ`,
+          recommendedLabel: 'ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮ',
+          recommendedAction: `${toLocalizedDigits(7, 'kn')} ದಿನ ಕಾಯಿರಿ`,
+          potentialValue: `+₹${toLocalizedDigits('6,500', 'kn')} ಸಂಭಾವ್ಯ ಹೆಚ್ಚುವರಿ ಲಾಭ`,
+          statusPill: 'AI ಮಾರುಕಟ್ಟೆ ವಿಶ್ಲೇಷಣೆ ಸಕ್ರಿಯವಾಗಿದೆ',
+          unit: '/ಕೆಜಿ'
         };
       default:
         return {

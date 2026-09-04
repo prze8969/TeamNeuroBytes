@@ -88,7 +88,14 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
       >
         <Palette size={14} className="text-amber-300" />
         <span className="hidden sm:inline font-mono text-[10px] uppercase tracking-wider text-amber-200">
-          {currentLocale === 'hi' ? 'थीम:' : currentLocale === 'mr' ? 'थीम:' : 'Theme:'}
+          {currentLocale === 'hi' ? 'थीम:' 
+            : currentLocale === 'mr' ? 'थीम:' 
+            : currentLocale === 'pa' ? 'ਥੀਮ:' 
+            : currentLocale === 'gu' ? 'થીમ:' 
+            : currentLocale === 'ta' ? 'தீம்:' 
+            : currentLocale === 'te' ? 'థీమ్:' 
+            : currentLocale === 'kn' ? 'ಥೀಮ್:' 
+            : 'Theme:'}
         </span>
         <span className="font-bold">{config.shortName}</span>
         <ChevronDown size={12} className={`transition-transform duration-200 opacity-70 ${isOpen ? 'rotate-180' : ''}`} />
@@ -100,11 +107,21 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-amber-400" />
               <span className="text-xs font-black uppercase tracking-wider text-slate-200">
-                {currentLocale === 'hi' ? 'थीम चुनें' : currentLocale === 'mr' ? 'थीम निवडा' : 'Choose Aesthetic Theme'}
+                {currentLocale === 'hi' ? 'थीम चुनें' 
+                  : currentLocale === 'mr' ? 'थीम निवडा' 
+                  : currentLocale === 'pa' ? 'ਥੀਮ ਚੁਣੋ' 
+                  : currentLocale === 'gu' ? 'થીમ પસંદ કરો' 
+                  : currentLocale === 'ta' ? 'தீம் தேர்ந்தெடுக்கவும்' 
+                  : currentLocale === 'te' ? 'థీమ్‌ను ఎంచుకోండి' 
+                  : currentLocale === 'kn' ? 'ಥೀಮ್ ಆಯ್ಕೆಮಾಡಿ' 
+                  : 'Choose Aesthetic Theme'}
               </span>
             </div>
             <span className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
-              {currentLocale === 'hi' ? `${allThemes.length} थीम उपलब्ध` : currentLocale === 'mr' ? `${allThemes.length} थीम उपलब्ध` : `${allThemes.length} Curated Themes`}
+              {currentLocale === 'hi' ? `${allThemes.length} थीम उपलब्ध` 
+                : currentLocale === 'mr' ? `${allThemes.length} थीम उपलब्ध` 
+                : currentLocale === 'pa' ? `${allThemes.length} ਥੀਮ ਉਪਲਬਧ` 
+                : `${allThemes.length} Curated Themes`}
             </span>
           </div>
 
@@ -115,7 +132,14 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 px-1">
                 <Trees size={12} />
                 <span>
-                  {currentLocale === 'hi' ? 'प्राकृतिक एवं ग्रामीण' : currentLocale === 'mr' ? 'नैसर्गिक आणि ग्रामीण' : 'Natural, Farm & Earthy (Non-AI)'}
+                  {currentLocale === 'hi' ? 'प्राकृतिक एवं ग्रामीण' 
+                    : currentLocale === 'mr' ? 'नैसर्गिक आणि ग्रामीण' 
+                    : currentLocale === 'pa' ? 'ਕੁਦਰਤੀ ਅਤੇ ਖੇਤ' 
+                    : currentLocale === 'gu' ? 'કુદરતી અને ખેતી' 
+                    : currentLocale === 'ta' ? 'இயற்கை மற்றும் பண்ணை' 
+                    : currentLocale === 'te' ? 'సహజ మరియు వ్యవసాయ' 
+                    : currentLocale === 'kn' ? 'ನೈಸರ್ಗಿಕ ಮತ್ತು ಕೃಷಿ' 
+                    : 'Natural, Farm & Earthy (Non-AI)'}
                 </span>
               </div>
               <div className="space-y-1.5">
@@ -128,7 +152,14 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 px-1">
                 <Landmark size={12} />
                 <span>
-                  {currentLocale === 'hi' ? 'संस्थागत बैंकिंग एवं डीपीआई' : currentLocale === 'mr' ? 'संस्थात्मक बँकिंग आणि डीपीआय' : 'Institutional Banking & DPI'}
+                  {currentLocale === 'hi' ? 'संस्थागत बैंकिंग एवं डीपीआई' 
+                    : currentLocale === 'mr' ? 'संस्थात्मक बँकिंग आणि डीपीआय' 
+                    : currentLocale === 'pa' ? 'ਬੈਂਕਿੰਗ ਅਤੇ ਸੰਸਥਾਗਤ' 
+                    : currentLocale === 'gu' ? 'સંસ્થાકીય બેંકિંગ' 
+                    : currentLocale === 'ta' ? 'வங்கி மற்றும் நிறுவன' 
+                    : currentLocale === 'te' ? 'బ్యాంకింగ్ & సంస్థాగత' 
+                    : currentLocale === 'kn' ? 'ಬ್ಯಾಂಕಿಂಗ್ ಮತ್ತು ಸಾಂಸ್ಥಿಕ' 
+                    : 'Institutional Banking & DPI'}
                 </span>
               </div>
               <div className="space-y-1.5">
@@ -141,7 +172,14 @@ export function ThemeSwitcher({ variant = 'nav' }: { variant?: 'nav' | 'floating
               <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400 px-1">
                 <Cpu size={12} />
                 <span>
-                  {currentLocale === 'hi' ? 'तकनीकी एवं डार्क' : currentLocale === 'mr' ? 'तांत्रिक आणि डार्क' : 'Tech & Dark'}
+                  {currentLocale === 'hi' ? 'तकनीकी एवं डार्क' 
+                    : currentLocale === 'mr' ? 'तांत्रिक आणि डार्क' 
+                    : currentLocale === 'pa' ? 'ਤਕਨੀਕੀ ਅਤੇ ਡਾਰਕ' 
+                    : currentLocale === 'gu' ? 'ટેક અને ડાર્ક' 
+                    : currentLocale === 'ta' ? 'தொழில்நுட்பம் மற்றும் டார்க்' 
+                    : currentLocale === 'te' ? 'టెక్ & డార్క్' 
+                    : currentLocale === 'kn' ? 'ಟೆಕ್ ಮತ್ತು ಡಾರ್ಕ್' 
+                    : 'Tech & Dark'}
                 </span>
               </div>
               <div className="space-y-1.5">

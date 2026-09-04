@@ -103,7 +103,16 @@ export function KrishiNitiNav() {
               title="Razorpay Standard Checkout"
             >
               <ShieldCheck size={14} className="text-emerald-300" />
-              <span>{currentLocale === 'hi' ? 'चेकआउट' : currentLocale === 'mr' ? 'चेकआउट' : 'Checkout'}</span>
+              <span>
+                {currentLocale === 'hi' ? 'चेकआउट' 
+                  : currentLocale === 'mr' ? 'चेकआउट' 
+                  : currentLocale === 'pa' ? 'ਚੈੱਕਆਊਟ' 
+                  : currentLocale === 'gu' ? 'ચેકઆઉટ' 
+                  : currentLocale === 'ta' ? 'செக்அவுட்' 
+                  : currentLocale === 'te' ? 'చెక్‌అవుట్' 
+                  : currentLocale === 'kn' ? 'ಚೆಕ್‌ಔಟ್' 
+                  : 'Checkout'}
+              </span>
             </Link>
           </nav>
 
@@ -215,7 +224,16 @@ export function KrishiNitiNav() {
                 className="block p-2.5 rounded-xl bg-emerald-900/80 border border-emerald-700/70 text-emerald-100 flex items-center gap-2"
               >
                 <ShieldCheck size={16} className="text-emerald-300" />
-                <span>{currentLocale === 'hi' ? 'रेज़रपे चेकआउट' : currentLocale === 'mr' ? 'रेझरपे चेकआउट' : 'Razorpay Checkout'}</span>
+                <span>
+                  {currentLocale === 'hi' ? 'रेज़रपे चेकआउट' 
+                    : currentLocale === 'mr' ? 'रेझरपे चेकआउट' 
+                    : currentLocale === 'pa' ? 'ਰੇਜ਼ਰਪੇਅ ਚੈੱਕਆਊਟ' 
+                    : currentLocale === 'gu' ? 'રેઝરપે ચેકઆઉટ' 
+                    : currentLocale === 'ta' ? 'ரேஸர்பே செக்அவுட்' 
+                    : currentLocale === 'te' ? 'రేజర్‌పే చెక్‌అవుట్' 
+                    : currentLocale === 'kn' ? 'ರೇಜರ್‌ಪೇ ಚೆಕ್‌ಔಟ್' 
+                    : 'Razorpay Checkout'}
+                </span>
               </Link>
             </div>
 

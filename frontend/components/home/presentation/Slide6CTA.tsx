@@ -73,6 +73,11 @@ export function Slide6CTA() {
     switch (currentLocale) {
       case 'hi': return 'तकनीकी प्लेटफॉर्म एवं एपीआई';
       case 'mr': return 'तंत्रज्ञान प्लॅटफॉर्म आणि एपीआय';
+      case 'pa': return 'ਤਕਨੀਕੀ ਪਲੇਟਫਾਰਮ ਅਤੇ ਏਪੀਆਈ';
+      case 'gu': return 'ટેક પ્લેટફોર્મ અને API';
+      case 'ta': return 'தொழில்நுட்ப தளம் & API';
+      case 'te': return 'సాంకేతిక ప్లాట్‌ఫారమ్ & APIలు';
+      case 'kn': return 'ತಂತ್ರಜ್ಞಾನ ವೇದಿಕೆ ಮತ್ತು APIಗಳು';
       default: return 'Tech Platform & APIs';
     }
   };
@@ -81,6 +86,11 @@ export function Slide6CTA() {
     switch (currentLocale) {
       case 'hi': return 'लॉगिन पोर्टल';
       case 'mr': return 'लॉगिन पोर्टल';
+      case 'pa': return 'ਲਾਗਇਨ ਪੋਰਟਲ';
+      case 'gu': return 'લૉગિન પોર્ટલ';
+      case 'ta': return 'உள்நுழைவு போர்டல்';
+      case 'te': return 'లాగిన్ పోర్టల్';
+      case 'kn': return 'ಲಾಗಿನ್ ಪೋರ್ಟಲ್';
       default: return 'Login Gateway';
     }
   };

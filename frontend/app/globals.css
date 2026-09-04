@@ -9,9 +9,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans), "Noto Sans", sans-serif;
-  --font-display: var(--font-mukta), "Mukta", sans-serif;
-  --font-heading: var(--font-mukta), "Mukta", sans-serif;
+  --font-sans: var(--font-noto-sans), var(--font-gurmukhi), var(--font-devanagari), var(--font-tamil), var(--font-telugu), var(--font-gujarati), var(--font-kannada), "Noto Sans", sans-serif;
+  --font-display: var(--font-mukta), var(--font-gurmukhi), var(--font-devanagari), var(--font-tamil), var(--font-telugu), var(--font-gujarati), var(--font-kannada), "Mukta", sans-serif;
+  --font-heading: var(--font-mukta), var(--font-gurmukhi), var(--font-devanagari), var(--font-tamil), var(--font-telugu), var(--font-gujarati), var(--font-kannada), "Mukta", sans-serif;
   --font-mono: var(--font-geist-mono);
   --tracking-tightest: -0.03em;
   --tracking-tighter: -0.02em;
