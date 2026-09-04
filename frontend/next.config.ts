@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  trailingSlash: isGithubPages ? true : false,
 };
 
 export default nextConfig;
