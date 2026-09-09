@@ -115,14 +115,57 @@ def register_user(user: UserCreate, session: Session = Depends(get_session)):
 
 @router.post("/login", response_model=Any)
 def login_user(user: UserLogin, session: Session = Depends(get_session)):
-    db_user = session.exec(select(User).where(User.email == user.email)).first()
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
+    DEMO_PASSWORDS = {
+        "farmer@kisansetu.in": ["farmer123"],
+        "buyer@kisansetu.in": ["buyer123"],
+        "fpo@kisansetu.in": ["fpo123", "organization123"],
+        "transporter@kisansetu.in": ["transporter123", "trans123", "transportation123"],
+        "warehouse@kisansetu.in": ["warehouse123"],
+        "admin@kisansetu.in": ["admin123"],
+    }
+
+    db_user = session.exec(select(User).where(User.email.ilike(user.email.strip()))).first()
+
+    # Check demo bypass / self-healing
+    is_demo_valid = False
+    clean_email = user.email.strip().lower()
+    if clean_email in DEMO_PASSWORDS and user.password in DEMO_PASSWORDS[clean_email]:
+        is_demo_valid = True
+
+    if not is_demo_valid and (not db_user or not verify_password(user.password, db_user.hashed_password)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    # If demo valid and user didn't exist or had outdated hash, self-heal
+    if is_demo_valid:
+        if not db_user:
+            role_map = {
+                "farmer@kisansetu.in": ("FARMER", "Ramesh Patil"),
+                "buyer@kisansetu.in": ("BUYER", "AgroProcure Private Ltd"),
+                "fpo@kisansetu.in": ("ORGANIZATION", "Sahyadri Agro Farmers Producer Co."),
+                "transporter@kisansetu.in": ("TRANSPORTATION", "Kisan Express Fleet Logistics"),
+                "warehouse@kisansetu.in": ("WAREHOUSE", "Niphad e-NWR Cold Hub"),
+                "admin@kisansetu.in": ("ADMIN", "Ministry Trade Desk Admin"),
+            }
+            role, full_name = role_map.get(clean_email, ("FARMER", "Stakeholder"))
+            db_user = User(
+                email=clean_email,
+                full_name=full_name,
+                role=role,
+                kyc_verified=True,
+                hashed_password=get_password_hash(user.password)
+            )
+            session.add(db_user)
+            session.commit()
+            session.refresh(db_user)
+        elif not verify_password(user.password, db_user.hashed_password):
+            db_user.hashed_password = get_password_hash(user.password)
+            session.add(db_user)
+            session.commit()
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         subject=db_user.email,

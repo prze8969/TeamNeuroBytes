@@ -20,6 +20,16 @@ export function ProtectedRoute({
   const router = useRouter();
   const pathname = usePathname();
 
+  const normalizeRole = (r?: string | null): string => {
+    if (!r) return '';
+    const u = String(r).toUpperCase();
+    if (u === 'TRANSPORTER') return 'TRANSPORTATION';
+    if (u === 'FPO') return 'ORGANIZATION';
+    return u;
+  };
+
+  const isAllowed = !allowedRoles || allowedRoles.length === 0 || allowedRoles.some(ar => normalizeRole(ar) === normalizeRole(role));
+
   useEffect(() => {
     if (loading) return;
 
@@ -27,8 +37,8 @@ export function ProtectedRoute({
     if (!isAuthenticated || !session || !user) {
       let roleHint = 'farmer';
       if (pathname.includes('/buyer')) roleHint = 'buyer';
-      else if (pathname.includes('/fpo')) roleHint = 'fpo';
-      else if (pathname.includes('/transportation')) roleHint = 'transporter';
+      else if (pathname.includes('/fpo') || pathname.includes('/organization')) roleHint = 'fpo';
+      else if (pathname.includes('/transportation') || pathname.includes('/transporter')) roleHint = 'transporter';
       else if (pathname.includes('/warehouse')) roleHint = 'warehouse';
       else if (pathname.includes('/admin')) roleHint = 'admin';
 
@@ -39,12 +49,12 @@ export function ProtectedRoute({
     }
 
     // 2. Authenticated but wrong role -> Redirect to unauthorized view
-    if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    if (!isAllowed && allowedRoles) {
       router.replace(
         `/unauthorized?required=${encodeURIComponent(allowedRoles.join(','))}&current=${encodeURIComponent(role)}`
       );
     }
-  }, [user, session, role, loading, isAuthenticated, allowedRoles, router, pathname]);
+  }, [user, session, role, loading, isAuthenticated, allowedRoles, router, pathname, isAllowed]);
 
   // Loading State
   if (loading) {
@@ -74,7 +84,7 @@ export function ProtectedRoute({
   }
 
   // Unauthorized role
-  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+  if (!isAllowed) {
     return fallback || (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-8 text-xs text-slate-400 font-mono">
         Access restricted. Redirecting to authorization desk...

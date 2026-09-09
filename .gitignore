@@ -54,3 +54,7 @@ frontend/out/
 blockchain/cache/
 blockchain/out/
 
+# Agent and IDE configs
+.agents/
+.impeccable/
+

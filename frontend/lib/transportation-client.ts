@@ -42,9 +42,20 @@ export interface ApiResult<T> {
 
 async function request<T>(url: string, init?: RequestInit): Promise<ApiResult<T>> {
   try {
+    let token: string | null = null;
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/token=([^;]+)/);
+      token = match ? match[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('kisansetu_token') : null);
+    }
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      ...(init?.headers as Record<string, string> || {}),
+    };
+
     const res = await fetch(url, {
       ...init,
-      headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
+      headers,
     });
     const data = res.ok ? await res.json().catch(() => null) : null;
     return {

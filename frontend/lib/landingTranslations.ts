@@ -149,7 +149,7 @@ export const LANDING_TRANSLATIONS: Record<Locale, LandingCopy> = {
     },
     hero: {
       tag: '🌾 The Trusted Platform for Indian Farmers',
-      title: 'Sell Your Crop at',
+      title: 'Trade Your Harvest at',
       titleHighlight: 'Fair Market Price.',
       subtitle: 'List on WhatsApp. Get graded by AI. Money safe in bank.',
       farmerCta: 'List Crop via WhatsApp',
@@ -232,7 +232,7 @@ export const LANDING_TRANSLATIONS: Record<Locale, LandingCopy> = {
           description: 'Funds released instantly to farmer bank account upon physical OTP delivery handshake.'
         }
       ],
-      bannerTitle: 'Want to sell your crop today?',
+      bannerTitle: 'Want to trade your harvest today?',
       bannerSub: 'Free for farmers. Start now on WhatsApp in 30 seconds.',
       bannerCta: 'Start on WhatsApp'
     },
@@ -321,7 +321,7 @@ export const LANDING_TRANSLATIONS: Record<Locale, LandingCopy> = {
       ]
     },
     ctaBand: {
-      title: 'Ready to sell your crop smarter?',
+      title: 'Ready to trade your harvest smarter?',
       subtitle: 'Join over 500+ farmers getting fair prices and guaranteed bank payments.',
       button: 'Start on WhatsApp Now',
       phonePlaceholder: 'Enter your 10-digit mobile number for callback...',

@@ -114,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const cookieRoleMatch = document.cookie.match(/user_role=([A-Z_]+)/);
       const cookieTokenMatch = document.cookie.match(/token=([^;]+)/);
       
-      const storedRole = (cookieRoleMatch ? cookieRoleMatch[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('kisansetu_role') : null)) as UserRole;
+      const rawStoredRole = cookieRoleMatch ? cookieRoleMatch[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('kisansetu_role') : null);
       const storedToken = cookieTokenMatch ? cookieTokenMatch[1] : (typeof localStorage !== 'undefined' ? localStorage.getItem('kisansetu_token') : null);
 
       if (storedToken && storedToken.trim() !== '') {
@@ -125,10 +125,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try { profile = JSON.parse(storedUser); } catch {}
           }
         }
-        const resolvedRole: UserRole = storedRole && defaultUserProfiles[storedRole] ? storedRole : 'FARMER';
+        let resolvedRole: UserRole = 'FARMER';
+        if (rawStoredRole) {
+          const u = rawStoredRole.toUpperCase();
+          if (u === 'TRANSPORTER') resolvedRole = 'TRANSPORTATION';
+          else if (u === 'FPO') resolvedRole = 'ORGANIZATION';
+          else if (defaultUserProfiles[u as UserRole]) resolvedRole = u as UserRole;
+        }
+
         setRole(resolvedRole);
         setSession(storedToken);
-        setUser(profile || defaultUserProfiles[resolvedRole]);
+        const resolvedUser = (profile && profile.role === resolvedRole) ? profile : defaultUserProfiles[resolvedRole];
+        setUser(resolvedUser);
       } else {
         setSession(null);
         setUser(null);
@@ -190,14 +198,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const switchRole = (newRole: UserRole) => {
-    if (!defaultUserProfiles[newRole]) return;
-    setRole(newRole);
-    setUser(defaultUserProfiles[newRole]);
+    let resolvedRole: UserRole = newRole;
+    const u = String(newRole).toUpperCase();
+    if (u === 'TRANSPORTER') resolvedRole = 'TRANSPORTATION';
+    else if (u === 'FPO') resolvedRole = 'ORGANIZATION';
+
+    if (!defaultUserProfiles[resolvedRole]) return;
+    const profile = defaultUserProfiles[resolvedRole];
+    const token = session || 'authenticated-session-token';
+
+    setRole(resolvedRole);
+    setUser(profile);
+    setSession(token);
+
     try {
       if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('kisansetu_role', newRole);
+        localStorage.setItem('kisansetu_role', resolvedRole);
+        localStorage.setItem('kisansetu_token', token);
+        localStorage.setItem('kisansetu_user', JSON.stringify(profile));
       }
-      document.cookie = `user_role=${newRole}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `user_role=${resolvedRole}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `token=${token}; path=/; max-age=31536000; SameSite=Lax`;
     } catch {}
   };
 

@@ -15,7 +15,7 @@ export function Slide6CTA() {
       <div className="flex-grow flex flex-col justify-center items-center px-6 relative z-10 w-full max-w-4xl mx-auto text-center">
         
         <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold text-white tracking-tight leading-[1.1] mb-6 drop-shadow-xl">
-          Ready to sell your crop <br className="hidden md:block"/> at a fair price?
+          Ready to trade your harvest <br className="hidden md:block"/> at a fair price?
         </h2>
         
         <p className="text-lg md:text-xl text-emerald-100/80 max-w-2xl mx-auto mb-12">
@@ -25,7 +25,7 @@ export function Slide6CTA() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto">
           {/* Primary CTA */}
           <a
-            href="https://wa.me/918000000000?text=Hi%20Krishi%20Niti%20I%20want%20to%20sell%20my%20crop"
+            href="https://wa.me/918000000000?text=Hi%20Krishi%20Niti%20I%20want%20to%20trade%20my%20harvest"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-amber-400 hover:bg-amber-300 text-[#04130c] font-black text-lg uppercase tracking-wider transition-all transform hover:scale-[1.02] flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(251,191,36,0.3)]"

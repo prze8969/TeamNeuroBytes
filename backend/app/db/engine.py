@@ -82,9 +82,35 @@ def seed_initial_demo_data():
                 state="Maharashtra",
                 latitude=18.5204,
                 longitude=73.8567,
-                hashed_password=get_password_hash("trans123")
+                hashed_password=get_password_hash("transporter123")
             )
-            session.add_all([farmer, buyer, fpo, transporter])
+            warehouse = User(
+                email="warehouse@kisansetu.in",
+                phone_number="+919766554433",
+                full_name="Niphad e-NWR Cold Hub",
+                role="WAREHOUSE",
+                kyc_verified=True,
+                cibil_score=780,
+                district="Nashik",
+                state="Maharashtra",
+                latitude=20.0760,
+                longitude=74.1080,
+                hashed_password=get_password_hash("warehouse123")
+            )
+            admin = User(
+                email="admin@kisansetu.in",
+                phone_number="+919899001122",
+                full_name="Ministry Trade Desk Admin",
+                role="ADMIN",
+                kyc_verified=True,
+                cibil_score=850,
+                district="New Delhi",
+                state="Delhi",
+                latitude=28.6139,
+                longitude=77.2090,
+                hashed_password=get_password_hash("admin123")
+            )
+            session.add_all([farmer, buyer, fpo, transporter, warehouse, admin])
             session.commit()
             
             # Seed Demo Buyer Profile

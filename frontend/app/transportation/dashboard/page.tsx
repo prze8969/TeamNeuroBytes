@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import {
   Truck, MapPin, ArrowRight, CheckCircle2, Circle, Clock, IndianRupee, Bell, UserCircle, X,
   Phone, Navigation, Settings2, ChevronRight, Package, AlertTriangle, CalendarDays, Thermometer, Droplets,
-  Radio, Shield, Eye, Star, Wallet, ExternalLink, ClipboardCheck, Gauge,
+  Radio, Shield, ShieldCheck, Eye, Star, Wallet, ExternalLink, ClipboardCheck, Gauge,
 } from 'lucide-react';
 
 import {
@@ -34,7 +34,6 @@ import { AcceptTenderModal } from '@/components/transportation/AcceptTenderModal
 import { OrdersExplorer } from '@/components/transportation/OrdersExplorer';
 import { LoadBoard } from '@/components/transportation/LoadBoard';
 import { EarningsPanel } from '@/components/transportation/EarningsPanel';
-import { TransportSidebar } from '@/components/transportation/TransportSidebar';
 import {
   fetchTrips, fetchTransporterProfile, saveTransporterProfile, acceptFreightLoad,
   claimFuelAdvance, verifyFarmgateOtp, markMandiArrival, mapsDirectionsUrl,
@@ -803,9 +802,11 @@ export default function TransportationDashboardPage() {
   const alertsCount = alerts.length;
   const pendingSettlementCount = orders.filter(o => o.status === 'ARRIVED_AT_MANDI').length;
 
+  const activeTrip = orders.find(o => o.status === 'IN_TRANSIT') || orders.find(o => ['ASSIGNED', 'PENDING'].includes(o.status)) || orders[0];
+
   return (
     <ProtectedRoute allowedRoles={['TRANSPORTATION', 'ADMIN']}>
-      <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-slate-900">
+      <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-slate-900 w-full overflow-x-hidden">
         <Navbar activeRole="TRANSPORTATION" />
 
         <TransporterOnboardingModal isOpen={isOnboardingModalOpen} onClose={() => setIsOnboardingModalOpen(false)} onSaveProfile={handleSaveProfile} initialProfile={carrierProfile} isEditMode={isEditMode} userEmail={user?.email} />
@@ -813,25 +814,8 @@ export default function TransportationDashboardPage() {
         <OtpVerifyModal order={otpOrder} isOpen={isOtpOpen} isSubmitting={otpSubmitting} errorMessage={otpError} onClose={() => { setIsOtpOpen(false); setOtpOrder(null); setOtpError(null); }} onVerify={handleVerifyOtp} />
         <AcceptTenderModal tender={acceptTender} isOpen={isAcceptOpen} isSubmitting={acceptSubmitting} errorMessage={acceptError} defaultDriverPhone={carrierProfile.contact_phone} onClose={() => { setIsAcceptOpen(false); setAcceptTender(null); setAcceptError(null); }} onAccept={handleAcceptTender} />
 
-        {/* ═══════════════ SHELL: sidebar + content ═══════════════ */}
-        <div className="flex-1 flex min-h-0">
-          <TransportSidebar
-            activeTab={activeTab}
-            onNavigate={(tab) => setActiveTab(tab)}
-            onOpenFleetSettings={() => { setIsEditMode(true); setIsOnboardingModalOpen(true); }}
-            orders={orders}
-            carrierStats={carrierStats}
-            carrierName={carrierProfile.carrier_name}
-            rating={carrierProfile.rating}
-            totalTrucks={carrierProfile.total_trucks}
-            escrowBalance={escrowBalance}
-            tendersCount={openTenders.length}
-          />
-
-          <div className="flex-1 min-w-0 flex flex-col">
-
         {/* ═══════════════ HEADER (Command Center) ═══════════════ */}
-        <header className="bg-white border-b border-slate-200/80 relative z-40">
+        <header className="bg-white border-b border-slate-200/80 relative z-40 w-full">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0">
@@ -967,120 +951,217 @@ export default function TransportationDashboardPage() {
               </div>
             )}
 
-            <div className="space-y-5">
-              <div className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-[#121821] px-4 py-3 text-[11px] font-medium text-slate-300 shadow-[0_20px_60px_rgba(15,23,42,0.6)]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span>Active</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
-                  <span>Idle</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
-                  <span>Maintenance</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300">Show routes</button>
-                  <button className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-emerald-300">Show alerts</button>
-                </div>
-              </div>
-
-              <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#121821] shadow-[0_30px_80px_rgba(2,6,23,0.75)] min-h-[560px]">
-                <div className="absolute inset-0 opacity-90" style={{
-                  backgroundImage: `linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px), radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 35%), linear-gradient(135deg, rgba(15,23,42,0.95), rgba(15,23,42,0.8))`,
-                  backgroundSize: '28px 28px, 28px 28px, 100% 100%, 100% 100%',
-                }} />
-
-                <div className="absolute inset-0" style={{
-                  backgroundImage: `linear-gradient(120deg, transparent 0 25%, rgba(255,255,255,0.03) 25.5% 26.5%, transparent 27% 100%), linear-gradient(20deg, transparent 0 58%, rgba(255,255,255,0.04) 58.5% 59.5%, transparent 60% 100%), linear-gradient(90deg, transparent 0 72%, rgba(255,255,255,0.03) 72.5% 73.5%, transparent 74% 100%)`,
-                }} />
-
-                <div className="absolute left-5 top-5 z-20 w-[340px] rounded-2xl border border-white/10 bg-[#171d27]/90 p-4 shadow-2xl backdrop-blur">
-                  <div className="flex items-center justify-between gap-3">
+            {/* ═══════════════ AIS-140 SATELLITE GPS & COLD-CHAIN TELEMETRY ═══════════════ */}
+            {activeTrip && (
+              <div className="rounded-3xl border border-slate-200/80 bg-white shadow-sm overflow-hidden transition-all">
+                {/* Header Strip */}
+                <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950 text-white px-5 sm:px-7 py-4.5 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                      <Radio className="w-5 h-5 animate-pulse" />
+                    </div>
                     <div>
-                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-300">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                        Live Trip
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">
+                          AIS-140 Live GPS Telemetry
+                        </span>
+                        <span className="bg-emerald-500/20 text-emerald-300 text-[9px] font-black px-2 py-0.5 rounded-full border border-emerald-400/20">
+                          {activeTrip.deliveryStatus === 'ON_TIME' ? 'ON TIME' : activeTrip.deliveryStatus}
+                        </span>
                       </div>
-                      <div className="mt-2 text-[15px] font-black text-white">TX-4821-HX</div>
-                    </div>
-                    <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[9px] uppercase tracking-[0.2em] text-slate-300">
-                      <span className="w-2 h-2 rounded-full bg-amber-400" />
-                      AT RISK
+                      <h2 className="text-base sm:text-lg font-black tracking-tight text-white mt-0.5">
+                        {activeTrip.shipment.cropName} • {activeTrip.shipment.weightTons} MT ({activeTrip.id})
+                      </h2>
                     </div>
                   </div>
 
-                  <div className="mt-4 text-[11px] text-slate-300">Dallas, TX + Memphis, TN</div>
-                  <div className="mt-3 h-2 rounded-full bg-white/10">
-                    <div className="h-full w-[72%] rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-emerald-400" />
+                  <div className="flex items-center gap-3">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">e-Way Bill</p>
+                      <p className="text-xs font-mono font-bold text-emerald-400">{activeTrip.ewayBillNumber}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => openDrawer(activeTrip)}
+                      className="h-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 shadow-md shadow-emerald-950/40 cursor-pointer"
+                    >
+                      <Eye size={13} className="mr-1.5" /> Haul Dossier
+                    </Button>
                   </div>
-                  <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
-                    <span>ETA time to arrival</span>
-                    <span className="font-semibold text-slate-200">72.9 mi</span>
+                </div>
+
+                {/* Telemetry Metrics Row */}
+                <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100 bg-slate-50/60 border-b border-slate-100">
+                  {/* Metric 1: Speed */}
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-center justify-between text-slate-400 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Live Speed</span>
+                      <Gauge size={14} className="text-blue-500" />
+                    </div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-black text-slate-900">{activeTrip.tracking.speedKmh}</span>
+                      <span className="text-xs font-semibold text-slate-500">km/h</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5">Corridor limit: 60 km/h</p>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl border border-white/10 bg-[#1a212c] p-3">
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Speed</div>
-                      <div className="mt-3 flex items-center justify-center">
-                        <div className="relative h-16 w-16">
-                          <div className="absolute inset-0 rounded-full border-[5px] border-white/10" />
-                          <div className="absolute inset-[5px] rounded-full border-[5px] border-amber-400/80 border-t-transparent border-r-amber-300" style={{ transform: 'rotate(35deg)' }} />
-                          <div className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-white">98</div>
-                        </div>
+                  {/* Metric 2: Temperature & Cold Chain */}
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-center justify-between text-slate-400 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Reefer Climate</span>
+                      <Thermometer size={14} className="text-emerald-600" />
+                    </div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-black text-slate-900">
+                        {activeTrip.vehicle.temperatureC ? `${activeTrip.vehicle.temperatureC}°C` : 'Ambient'}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-500">
+                        {activeTrip.vehicle.humidityRh ? `${activeTrip.vehicle.humidityRh}% RH` : ''}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700 font-medium mt-0.5">Sensor telemetry optimal</p>
+                  </div>
+
+                  {/* Metric 3: Distance remaining */}
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-center justify-between text-slate-400 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Remaining</span>
+                      <Navigation size={14} className="text-amber-500" />
+                    </div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-black text-slate-900">{activeTrip.distanceRemainingKm}</span>
+                      <span className="text-xs font-semibold text-slate-500">km</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      ETA: {new Date(activeTrip.estimatedArrivalTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+
+                  {/* Metric 4: Freight Escrow */}
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-center justify-between text-slate-400 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Freight Settlement</span>
+                      <Wallet size={14} className="text-emerald-600" />
+                    </div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-black text-slate-900">₹{activeTrip.totalFreightInr.toLocaleString('en-IN')}</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700 font-semibold mt-0.5">
+                      {activeTrip.advanceClaimed ? '30% Fuel Advance Credited' : '30% Advance Ready to Claim'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Corridor Highway Route Progression Visualizer */}
+                <div className="p-5 sm:p-6 bg-white space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Transit Corridor</span>
+                      <p className="text-sm font-bold text-slate-800 flex items-center gap-1.5 mt-0.5">
+                        <MapPin size={14} className="text-emerald-600 shrink-0" />
+                        <span>{shortLoc(activeTrip.origin.name)}</span>
+                        <ArrowRight size={13} className="text-slate-400 shrink-0" />
+                        <span className="text-emerald-900 font-extrabold">{shortLoc(activeTrip.destination.name)}</span>
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500 font-medium">Vehicle:</span>
+                      <span className="font-mono text-xs font-black text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
+                        {activeTrip.vehicle.registrationNumber}
+                      </span>
+                      <span className="text-xs text-slate-400">•</span>
+                      <span className="text-xs text-slate-700 font-semibold">{activeTrip.driver.name}</span>
+                    </div>
+                  </div>
+
+                  {/* Highway Corridor Waypoints Stepper */}
+                  <div className="relative pt-2 pb-1">
+                    {/* Progress Bar Track */}
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-amber-500 rounded-full transition-all duration-700"
+                        style={{
+                          width: `${Math.min(100, Math.max(10, Math.round((activeTrip.completedDistanceKm / (activeTrip.totalDistanceKm || 1)) * 100)))}%`
+                        }}
+                      />
+                    </div>
+
+                    {/* Milestone Nodes */}
+                    <div className="grid grid-cols-5 gap-1 pt-3 text-center">
+                      <div className="space-y-1">
+                        <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 ring-4 ring-emerald-100" />
+                        <p className="text-[10px] font-bold text-slate-800 truncate">Nashik Hub</p>
+                        <p className="text-[9px] text-emerald-700 font-medium">Loaded (08:30 AM)</p>
                       </div>
-                      <div className="mt-2 text-center text-[10px] text-slate-300">mph</div>
-                    </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#1a212c] p-3">
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Fuel level</div>
-                      <div className="mt-3 flex items-center justify-center">
-                        <div className="relative h-16 w-16">
-                          <div className="absolute inset-0 rounded-full border-[5px] border-white/10" />
-                          <div className="absolute inset-[5px] rounded-full border-[5px] border-transparent bg-gradient-to-t from-amber-300 via-amber-300 to-transparent" style={{ clipPath: 'inset(18% 0 0 0 round 999px)' }} />
-                          <div className="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-white">31%</div>
-                        </div>
+                      <div className="space-y-1">
+                        <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 ring-4 ring-emerald-100" />
+                        <p className="text-[10px] font-bold text-slate-800 truncate">Ghoti Toll</p>
+                        <p className="text-[9px] text-emerald-700 font-medium">Crossed (10:45 AM)</p>
                       </div>
-                      <div className="mt-2 text-center text-[10px] text-slate-300">3.61 gal</div>
+
+                      <div className="space-y-1">
+                        <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600 ring-4 ring-emerald-100" />
+                        <p className="text-[10px] font-bold text-slate-800 truncate">Kasara Ghat</p>
+                        <p className="text-[9px] text-emerald-700 font-medium">Passed (12:15 PM)</p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <span className="inline-block w-3.5 h-3.5 rounded-full bg-amber-500 ring-4 ring-amber-100 animate-pulse" />
+                        <p className="text-[10px] font-black text-amber-700 truncate">Bhiwandi Bypass</p>
+                        <p className="text-[9px] text-amber-600 font-bold">GPS Live (58 km/h)</p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <span className="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 ring-4 ring-slate-100" />
+                        <p className="text-[10px] font-bold text-slate-600 truncate">Vashi APMC</p>
+                        <p className="text-[9px] text-slate-400">ETA 02:45 PM</p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-medium text-amber-200">
-                    <AlertTriangle size={12} className="text-amber-300" />
-                    Required Break: 30 min (After 8h of driving)
+                  {/* Actions Footer Strip */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <ShieldCheck size={14} className="text-emerald-600" />
+                      <span>Farmgate OTP: <strong className="text-slate-800 font-mono">Verified ({activeTrip.farmGateOtp})</strong></span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {!activeTrip.advanceClaimed && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleClaimAdvanceForOrder(activeTrip)}
+                          className="h-8 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs cursor-pointer"
+                        >
+                          Claim 30% Fuel Advance
+                        </Button>
+                      )}
+                      {activeTrip.status !== 'ARRIVED_AT_MANDI' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMarkArrivalForOrder(activeTrip)}
+                          className="h-8 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 border-slate-200 cursor-pointer"
+                        >
+                          Mark Mandi Arrival
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => openDrawer(activeTrip)}
+                        variant="secondary"
+                        className="h-8 rounded-xl text-xs font-bold cursor-pointer"
+                      >
+                        Trip Details & Tracking
+                      </Button>
+                    </div>
                   </div>
-                </div>
-
-                <div className="absolute right-6 top-6 z-20 h-28 w-28 rounded-full border border-white/10 bg-[#212a35]/80 shadow-[0_0_30px_rgba(255,255,255,0.05)] backdrop-blur-sm" />
-                <div className="absolute right-10 top-10 z-30 h-20 w-20 rounded-full border border-white/10 bg-[#1a222d]/90">
-                  <div className="absolute inset-3 rounded-full border border-dashed border-white/20" />
-                  <div className="absolute left-1/2 top-1/2 h-8 w-[2px] -translate-x-1/2 -translate-y-1/2 bg-white/80" />
-                  <div className="absolute left-1/2 top-1/2 h-[2px] w-8 -translate-x-1/2 -translate-y-1/2 bg-white/80" />
-                  <div className="absolute left-1/2 top-1/2 h-0 w-0 -translate-x-1/2 -translate-y-1/2 border-l-[8px] border-r-[8px] border-b-[14px] border-l-transparent border-r-transparent border-b-amber-400" style={{ transform: 'translate(-50%, -50%) rotate(90deg)' }} />
-                </div>
-
-                <div className="absolute inset-0 z-10">
-                  <div className="absolute left-[34%] top-[48%] h-2 w-40 rounded-full bg-emerald-400/80 shadow-[0_0_20px_rgba(52,211,153,0.8)]" style={{ transform: 'rotate(-18deg)' }} />
-                  <div className="absolute left-[42%] top-[32%] h-2 w-28 rounded-full bg-emerald-400/70 shadow-[0_0_18px_rgba(52,211,153,0.8)]" style={{ transform: 'rotate(12deg)' }} />
-                  <div className="absolute left-[62%] top-[44%] h-2 w-24 rounded-full bg-emerald-400/70 shadow-[0_0_18px_rgba(52,211,153,0.8)]" style={{ transform: 'rotate(24deg)' }} />
-
-                  <div className="absolute left-[52%] top-[44%] flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-[#b8bec6]/80 shadow-[0_0_24px_rgba(255,255,255,0.35)]">
-                    <Truck size={20} className="text-slate-800" />
-                  </div>
-
-                  <div className="absolute left-[59%] top-[60%] h-4 w-4 rounded-full bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.8)]" />
-                  <div className="absolute left-[29%] top-[38%] h-4 w-4 rounded-full bg-red-400 shadow-[0_0_18px_rgba(251,113,133,0.8)]" />
-                </div>
-
-                <div className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 rounded-full border border-white/10 bg-[#171d27]/80 px-4 py-2 text-[11px] text-slate-300 backdrop-blur-sm">
-                  <span>Space • Drag to pan</span>
-                  <span className="text-slate-500">•</span>
-                  <span>Scroll to zoom</span>
-                </div>
-
-                <div className="absolute bottom-5 right-6 z-20 rounded-full border border-white/10 bg-[#171d27]/80 px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-slate-300 backdrop-blur-sm">
-                  Map updates every 3 minutes
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
@@ -1175,8 +1256,6 @@ export default function TransportationDashboardPage() {
             </div>
           </>)}
         </main>
-          </div> {/* end content column */}
-        </div> {/* end shell row */}
       </div>
     </ProtectedRoute>
   );

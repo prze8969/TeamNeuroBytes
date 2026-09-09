@@ -52,60 +52,62 @@ export function KrishiNitiNav() {
   return (
     <>
       <header className={`sticky top-0 z-50 w-full border-b ${config.navBorder} ${config.navBg} backdrop-blur-xl transition-all duration-300`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 sm:h-20 flex items-center justify-between">
+        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 h-18 sm:h-20 flex items-center justify-between">
           
-          {/* Left: Clean Branding with compact SIH badge */}
-          <Link href="/" className="flex items-center group shrink-0">
-            <div className="block sm:hidden">
-              <KisanSetuLogo size="xs" variant="light" badge="SIH" showTagline={false} />
-            </div>
-            <div className="hidden sm:block">
-              <KisanSetuLogo size="md" variant="light" badge="SIH 2026" showTagline={false} />
-            </div>
-          </Link>
-
-          {/* Center Navigation Links (Radically Simplified for Farmers: 3 items) */}
-          <nav className="hidden md:flex items-center space-x-2 font-semibold text-sm text-emerald-100">
-            <Link 
-              href="/" 
-              className="px-3.5 py-2 rounded-xl hover:bg-emerald-900/60 hover:text-amber-300 transition-colors"
-            >
-              {t.home}
-            </Link>
-            <Link 
-              href="/#workflow" 
-              className="px-3.5 py-2 rounded-xl hover:bg-emerald-900/60 hover:text-amber-300 transition-colors"
-            >
-              {t.howItWorks}
-            </Link>
-            <button
-              onClick={() => setIsHelpOpen(true)}
-              className="px-3.5 py-2 rounded-xl text-emerald-100 hover:bg-emerald-900/60 hover:text-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <HelpCircle size={15} className="text-amber-300" />
-              <span>{t.help}</span>
-            </button>
-            
-            {/* Tucked away link for SIH Judges & Partners */}
-            <Link 
-              href="/#differentiation" 
-              className="px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-400/80 hover:text-emerald-200 hover:bg-emerald-900/40 transition-colors flex items-center gap-1 ml-2"
-            >
-              <span>{t.forJudges}</span>
+          {/* Left End: Branding + Navigation Links */}
+          <div className="flex items-center space-x-4 sm:space-x-6 lg:space-x-8">
+            <Link href="/" className="flex items-center group shrink-0">
+              <div className="block sm:hidden">
+                <KisanSetuLogo size="xs" variant="light" badge="SIH" showTagline={false} />
+              </div>
+              <div className="hidden sm:block">
+                <KisanSetuLogo size="md" variant="light" badge="SIH 2026" showTagline={false} />
+              </div>
             </Link>
 
-            {/* Razorpay Checkout Demo */}
-            <Link 
-              href="/checkout" 
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-300 hover:text-white bg-emerald-800/50 hover:bg-emerald-800 transition-colors flex items-center gap-1"
-              title="Razorpay Standard Checkout"
-            >
-              <ShieldCheck size={14} className="text-emerald-300" />
-              <span>Checkout</span>
-            </Link>
-          </nav>
+            {/* Navigation Links next to the logo */}
+            <nav className="hidden md:flex items-center space-x-1 sm:space-x-2 font-semibold text-sm text-emerald-100">
+              <Link 
+                href="/" 
+                className="px-3.5 py-2 rounded-xl hover:bg-emerald-900/60 hover:text-amber-300 transition-colors"
+              >
+                {t.home}
+              </Link>
+              <Link 
+                href="/#workflow" 
+                className="px-3.5 py-2 rounded-xl hover:bg-emerald-900/60 hover:text-amber-300 transition-colors"
+              >
+                {t.howItWorks}
+              </Link>
+              <button
+                onClick={() => setIsHelpOpen(true)}
+                className="px-3.5 py-2 rounded-xl text-emerald-100 hover:bg-emerald-900/60 hover:text-amber-300 transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <HelpCircle size={15} className="text-amber-300" />
+                <span>{t.help}</span>
+              </button>
+              
+              {/* Tucked away link for SIH Judges & Partners */}
+              <Link 
+                href="/#differentiation" 
+                className="px-3 py-1.5 rounded-lg text-xs font-mono text-emerald-400/80 hover:text-emerald-200 hover:bg-emerald-900/40 transition-colors flex items-center gap-1 ml-1"
+              >
+                <span>{t.forJudges}</span>
+              </Link>
 
-          {/* Right Action Group */}
+              {/* Razorpay Checkout Demo */}
+              <Link 
+                href="/checkout" 
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-300 hover:text-white bg-emerald-800/50 hover:bg-emerald-800 transition-colors flex items-center gap-1"
+                title="Razorpay Standard Checkout"
+              >
+                <ShieldCheck size={14} className="text-emerald-300" />
+                <span>Checkout</span>
+              </Link>
+            </nav>
+          </div>
+
+          {/* Right End: Theme, Language, Sign In / Dashboard */}
           <div className="flex items-center space-x-1.5 sm:space-x-2.5">
             
             {/* Live Theme Palette Switcher (Desktop / Tablet) */}

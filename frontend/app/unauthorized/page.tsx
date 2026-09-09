@@ -94,7 +94,14 @@ function UnauthorizedContent() {
         <Button
           type="button"
           variant="outline"
-          onClick={() => router.push('/login')}
+          onClick={() => {
+            const primaryRequired = requiredRoles[0]?.toLowerCase() || '';
+            const targetDest = requiredRoles[0] ? (roleRouteMap[requiredRoles[0].toUpperCase()] || '') : '';
+            const query = new URLSearchParams();
+            if (primaryRequired) query.set('preselectedRole', primaryRequired);
+            if (targetDest) query.set('redirectTo', targetDest);
+            router.push(`/login${query.toString() ? `?${query.toString()}` : ''}`);
+          }}
           className="w-full h-12 rounded-xl text-sm font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-50 border-slate-200/90 cursor-pointer flex items-center justify-center gap-2"
         >
           <LogOut size={16} className="opacity-70" />

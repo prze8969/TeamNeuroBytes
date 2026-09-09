@@ -38,8 +38,8 @@ export function Navbar({ activeRole = 'FARMER' }: { activeRole?: string }) {
   return (
     <header className={`sticky top-0 z-50 w-full shadow-md ${config.navBg} border-b ${config.navBorder} text-white transition-colors duration-300`}>
       {/* Main Navigation Bar */}
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-4 md:space-x-8 lg:space-x-12">
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 h-16 flex items-center justify-between">
+        <div className="flex items-center space-x-4 md:space-x-6 lg:space-x-8">
           <Link href="/" className="flex items-center group shrink-0">
             <KisanSetuLogo size="sm" variant="light" badge={!isFarmer ? "Agri-Trade AI" : undefined} showTagline={false} />
           </Link>
