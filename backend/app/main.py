@@ -91,3 +91,8 @@ def root():
             "Automated 6-Hour AGMARKNET Live Feed Synchronization"
         ]
     }
+
+@app.get("/health", tags=["System Health"])
+def health_check():
+    return {"status": "ok"}
+
